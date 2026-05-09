@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 class Task:
-    def __init__(self, task, id, created_date, modified_date, priority = 2, done = False):
+    def __init__(self, task, id, created_date, modified_date, priority = "Medium", done = False):
         self.task = task
         self.id = id
         self.created_date = created_date
@@ -23,13 +23,13 @@ class Task:
 
     #priority
     def priority_high(self, modified_date):
-        self.priority = 1
+        self.priority = "High"
         self.modified_date = modified_date
     def priority_normal(self, modified_date):
-        self.priority = 2
+        self.priority = "Medium"
         self.modified_date = modified_date
     def priority_low(self, modified_date):
-        self.priority = 3
+        self.priority = "Low"
         self.modified_date = modified_date
     #file representation
     def to_dict(self):
@@ -37,4 +37,4 @@ class Task:
     # display of task
     def __str__(self):
         is_done = "√" if self.done else "x"
-        return f"{self.created_date} | {self.id} | {is_done} | {self.task}"
+        return f"{self.id} | {is_done} | {self.task} | {self.priority}"

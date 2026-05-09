@@ -20,7 +20,7 @@ class TaskList:
         self.changed = True
 
         logger.info(f"{self.category}:task added [{task}]")
-        return newtask
+        return f"{self.category}:task added [{newtask.task}]  and Id is [ {newtask.id} ]"
     
     def importing_task(self,task, id, created_date, modified_date, priority, done):
         newtask = Task(task, id, created_date, modified_date, priority, done)
@@ -115,7 +115,8 @@ class TaskList:
     
     #----------------------------------Display task---------------------------------------------
     def display_all(self):
-        print(self.category)
+        print()
+        print("# ",self.category)
         if not self.tasklist:
             print("No tasks available")
             logger.warning("{self.category}: No tasks available ")
@@ -125,8 +126,8 @@ class TaskList:
         logger.debug(f"{self.category}: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ")
 
     def display_bymonths(self,months,year):
-        
-        print(self.category)
+        print()
+        print("# ",self.category)
         count = 0
         no_task = True
         if not self.tasklist:
@@ -145,7 +146,8 @@ class TaskList:
         logger.debug(f"{self.category}: Displayed {count}/{len(self.tasklist)} tasks ")
 
     def display_byweek(self,week,year):
-        print(self.category)
+        print()
+        print("# ",self.category)
         count = 0
         if not self.tasklist:
             print(f"{self.category}: No tasks available in {self.category} page")
@@ -162,7 +164,8 @@ class TaskList:
         logger.debug(f"{self.category}: Displayed {count}/{len(self.tasklist)} tasks ")    
     
     def display_byyear(self,year):
-        print(self.category)
+        print()
+        print("# ",self.category)
         count = 0
         if not self.tasklist:
             print(f"{self.category}: No tasks available in {self.category} page")
@@ -179,7 +182,8 @@ class TaskList:
         logger.debug(f"{self.category}: Displayed {count}/{len(self.tasklist)} tasks ")
 
     def display_byday(self,day,months,year):
-        print(self.category)
+        print()
+        print("# ",self.category)
         count = 0
         if not self.tasklist:
             print(f"{self.category}: No tasks available in {self.category} page")
