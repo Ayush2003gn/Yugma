@@ -181,7 +181,7 @@ class TaskPage:
         if category == "*":
             for page in self.taskpage:
                 page.display_all()
-                return
+            return
         else:
             page = self.category_finder(category)
             if page:
