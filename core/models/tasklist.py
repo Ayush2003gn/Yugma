@@ -10,13 +10,18 @@ class TaskList:
     def __init__(self, category):
         self.category = category 
         self.tasklist = []
+        self.changed = False
     #----------------------------------Create task---------------------------------------------
     def add_task(self,task):
         id = datetime.datetime.now().strftime("%d%m%y%H%M%S%f")
         newtask = Task(task,id,datetime_now(),datetime_now())
+        
         self.tasklist.append(newtask)
+        self.changed = True
+
         logger.info(f"{self.category}:task added [{task}]")
         return newtask
+    
     def importing_task(self,task, id, created_date, modified_date, priority, done):
         newtask = Task(task, id, created_date, modified_date, priority, done)
         self.tasklist.append(newtask)
@@ -25,6 +30,7 @@ class TaskList:
         for task in self.tasklist:
             if task.id == id:
                 return task
+            
         return None
     
     #----------------------------------Remove task---------------------------------------------
@@ -33,7 +39,9 @@ class TaskList:
         if task:
             self.tasklist.remove(task)
             logger.info(f"{self.category}: Id : {id} is removed")
+            self.changed = True
             return f"Id : {id} is removed"
+        
         logger.warning(f"{self.category}: Task ID not found: {id} ")
         return "Id not found in {self.category} page"
     
@@ -43,6 +51,7 @@ class TaskList:
         if task_found == None:
             logger.warning(f"{self.category}: Task ID not found: {id}")
             return "Id not found in {self.category} page"
+        
         else:
             task_found.correction(task,datetime_now())
             logger.info(f"{self.category}: Task updated: id={id}, new_value='{task}'")
@@ -194,7 +203,7 @@ class TaskList:
         return (count_done/len(self.tasklist))*100
     
     def completion_bar(self):
-        percent_inten = int(self.percent_done/10)
+        percent_inten = int(self.percent_done()/10.0)
         bar = ""
         for i in range(percent_inten):
             bar += "="
