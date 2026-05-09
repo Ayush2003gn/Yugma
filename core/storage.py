@@ -32,7 +32,6 @@ def json_to_py(path):
         with open(path, "r") as f:
             logger.info("taking data from json")
             x = json.load(f)
-            print(x) 
             return x
     except json.JSONDecodeError:
         logger.error("JSON is corrupted, resetting file", exc_info=True)
