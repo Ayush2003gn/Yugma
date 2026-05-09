@@ -8,8 +8,8 @@ class TaskPage:
         self.default = None
 
     #-------------------------------------Changes in Page------------------------------------------
-    def add_tasklist(self,category):
-        if not self.taskgroup:
+    def add_page(self,category):
+        if not self.taskpage:
             self.taskpage.append(TaskList(category))
             return f"Page is added of category {category}"
         else:

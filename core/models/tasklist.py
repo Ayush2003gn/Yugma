@@ -17,7 +17,10 @@ class TaskList:
         self.tasklist.append(newtask)
         logger.info(f"{self.category}:task added [{task}]")
         return newtask
-    
+    def importing_task(self,task, id, created_date, modified_date, priority, done):
+        newtask = Task(task, id, created_date, modified_date, priority, done)
+        self.tasklist.append(newtask)
+
     def id_find(self,id):
         for task in self.tasklist:
             if task.id == id:

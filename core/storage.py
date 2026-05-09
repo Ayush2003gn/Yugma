@@ -1,6 +1,7 @@
 import logging
 from pathlib import Path
 import os
+import json
 logger = logging.getLogger(__name__)
 
 base = os.path.dirname(os.path.dirname(__file__))
@@ -25,3 +26,14 @@ def pathcategory_finder():
             datafile = os.path.join(datafolder_Path,filecategory[file]+".json")
             path_category[file] = datafile
     return path_category
+
+def json_to_py(path):
+    try:
+        with open(path, "r") as f:
+            logger.info("taking data from json")
+            x = json.load(f)
+            print(x) 
+            return x
+    except json.JSONDecodeError:
+        logger.error("JSON is corrupted, resetting file", exc_info=True)
+        return []
