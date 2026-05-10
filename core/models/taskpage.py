@@ -245,3 +245,17 @@ class TaskPage:
         else:
             print("No pages are there")
 
+    def category_datapath_dict(self):
+        category_list = {}
+        if self.taskpage:
+            for page in self.taskpage:
+                category = page.category
+                category_list[category + "_data.json"] = category
+            return category_list
+        return {}
+
+    def serialize_tasksofpage(self,category):
+        page = self.category_finder(category)
+        if page:
+            return page.serialize_tasks()
+        

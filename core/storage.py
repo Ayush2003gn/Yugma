@@ -36,3 +36,17 @@ def json_to_py(path):
     except json.JSONDecodeError:
         logger.error("JSON is corrupted, resetting file", exc_info=True)
         return []
+def path_make(filename):
+    return os.path.join(datafolder_Path,filename)
+
+def ensure_datafile(file_paths):
+    if not os.path.exists(file_paths):
+        logger.critical("File is not there")
+        with open(file_paths, "w") as f:
+            json.dump([], f)
+
+
+def exporting_data(path,data_list):
+    with open(path , "w") as f:
+        json.dump(data_list , f , indent= 2 )
+        logger.info("Data written to JSON file successfully")

@@ -33,7 +33,7 @@ class Task:
         self.modified_date = modified_date
     #file representation
     def to_dict(self):
-        return {"Id" : self.id, "Task" : self.task, "Done" : self.done, "Date Created":self.created_date, "Date Modified":self.modified_date, "Priority":self.priority}
+        return {"Id" : self.id, "Task" : self.task, "Done" : self.done, "Date Created":self.created_date.isoformat(), "Date Modified":self.modified_date.isoformat(), "Priority":self.priority}
     # display of task
     def __str__(self):
         is_done = "√" if self.done else "x"

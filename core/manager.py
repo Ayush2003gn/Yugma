@@ -26,4 +26,27 @@ def import_data():
         
     create_category()
 
+def export_data():
+    category_datafile_dict = Todo.category_datapath_dict()
 
+    def create_path():
+        category_path_dict = {}
+        for filename,category in category_datafile_dict.items():
+            path = storage.path_make(filename)
+            category_path_dict[path] = category
+        return category_path_dict
+    
+    def ensure_filespath(path_dict):
+        if path_dict:
+            for path in path_dict:
+                storage.ensure_datafile(path)
+    
+    def exporting_data_infiles(path_dict):
+        if path_dict:
+            for path , category in path_dict.items():
+                data = Todo.serialize_tasksofpage(category)
+                storage.exporting_data(path , data)
+    
+    path_dict = create_path()
+    ensure_filespath(path_dict)
+    exporting_data_infiles(path_dict)
