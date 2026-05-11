@@ -50,3 +50,123 @@ def export_data():
     path_dict = create_path()
     ensure_filespath(path_dict)
     exporting_data_infiles(path_dict)
+
+def cmd_page(arg):
+    count = 0
+    category = None
+    while count < len(arg):
+        current = arg[count]
+        if current in ["add", "-p"]:
+            if count + 1 >= len(arg):
+                print("Category missing")
+                break
+
+            category = arg[count + 1]
+            print(Todo.add_page(category))
+            count += 2
+            continue
+
+        elif current in ["set-default", "--sd"]:
+
+            if current == "set-default":
+
+                if count + 1 >= len(arg):
+                    print("Category missing")
+                    break
+
+                category = arg[count + 1]
+                print(Todo.set_default(category))
+                count += 2
+                continue
+
+            elif current == "--sd":
+
+                if category is None:
+                    print("No category entered")
+                    break
+
+                print(Todo.set_default(category))
+                count += 1
+                continue
+
+        elif current in ["remove", "-rm"]:
+
+            if count + 1 >= len(arg):
+                print("Category missing")
+                break
+
+            category = arg[count + 1]
+            print(Todo.remove_page(category))
+            count += 2
+            continue
+
+        else:
+            print(f"Unknown argument: {current}")
+            break
+        
+
+def cmd_add(arg):
+    count = 0
+    category = None
+
+    while count < len(arg):
+        current = arg[count]
+        if current in ["-task", "-t"]:
+            if count + 1 >= len(arg):
+                print("task missing")
+                break
+
+            task = arg[count + 1]
+            print(Todo.add_page(task)["message"])
+            count += 2
+            continue
+
+        elif current in ["set-default", "--sd"]:
+
+            if current == "set-default":
+
+                if count + 1 >= len(arg):
+                    print("Category missing")
+                    break
+
+                category = arg[count + 1]
+                print(Todo.set_default(category))
+                count += 2
+                continue
+
+            elif current == "--sd":
+
+                if category is None:
+                    print("No category entered")
+                    break
+
+                print(Todo.set_default(category))
+                count += 1
+                continue
+
+        elif current in ["remove", "-rm"]:
+
+            if count + 1 >= len(arg):
+                print("Category missing")
+                break
+
+            category = arg[count + 1]
+            print(Todo.remove_page(category))
+            count += 2
+            continue
+
+        else:
+            print(f"Unknown argument: {current}")
+            break
+
+def cmd_remove(arg):
+    pass
+    
+def cmd_priorty(arg):
+    pass
+
+def cmd_status(arg):
+    pass
+
+def cmd_display(arg):
+    pass

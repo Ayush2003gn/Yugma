@@ -47,6 +47,15 @@ def ensure_datafile(file_paths):
 
 
 def exporting_data(path,data_list):
-    with open(path , "w") as f:
-        json.dump(data_list , f , indent= 2 )
-        logger.info("Data written to JSON file successfully")
+    try:
+        with open(path , "w") as f:
+            json.dump(data_list , f , indent= 2 )
+            logger.info("Data written to JSON file successfully")
+    except:
+        ensure_datafile(path)
+        try:
+            with open(path , "w") as f:
+                json.dump(data_list , f , indent= 2 )
+                logger.info("Data written to JSON file successfully")
+        except:
+            print("Something went wrong")

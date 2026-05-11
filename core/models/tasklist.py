@@ -1,6 +1,7 @@
 from core.models.task import Task
 import datetime
 import logging
+import uuid
 logger = logging.getLogger(__name__)
 
 def datetime_now():
@@ -10,22 +11,30 @@ class TaskList:
     def __init__(self, category):
         self.category = category 
         self.tasklist = []
+        self.ui_id_count = 0
         self.changed = False
+
     #----------------------------------Create task---------------------------------------------
     def add_task(self,task):
-        id = datetime.datetime.now().strftime("%d%m%y%H%M%S%f")
-        newtask = Task(task,id,datetime_now(),datetime_now())
+        id = str(uuid.uuid4())
+        ui_id = self.ui_id_generator()
+        newtask = Task(task, id, ui_id, datetime_now(), datetime_now())
         
         self.tasklist.append(newtask)
         self.changed = True
 
         logger.info(f"{self.category} page:task added [{task}]")
-        return f"{self.category} page:task added [{newtask.task}]  and Id is [ {newtask.id} ]"
+        return {"success": True,"message": f"{self.category} page:task added [{newtask.task}]","task": newtask}
     
     def importing_task(self,task, id, created_date, modified_date, priority, done):
-        newtask = Task(task, id, datetime.datetime.fromisoformat(created_date), datetime.datetime.fromisoformat(modified_date), priority, done)
+        ui_id = self.ui_id_generator()
+        newtask = Task(task, id, ui_id, datetime.datetime.fromisoformat(created_date), datetime.datetime.fromisoformat(modified_date), priority, done)
         self.tasklist.append(newtask)
 
+    def ui_id_generator(self):
+        self.ui_id_count += 1
+        return self.ui_id_count
+    
     def id_find(self,id):
         for task in self.tasklist:
             if task.id == id:
@@ -40,78 +49,78 @@ class TaskList:
             self.tasklist.remove(task)
             logger.info(f"{self.category} page: Id : {id} is removed")
             self.changed = True
-            return f"Id : {id} is removed"
+            return {"success": True,"message":f"Id : {id} is removed"}
         
         logger.warning(f"{self.category} page: Task ID not found: {id} ")
-        return "Id not found in {self.category} page"
+        return {"success": False,"message":f"Id not found in {self.category} page"}
     
     #----------------------------------Update task---------------------------------------------    
     def update_task(self,id,task):
         task_found = self.id_find(id)
         if task_found == None:
             logger.warning(f"{self.category} page: Task ID not found: {id}")
-            return "Id not found in {self.category} page"
+            return {"success": False,"message":f"Id not found in {self.category} page" }
         
         else:
             task_found.correction(task,datetime_now())
             logger.info(f"{self.category} page: Task updated: id={id}, new_value='{task}'")
             self.changed = True
-            return f"successfully Update task of id {id} in {self.category} page"
+            return {"success": True,"message":f"successfully Update task of id {id} in {self.category} page","task":task_found}
     
     def mark_done(self,id):
         task_found = self.id_find(id)
         if task_found == None:
             logger.warning(f"{self.category} page: Task ID not found: {id} ")
-            return "Id not found in {self.category} page"
+            return {"success": False,"message":f"Id not found in {self.category} page"}
         else:
             task_found.mark_done(datetime_now())
             logger.info(f"{self.category} page: Task status updated: {id} ")
             self.changed = True
-            return f"successfully Update status of id {id} in {self.category} page"
+            return {"success": True,"message":f"successfully Update status of id {id} in {self.category} page","task":task_found}
         
     def mark_undone(self,id):
         task_found = self.id_find(id)
         if task_found == None:
             logger.warning(f"{self.category} page: Task ID not found: {id} ")
-            return "Id not found in {self.category} page"
+            return {"success": False,"message":f"Id not found in {self.category} page"}
         else:
             task_found.mark_undone(datetime_now())
             logger.info(f"{self.category} page: Task status updated: {id}")
             self.changed = True
-            return f"successfully Update status of id {id} in {self.category} page"
+            return {"success": True,"message":f"successfully Update status of id {id} in {self.category} page","task":task_found}
     
     def highpriority_task(self,id):
         task_found = self.id_find(id)
         if task_found == None:
             logger.warning(f"{self.category} page: Task ID not found: {id} ")
-            return "Id not found in {self.category} page"
+            return {"success": False,"message":f"Id not found in {self.category} page"}
         else:
             task_found.priority_high(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {id} ")
             self.changed = True
-            return f"successfully Update priority level of id {id} in {self.category} page"
+            return {"success": True,"message":f"successfully Update priority level of id {id} in {self.category} page","task":task_found}
         
     def Normalpriority_task(self,id):
         task_found = self.id_find(id)
         if task_found == None:
             logger.warning(f"{self.category} page: Task ID not found: {id} ")
-            return "Id not found"
+            return {"success": False,"message":"Id not found"}
         else:
             task_found.priority_normal(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {id}")
             self.changed = True
-            return f"successfully Update priority level of id {id} in {self.category} page"
+            return {"success": True,"message":f"successfully Update priority level of id {id} in {self.category} page","task":task_found}
         
     def lowpriority_task(self,id):
         task_found = self.id_find(id)
         if task_found == None:
             logger.warning(f"{self.category} page: Task ID not found: {id} ")
-            return "Id not found"
+            return {"success": False,"message":"Id not found"}
         else:
             task_found.priority_low(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {id} ")
             self.changed = True
-            return f"successfully Update priority level of id {id} in {self.category} page"
+            return {"success": True,"message":f"successfully Update priority level of id {id} in {self.category} page","task":task_found}
     
     #----------------------------------Display task---------------------------------------------
     def display_all(self):
