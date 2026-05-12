@@ -52,6 +52,10 @@ def export_data():
     exporting_data_infiles(path_dict)
 
 def cmd_page(arg):
+    if len(arg) < 2:
+        print("Something Wrong in argument")
+        logger.error("Something Wrong in argument")
+        return
     count = 0
     category = None
     while count < len(arg):
@@ -111,6 +115,10 @@ def cmd_page(arg):
         
 
 def cmd_add(arg):
+    if len(arg) < 2:
+        print("Something Wrong in argument")
+        logger.error("Something Wrong in argument")
+        return
     if arg[0] == "-t" or arg[0] == "-task":
         task = arg[1]
     else:
@@ -169,6 +177,11 @@ def cmd_add(arg):
     count += 1
 
 def cmd_remove(arg):
+    if len(arg) < 2:
+        print("Something Wrong in argument")
+        logger.error("Something Wrong in argument")
+        return
+    
     if arg[0] == "-id":
         id = arg[1]
     else:
@@ -186,6 +199,11 @@ def cmd_remove(arg):
     print(action["message"])
     
 def cmd_priorty(arg):
+    if len(arg) < 2:
+        print("Something Wrong in argument")
+        logger.error("Something Wrong in argument")
+        return
+    
     if "--C" in arg:
         index = arg.index("--C") #manual setting category
         if index + 1 >= len(arg):
@@ -226,6 +244,11 @@ def cmd_priorty(arg):
     
 
 def cmd_status(arg):
+    if len(arg) < 2:
+        print("Something Wrong in argument")
+        logger.error("Something Wrong in argument")
+        return
+    
     if arg[0] == "-id":
         id = arg[1]
     else:
