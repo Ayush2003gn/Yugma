@@ -199,7 +199,7 @@ def cmd_remove(arg):
     print(action["message"])
     
 def cmd_priorty(arg):
-    if len(arg) < 2:
+    if len(arg) < 3:
         print("Something Wrong in argument")
         logger.error("Something Wrong in argument")
         return
