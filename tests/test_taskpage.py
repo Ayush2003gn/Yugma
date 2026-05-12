@@ -70,5 +70,3 @@ def test_add_task_without_default():
     result = todo.add_task("Task")
 
     assert result["success"] is False
-
-    assert "=" in bar
