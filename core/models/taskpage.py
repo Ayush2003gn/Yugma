@@ -17,9 +17,14 @@ class TaskPage:
                 if page.category.lower() == category.lower():
                     logger.warning(f"Category:{category} is alreay exist")
                     return "The given category is alreay exist"
-                
+            self.taskpage.append(TaskList(category))
             return f"Page is added of category {category}"
-    
+        
+    def category_finder(self,category):
+        for page in self.taskpage:
+            if page.category == category:
+                return page
+        return None
     def remove_page(self,category):
         page = self.category_finder(category)
         if page:
