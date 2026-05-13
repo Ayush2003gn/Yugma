@@ -4,7 +4,7 @@ class Task:
     def __init__(self, task, internal_id, ui_id, created_date, modified_date, priority = "Medium", done = False):
         self.task = task
         self.internal_id = internal_id
-        self.ui_id = ui_id
+        self.ui_id = ui_id #TODO: work on external id
         self.created_date = created_date
         self.modified_date = modified_date
         self.priority = priority #1 = high | 2 = Normal | 3 = low
