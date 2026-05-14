@@ -46,7 +46,7 @@ class TaskList:
     
     #----------------------------------Remove task---------------------------------------------
     def remove_task_internal_id(self, internal_id):
-        task = self.id_find(internal_id)
+        task = self.internal_id_find(internal_id)
         if task["success"]:
             self.tasklist.remove(task["data"])
             logger.info(f"{self.category} page: Id : {internal_id} is removed")
@@ -58,7 +58,7 @@ class TaskList:
     
     #----------------------------------Update task---------------------------------------------    
     def update_task_internal_id(self, internal_id, task):
-        task_found = self.id_find(internal_id)
+        task_found = self.internal_id_find(internal_id)
         if task_found["success"]:
             task_found["data"].correction(task,datetime_now())
             logger.info(f"{self.category} page: Task updated: id={internal_id}, new_value='{task}'")
@@ -80,7 +80,7 @@ class TaskList:
         return {"success": False,"message":f"Id not found in {self.category} page","data": None}
         
     def mark_undone_internal_id(self,internal_id):
-        task_found = self.id_find(internal_id)
+        task_found = self.internal_id_find(internal_id)
         if task_found["success"]:
             task_found["data"].mark_undone(datetime_now())
             logger.info(f"{self.category} page: Task status updated: {internal_id}")
@@ -91,7 +91,7 @@ class TaskList:
         return {"success": False,"message":f"Id not found in {self.category} page","data": None}
 
     def high_priority_task_internal_id(self,internal_id):
-        task_found = self.id_find(internal_id)
+        task_found = self.internal_id_find(internal_id)
         if task_found["success"]:
             task_found["data"].priority_high(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {internal_id} ")
@@ -102,7 +102,7 @@ class TaskList:
         return {"success": False, "message":f"Id not found in {self.category} page", "data": None}
 
     def Normal_priority_task(self,internal_id):
-        task_found = self.id_find(internal_id)
+        task_found = self.internal_id_find(internal_id)
         if task_found["success"]:
             task_found["data"].priority_normal(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {internal_id}")
@@ -113,7 +113,7 @@ class TaskList:
         return {"success": False,"message":f"Id not found in {self.category} page","data": None}
 
     def low_priority_task_internal_id(self,internal_id):
-        task_found = self.id_find(internal_id)
+        task_found = self.internal_id_find(internal_id)
         if task_found["success"]:
             
             task_found["data"].priority_low(datetime_now())
@@ -126,7 +126,7 @@ class TaskList:
 
     #----------------------------------Display task---------------------------------------------
     def display_all(self):
-        display = list("#"+str(self.category))
+        display = [f"# {self.category}"]
         if not self.tasklist:
             logger.warning("{self.category} page: No tasks available ")
             display.append("No tasks available")
@@ -143,7 +143,7 @@ class TaskList:
 
 
     def display_by_months(self,months,year):
-        display = list("#"+str(self.category))
+        display = [f"# {self.category}"]
         count = 0
 
         if not self.tasklist:
@@ -172,7 +172,7 @@ class TaskList:
 
 
     def display_by_week(self,week,year):
-        display = list("#"+str(self.category))
+        display = [f"# {self.category}"]
         count = 0
         if not self.tasklist:
             logger.warning("{self.category} page: No tasks available ")
@@ -200,7 +200,7 @@ class TaskList:
     
 
     def display_by_year(self,year):
-        display = list("#"+str(self.category))
+        display = [f"# {self.category}"]
         count = 0
         if not self.tasklist:
             logger.warning("{self.category} page: No tasks available ")
@@ -228,7 +228,7 @@ class TaskList:
 
 
     def display_by_done(self):
-        display = list("#"+str(self.category))
+        display = [f"# {self.category}"]
         count = 0
         if not self.tasklist:
             logger.warning("{self.category} page: No tasks available ")
@@ -255,7 +255,7 @@ class TaskList:
         return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
 
     def display_by_pending(self):
-        display = list("#"+str(self.category))
+        display = [f"# {self.category}"]
         count = 0
         if not self.tasklist:
             logger.warning("{self.category} page: No tasks available ")

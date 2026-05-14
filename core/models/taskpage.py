@@ -27,7 +27,7 @@ class TaskPage:
     def remove_page(self,category):
         page = self.category_finder(category)
         if page["success"] :
-            self.taskpage.remove(page)
+            self.taskpage.remove(page["data"])
             logger.info(f" Category : {category} is removed")
             return {"success": True, "message":f"Category : {category} is removed","data":None}
         logger.warning(f"Page Category not found: {category}")
@@ -35,7 +35,7 @@ class TaskPage:
 
     def set_default(self,category):
         page = self.category_finder(category)
-        if page:
+        if page["success"]:
             self.default = page
             logger.info(f" Category : {category} is set as default")
             return {"success": True, "message":f"Category : {category} is set as default","data":None}
@@ -57,7 +57,7 @@ class TaskPage:
                 logger.warning(f"Page Category not found: {category}")
                 return page
             
-        method = getattr(page, action)
+        method = getattr(page["data"], action)
         return method(*args)
 
     #----------------------------------Create task---------------------------------------------
