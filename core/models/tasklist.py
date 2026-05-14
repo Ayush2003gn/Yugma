@@ -227,7 +227,7 @@ class TaskList:
 
 
 
-    def display_by_Done(self,day,months,year):
+    def display_by_done(self):
         display = list("#"+str(self.category))
         count = 0
         if not self.tasklist:
@@ -254,7 +254,7 @@ class TaskList:
         logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
         return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
 
-    def display_by_pending(self,day,months,year):
+    def display_by_pending(self):
         display = list("#"+str(self.category))
         count = 0
         if not self.tasklist:

@@ -14,7 +14,6 @@ class TaskPage:
                 if page.category.lower() == category.lower():
                     logger.warning(f"Category:{category} is alreay exist")
                     return {"success": False, "message":f"Category:{category} is alreay exist", "data":None}
-                    return "The given category is alreay exist"
         
         newpage = self.taskpage.append(TaskList(category))
         return {"success": True, "message":f"Page is added of category {category}", "data":newpage}
@@ -22,26 +21,26 @@ class TaskPage:
     def category_finder(self,category):
         for page in self.taskpage:
             if page.category == category:
-                return page
-        return None
+                return {"success": True, "message":f"Page Category found: {category}", "data":page}
+        return {"success": False, "message":f"Page Category not found: {category}", "data":None}
     
     def remove_page(self,category):
         page = self.category_finder(category)
-        if page:
+        if page["success"] :
             self.taskpage.remove(page)
             logger.info(f" Category : {category} is removed")
-            return f"Category : {category} is removed"
+            return {"success": True, "message":f"Category : {category} is removed","data":None}
         logger.warning(f"Page Category not found: {category}")
-        return {"success": False,"message":"Category not found"}
+        return page
 
     def set_default(self,category):
         page = self.category_finder(category)
         if page:
             self.default = page
             logger.info(f" Category : {category} is set as default")
-            return f"Category : {category} is set as default"
+            return {"success": True, "message":f"Category : {category} is set as default","data":None}
         logger.warning(f"Page Category not found: {category}")
-        return {"success": False,"message":"Category not found"}
+        return page
     
     #----------------------------------Change in task-------------------------------------------
     def _execute_page_method(self,action,*args,category):
@@ -49,14 +48,14 @@ class TaskPage:
             
             if self.default is None:
                 logger.warning("Not set default page or mention page")
-                return {"success": False,"message": "Not set default page or mention page","task": None}
+                return {"success": False, "message": "Not set default page or mention page", "data": None}
 
             page = self.default
         else:
             page = self.category_finder(category)
-            if page is None:
+            if page["success"] == False:
                 logger.warning(f"Page Category not found: {category}")
-                return {"success": False,"message": "Category not found"}
+                return page
             
         method = getattr(page, action)
         return method(*args)
@@ -99,95 +98,109 @@ class TaskPage:
             category=category
         )
 
-    def highpriority_task(self,id,category = None):
+    def high_priority_task(self,id,category = None):
         return self._execute_page_method(
-            "highpriority_task",
+            "high_priority_task",
             id,
             category=category
         )
 
-    def Normalpriority_task(self,id,category = None):
+    def Normal_priority_task(self,id,category = None):
         return self._execute_page_method(
-            "Normalpriority_task",
+            "Normal_priority_task",
             id,
             category=category
         )
 
-    def lowpriority_task(self,id,category = None):
+    def low_priority_task(self,id,category = None):
         return self._execute_page_method(
-            "lowpriority_task",
+            "low_priority_task",
             id,
             category=category
         )
     
     #----------------------------------Display task---------------------------------------------
+    def _execute_page_display(self,type_display,*args,category = "*"):
+        display = []
+        if category == "*":
+            for page in self.taskpage:
+                method = getattr(page, type_display)
+                method_data = method(*args)
+                display.append(method_data)
+            return {"success":True, "message":"Ready for display","data":display}
+        else:
+            page = self.category_finder(category)
+            if page["success"]:
+                method = getattr(page, type_display)
+                method_data = method(*args)
+                display.append(method_data)
+                return {"success":True, "message":"Ready for display","data":display}
+        logger.warning(f"Page Category not found: {category}")
+        return page
+            
+
+    #-------------------------------------------------------------------------------------------
     def display_all(self,category = "*"):
-        if category == "*":
-            for page in self.taskpage:
-                page.display_all()
-            return
-        else:
-            page = self.category_finder(category)
-            if page:
-                page.display_all()
-                return
-        logger.warning(f"Page Category not found: {category}")
-        return {"success": False,"message":"Category not found"}
+        return self._execute_page_display(
+            "display_all",
+            category
+            )
+        
     
-    def display_bymonths(self,months,year,category= "*"):
-        if category == "*":
-            for page in self.taskpage:
-                page.display_bymonths(months,year)
-        else:
-            page = self.category_finder(category)
-            if page:
-                page.display_bymonths(months,year)
-                return
-        logger.warning(f"Page Category not found: {category}")
-        return {"success": False,"message":"Category not found"}
+    def display_by_months(self,months,year,category= "*"):
+        return self._execute_page_display(
+            "display_by_months",
+            months,
+            year,
+            category
+            )
+        
     
-    def display_byweek(self,week,year,category= "*"):
-        if category == "*":
-            for page in self.taskpage:
-                page.display_byweek(week,year)
-        else:
-            page = self.category_finder(category)
-            if page:
-                page.display_byweek(week,year)
-                return
-        logger.warning(f"Page Category not found: {category}")
-        return {"success": False,"message":"Category not found"}
+    def display_by_week(self,week,year,category= "*"):
+        return self._execute_page_display(
+            "display_by_week",
+            week,
+            year,
+            category
+            )
     
-    def display_byday(self,day,months,year,category = "*"):
-        if category == "*":
-            for page in self.taskpage:
-                page.display_byday(day,months,year)
-        else:
-            page = self.category_finder(category)
-            if page:
-                page.display_byday(day,months,year)
-                return
-        logger.warning(f"Page Category not found: {category}")
-        return {"success": False,"message":"Category not found"}
+    def display_by_day(self,day,months,year,category = "*"):
+        return self._execute_page_display(
+            "display_by_day",
+            day,
+            months,
+            year,
+            category
+            )
     
-    def display_byyear(self,year,category = "*"):
-        if category == "*":
-            for page in self.taskpage:
-                page.display_byyear(year)
-        else:
-            page = self.category_finder(category)
-            if page:
-                page.display_byyear(year)
-                return
-        logger.warning(f"Page Category not found: {category}")
-        return {"success": False,"message":"Category not found"}
+    def display_by_year(self,year,category = "*"):
+        return self._execute_page_display(
+            "display_by_year",
+            year,
+            category
+            )
 
     def display_analysis(self):
+        display = []
         if self.taskpage:
             for page in self.taskpage:
-                print(page.completion_bar())
+                display.append(page.completion_bar())
+                return {"success":True, "message":"Ready for display","data":display}
         else:
-            print("No pages are there")
+            display.append("No pages are there")
+            return {"success":True, "message":"Ready for display","data":display}
+
+    def display_done(self,category):
+        return self._execute_page_display(
+            "display_by_done",
+            category
+        )
+    
+    def display_pending(self,category):
+        return self._execute_page_display(
+            "display_by_pending",
+            category
+        )
 
     def category_datapath_dict(self):
         category_list = {}
@@ -202,4 +215,4 @@ class TaskPage:
         page = self.category_finder(category)
         if page:
             return page.serialize_tasks()
-        
+
