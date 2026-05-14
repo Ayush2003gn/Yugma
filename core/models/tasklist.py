@@ -19,7 +19,7 @@ class TaskList:
         internal_id = str(uuid.uuid4())
         ui_id = self.ui_id_generator()
 
-        newtask = Task(task, internal_id, ui_id, datetime_now(), datetime_now())
+        newtask = Task(task, internal_id, ui_id["data"], datetime_now(), datetime_now())
         
         self.tasklist.append(newtask)
         self.changed = True
@@ -29,7 +29,7 @@ class TaskList:
     
     def importing_task(self,task, internal_id, created_date, modified_date, priority, done):
         ui_id = self.ui_id_generator()
-        newtask = Task(task, internal_id, ui_id, datetime.datetime.fromisoformat(created_date), datetime.datetime.fromisoformat(modified_date), priority, done)
+        newtask = Task(task, internal_id, ui_id["data"], datetime.datetime.fromisoformat(created_date), datetime.datetime.fromisoformat(modified_date), priority, done)
         self.tasklist.append(newtask)
         return {"success": True, "message": f"{self.category} page:task imported [{newtask.task}]", "data": newtask}
 
@@ -41,7 +41,6 @@ class TaskList:
         for task in self.tasklist:
             if task.internal_id == internal_id:
                 return {"success": True, "message": "Got the file", "data": task}
-                return task
             
         return {"success": False, "message": "Can't able to find internal task id {internal_id}", "data": None}
     

@@ -9,22 +9,22 @@ class TaskPage:
 
     #-------------------------------------Changes in Page------------------------------------------
     def add_page(self,category):
-        if not self.taskpage:
-            self.taskpage.append(TaskList(category))
-            return f"Page is added of category {category}"
-        else:
+        if self.taskpage:
             for page in self.taskpage:
                 if page.category.lower() == category.lower():
                     logger.warning(f"Category:{category} is alreay exist")
+                    return {"success": False, "message":f"Category:{category} is alreay exist", "data":None}
                     return "The given category is alreay exist"
-            self.taskpage.append(TaskList(category))
-            return f"Page is added of category {category}"
+        
+        newpage = self.taskpage.append(TaskList(category))
+        return {"success": True, "message":f"Page is added of category {category}", "data":newpage}
         
     def category_finder(self,category):
         for page in self.taskpage:
             if page.category == category:
                 return page
         return None
+    
     def remove_page(self,category):
         page = self.category_finder(category)
         if page:
