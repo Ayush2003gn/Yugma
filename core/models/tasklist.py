@@ -44,7 +44,6 @@ class TaskList:
                 return task
             
         return {"success": False, "message": "Can't able to find internal task id {internal_id}", "data": None}
-        return None
     
     #----------------------------------Remove task---------------------------------------------
     def remove_task_internal_id(self, internal_id):
