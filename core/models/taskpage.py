@@ -15,7 +15,8 @@ class TaskPage:
                     logger.warning(f"Category:{category} is alreay exist")
                     return {"success": False, "message":f"Category:{category} is alreay exist", "data":None}
         
-        newpage = self.taskpage.append(TaskList(category))
+        newpage = TaskList(category)
+        self.taskpage.append(newpage)
         return {"success": True, "message":f"Page is added of category {category}", "data":newpage}
         
     def category_finder(self,category):
@@ -36,7 +37,7 @@ class TaskPage:
     def set_default(self,category):
         page = self.category_finder(category)
         if page["success"]:
-            self.default = page
+            self.default = page["data"]
             logger.info(f" Category : {category} is set as default")
             return {"success": True, "message":f"Category : {category} is set as default","data":None}
         logger.warning(f"Page Category not found: {category}")
@@ -52,25 +53,25 @@ class TaskPage:
 
             page = self.default
         else:
-            page = self.category_finder(category)
-            if page["success"] == False:
+            page_dict = self.category_finder(category)
+            if page_dict["success"] == False:
                 logger.warning(f"Page Category not found: {category}")
-                return page
-            
-        method = getattr(page["data"], action)
+                return page_dict
+            page = page_dict["data"]
+        method = getattr(page, action)
         return method(*args)
 
     #----------------------------------Create task---------------------------------------------
     def add_task(self,task,category = None):
         return self._execute_page_method(
-        "add_task",
+        "add_task_internal_id",
         task,
         category=category)
     
     #----------------------------------Remove task---------------------------------------------
     def remove_task(self, id,category = None):
         return self._execute_page_method(
-            "remove_task",
+            "remove_task_internal_id",
             id,
             category=category
         )
@@ -78,7 +79,7 @@ class TaskPage:
     #----------------------------------Update task---------------------------------------------    
     def update_task(self,id,task,category = None):
         return self._execute_page_method(
-            "update_task",
+            "update_task_internal_id",
             id,
             task,
             category=category
@@ -86,35 +87,35 @@ class TaskPage:
     
     def mark_done(self,id,category = None):
         return self._execute_page_method(
-            "mark_done",
+            "mark_done_internal_id",
             id,
             category=category
         )
 
     def mark_undone(self,id,category = None):
         return self._execute_page_method(
-            "mark_undone",
+            "mark_undone_internal_id",
             id,
             category=category
         )
 
     def high_priority_task(self,id,category = None):
         return self._execute_page_method(
-            "high_priority_task",
+            "high_priority_task_internal_id",
             id,
             category=category
         )
 
-    def Normal_priority_task(self,id,category = None):
+    def normal_priority_task(self,id,category = None):
         return self._execute_page_method(
-            "Normal_priority_task",
+            "normal_priority_task_internal_id",
             id,
             category=category
         )
 
     def low_priority_task(self,id,category = None):
         return self._execute_page_method(
-            "low_priority_task",
+            "low_priority_task_internal_id",
             id,
             category=category
         )
@@ -129,8 +130,9 @@ class TaskPage:
                 display.append(method_data)
             return {"success":True, "message":"Ready for display","data":display}
         else:
-            page = self.category_finder(category)
-            if page["success"]:
+            page_dict = self.category_finder(category)
+            if page_dict["success"]:
+                page = page_dict["data"]
                 method = getattr(page, type_display)
                 method_data = method(*args)
                 display.append(method_data)
@@ -143,7 +145,7 @@ class TaskPage:
     def display_all(self,category = "*"):
         return self._execute_page_display(
             "display_all",
-            category
+            category=category
             )
         
     
@@ -152,7 +154,7 @@ class TaskPage:
             "display_by_months",
             months,
             year,
-            category
+            category=category
             )
         
     
@@ -161,7 +163,7 @@ class TaskPage:
             "display_by_week",
             week,
             year,
-            category
+            category=category
             )
     
     def display_by_day(self,day,months,year,category = "*"):
@@ -170,14 +172,14 @@ class TaskPage:
             day,
             months,
             year,
-            category
+            category=category
             )
     
     def display_by_year(self,year,category = "*"):
         return self._execute_page_display(
             "display_by_year",
             year,
-            category
+            category=category
             )
 
     def display_analysis(self):
@@ -185,7 +187,7 @@ class TaskPage:
         if self.taskpage:
             for page in self.taskpage:
                 display.append(page.completion_bar())
-                return {"success":True, "message":"Ready for display","data":display}
+            return {"success":True, "message":"Ready for display","data":display}
         else:
             display.append("No pages are there")
             return {"success":True, "message":"Ready for display","data":display}
@@ -193,13 +195,13 @@ class TaskPage:
     def display_done(self,category):
         return self._execute_page_display(
             "display_by_done",
-            category
+            category=category
         )
     
     def display_pending(self,category):
         return self._execute_page_display(
             "display_by_pending",
-            category
+            category=category
         )
 
     def category_datapath_dict(self):
@@ -213,6 +215,6 @@ class TaskPage:
 
     def serialize_tasksofpage(self,category):
         page = self.category_finder(category)
-        if page:
-            return page.serialize_tasks()
+        if page["success"]:
+            return page["data"].serialize_tasks()
 
