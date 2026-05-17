@@ -75,7 +75,7 @@ def command_handler(cmd, argument):
                     "flags": {"default": False}
                     }
                     
-            
+#-----------------page command handler-----------------            
 def cmd_page(argument):
     if len(argument) < 1:
         logger.warning("No page name provided by user")
@@ -89,7 +89,7 @@ def cmd_page(argument):
         index = find_index(argument, "add")
         page_name = argument[index + 1] if index + 1 < len(argument) else None
 
-        if page_name and page_name.startswith("--"):
+        if page_name and (page_name.startswith("--") or page_name.startswith("-")):
             page_name = None
 
         if page_name is None:
@@ -120,7 +120,7 @@ def cmd_page(argument):
         index = find_index(argument, "remove")
         page_name = argument[index + 1] if index + 1 < len(argument) else None
 
-        if page_name and page_name.startswith("--"):
+        if page_name and (page_name.startswith("--") or page_name.startswith("-")):
             page_name = None
 
         if page_name is None:
@@ -142,7 +142,7 @@ def cmd_page(argument):
     if "set-default" in argument:
         index = find_index(argument, "set-default")
         page_name = argument[index + 1] if index + 1 < len(argument) else None
-        if page_name and page_name.startswith("--"):
+        if page_name and (page_name.startswith("--") or page_name.startswith("-")):
             page_name = None
         if page_name is None:
             logger.warning("No page name provided for set-default command")
@@ -160,9 +160,62 @@ def cmd_page(argument):
         }
     
         
+#-----------------task in page command handler-----------------
+def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" or use default page)
+    return_values = {
+        "command": "add",
+        "action": None,
+        "page_name": None,
+        "flags": {"priority": None , "status": False}
+        }
+    if len(argument) < 1:
+        logger.warning("No task name provided by user")
+        return_values["action"] = "error-no-task-name"
+        return return_values
 
-def cmd_add(argument):
-    pass
+    if "-t" in argument:
+        
+        index = find_index(argument, "-t")
+        task_name = argument[index + 1] if index + 1 < len(argument) else None
+
+        if task_name and (task_name.startswith("--") or task_name.startswith("-")):
+            task_name = None
+
+        if task_name is None:
+            logger.warning("No task name provided for add command")
+            return_values["action"] = "error-no-task-name"
+        return_values = {
+            "command": "add",
+            "action": "add-task",
+            "task_name": task_name,
+            "page_name": None,
+            "flags": {"priority": None , "status": False}
+        }
+        page_name = None
+        if "--c" in argument:
+            index = find_index(argument, "--c")
+            page_name = argument[index + 1] if index + 1 < len(argument) else None
+
+            if page_name and (page_name.startswith("--") or page_name.startswith("-")):
+                page_name = None
+                return_values["action"] = "error-no-page-name"
+            if page_name is None:
+                logger.warning("No page name provided for add command, using default page")
+                return_values["action"] = "add-task"
+            return_values["page_name"] = page_name
+        else:
+            logger.info("No page name provided for add command, using default page")
+            return_values["action"] = "add-task"
+
+        if "--p" in argument:
+            index = find_index(argument, "--p")
+            priority = argument[index + 1] if index + 1 < len(argument) else None
+            return_values["flags"]["priority"] = priority
+        if "--md" in argument:
+            status = True
+            return_values["flags"]["status"] = status
+        
+    return return_values
 
 def cmd_remove(argument):
     pass
@@ -176,10 +229,10 @@ def cmd_status(argument):
 def cmd_display(argument):
     pass
 
-def cmd_help(): 
+def cmd_help():
     return {
-    "command": "help",
-    "action": None,
-    "page_name": None,
-    "flags": {"default": False}
+        "command": "help", 
+        "action": "display-help",
+        "page_name": None,
+        "flags": {"default": False}
     }
