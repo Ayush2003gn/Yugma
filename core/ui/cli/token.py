@@ -283,8 +283,11 @@ def cmd_display(argument):
         if index + 1 >= len(argument):
             logger.warning("Year missing")
             return uniform_return("display", "error-year-missing", date={"day": None, "month": None, "year": None})
-
-        year = int(argument[index + 1])
+        try:
+            year = int(argument[index + 1])
+        except ValueError:
+            logger.warning("Invalid year value")
+            return uniform_return("display", "error-invalid-year", date={"day": None, "month": None, "year": None})
 
         return uniform_return("display", "display-by-year", date={"day": None, "month": None, "year": year})
 
@@ -295,9 +298,12 @@ def cmd_display(argument):
         if index + 2 >= len(argument):
             logger.warning("Month or Year missing")
             return uniform_return("display", "error-month-year-missing", date={"day": None, "month": None, "year": None})
-
-        month = argument[index + 1]
-        year = int(argument[index + 2])
+        try:
+            month = argument[index + 1]
+            year = int(argument[index + 2])
+        except ValueError:
+            logger.warning("Invalid month or year value")
+            return uniform_return("display", "error-invalid-month-year", date={"day": None, "month": None, "year": None})
 
         return uniform_return("display", "display-by-month", date={"day": None, "month": month, "year": year})
 
@@ -308,9 +314,12 @@ def cmd_display(argument):
         if index + 2 >= len(argument):
             logger.warning("Week or Year missing")
             return uniform_return("display", "error-week-year-missing", date={"day": None, "month": None, "year": None})
-
-        week = int(argument[index + 1])
-        year = int(argument[index + 2])
+        try:
+            week = int(argument[index + 1])
+            year = int(argument[index + 2])
+        except ValueError:
+            logger.warning("Invalid week or year value")
+            return uniform_return("display", "error-invalid-week-year", date={"day": None, "month": None, "year": None})
 
         return uniform_return("display", "display-by-week", date={"day": week, "month": None, "year": year})
 
@@ -321,10 +330,13 @@ def cmd_display(argument):
         if index + 3 >= len(argument):
             logger.warning("Day Month Year missing")
             return uniform_return("display", "error-day-month-year-missing", date={"day": None, "month": None, "year": None})
-
-        day = int(argument[index + 1])
-        month = int(argument[index + 2])
-        year = int(argument[index + 3])
+        try:
+            day = int(argument[index + 1])
+            month = int(argument[index + 2])
+            year = int(argument[index + 3])
+        except ValueError:
+            logger.warning("Invalid day, month, or year value")
+            return uniform_return("display", "error-invalid-day-month-year", date={"day": None, "month": None, "year": None})
 
         return uniform_return("display", "display-by-day", date={"day": day, "month": month, "year": year})
 
