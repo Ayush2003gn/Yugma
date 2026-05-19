@@ -1,10 +1,135 @@
 from core.models.taskpage import TaskPage
 import logging
 logger = logging.getLogger(__name__)
+
 def todo():
     taskpage = TaskPage()
     logger.info("Initializing task page")
     return taskpage
+
+def ui_return_to_action(token_return):
+    command = token_return.get("command")
+    action = token_return.get("action")
+    page_name = token_return.get("page_name")
+    task_id = token_return.get("task_id")
+    task_name = token_return.get("task_name")
+    date = token_return.get("date")
+    flags = token_return.get("flags")
+    logger.info(f"Token return received: Command: {command}, Action: {action}, Page Name: {page_name}, Task ID: {task_id}, Task Name: {task_name}, Date: {date}, Flags: {flags}")
+
+    if command == "page":
+        if action == "add":
+            if "default" in flags:
+                logger.info(f"Adding page with default flag: {page_name}")
+
+                if flags["default"] is True:
+                    set_default(page_name)
+            return add_page(page_name)
+        
+        elif action == "remove":
+            return remove_page(page_name)
+        elif action == "set_default":
+            return set_default(page_name)
+        elif action.startswith("error"):
+            logger.error(f"Error in page command: {action}")
+            return {"success": False, "message": f"Page command error: {action}", "data": None}
+
+    elif command == "add":
+        if action.startswith("error"):
+            logger.error(f"Error in add command: {action}")
+            return {"success": False, "message": f"Add command error: {action}", "data": None}
+        if "status" in flags:
+            logger.info(f"Adding task with status flag: {task_name}, Status: {flags['status']}")
+
+            return add_task(task_name, category=page_name)
+        return add_task(task_name, page_name)
+
+    elif command == "remove":
+        if action.startswith("error"):
+            logger.error(f"Error in remove command: {action}")
+            return {"success": False, "message": f"Remove command error: {action}", "data": None}
+        return remove_task(task_name, category=page_name)
+    
+    elif command == "set_priority":
+        if action.startswith("error"):
+            logger.error(f"Error in set_priority command: {action}")
+            return {"success": False, "message": f"Set priority command error: {action}", "data": None}
+        priority = flags.get("priority")
+        if priority is not None:
+            return set_priority(task_name, priority)
+        else:
+            logger.error("Priority flag missing in set_priority command")
+            return {"success": False, "message": "Priority flag missing in set_priority command", "data": None}
+
+    elif command == "mark_done":
+        if action.startswith("error"):
+            logger.error(f"Error in mark_done command: {action}")
+            return {"success": False, "message": f"Mark done command error: {action}", "data": None}
+        return mark_done(task_id)
+    
+    elif command == "mark_undone":
+        if action.startswith("error"):
+            logger.error(f"Error in mark_undone command: {action}")
+            return {"success": False, "message": f"Mark undone command error: {action}", "data": None}
+        return mark_undone(task_id)
+    
+    elif command == "update":
+        if action.startswith("error"):
+            logger.error(f"Error in update command: {action}")
+            return {"success": False, "message": f"Update command error: {action}", "data": None}
+        return update_task(task_id, task_name, category=page_name)
+    elif command == "display":
+        if action.startswith("error"):
+            logger.error(f"Error in display command: {action}")
+            return {"success": False, "message": f"Display command error: {action}", "data": None}
+        # Display command is handled in the UI, so we just return success here
+        if action == "display-all":
+            return display_all(category=page_name)
+        elif action == "display-done":
+            return display_done(category=page_name)
+        elif action == "display-pending":
+            return display_pending(category=page_name)
+        elif action == "display-by-day":
+            day = flags.get("day")
+            month = flags.get("month")
+            year = flags.get("year")
+            if day is not None and month is not None and year is not None:
+                return display_by_day(day, month, year, category=page_name)
+            else:
+                logger.error("Day, month, or year flag missing in display-by-day command")
+                return {"success": False, "message": "Day, month, or year flag missing in display-by-day command", "data": None}
+        elif action == "display-by-months":
+            month = flags.get("month")
+            year = flags.get("year")
+            if month is not None and year is not None:
+                return display_by_months(month, year, category=page_name)
+            else:
+                logger.error("Month or year flag missing in display-by-months command")
+                return {"success": False, "message": "Month or year flag missing in display-by-months command", "data": None}
+        elif action == "display-by-week":
+            week = flags.get("week")
+            year = flags.get("year")
+            if week is not None and year is not None:
+                return display_by_week(week, year, category=page_name)
+            else:
+                logger.error("Week or year flag missing in display-by-week command")
+                return {"success": False, "message": "Week or year flag missing in display-by-week command", "data": None}
+        elif action == "display-by-year":
+            year = flags.get("year")
+            if year is not None:
+                return display_by_year(year, category=page_name)
+            else:
+                logger.error("Year flag missing in display-by-year command")
+                return {"success": False, "message": "Year flag missing in display-by-year command", "data": None}
+    elif command == "display_analysis":
+        if action.startswith("error"):
+            logger.error(f"Error in display_analysis command: {action}")
+            return {"success": False, "message": f"Display analysis command error: {action}", "data": None}
+        return display_analysis()
+    else:
+        logger.error(f"Unknown command: {command}")
+        return {"success": False, "message": f"Unknown command: {command}", "data": None}
+    
 
 def add_page(category):
     return todo.add_page(category)
@@ -27,10 +152,46 @@ def set_priority(task, priority):
     logger.info(f"Setting priority for task: {task}, Priority: {priority}")
     return todo.set_priority(task, priority)
 
-def status(task):
-    logger.info(f"Getting status for task: {task}")
-    return todo.status(task)
+def mark_done(id):
+    logger.info(f"Marking task as done: {id}")
+    return todo.mark_done(id)
 
-def display(category=None,type_display=None,date=None):
-    logger.info(f"Displaying tasks for category: {category}, Type: {type_display}, Date: {date}")
-    return todo.display(category,type_display,date)
+def mark_undone(id):
+    logger.info(f"Marking task as undone: {id}")
+    return todo.mark_undone(id)
+
+def update_task(id, task, category=None):
+    logger.info(f"Updating task: {id}, New Task: {task}, Category: {category}")
+    return todo.update_task(id, task, category)
+
+def display_all(category=None):
+    logger.info(f"Displaying all tasks for category: {category}")
+    return todo.display_all(category)
+
+def display_done(category=None):
+    logger.info(f"Displaying done tasks for category: {category}")
+    return todo.display_done(category)
+
+def display_pending(category=None):
+    logger.info(f"Displaying pending tasks for category: {category}")
+    return todo.display_pending(category)
+
+def display_by_day(day, months, year, category=None):
+    logger.info(f"Displaying tasks by day: {day}, Months: {months}, Year: {year}, Category: {category}")
+    return todo.display_by_day(day, months, year, category)
+
+def display_by_months(months,year, category=None):
+    logger.info(f"Displaying tasks by months: {months}, Year: {year}, Category: {category}")
+    return todo.display_by_months(months, year, category)
+
+def display_by_week(week, year, category=None):
+    logger.info(f"Displaying tasks by week: {week}, Year: {year}, Category: {category}")
+    return todo.display_by_week(week, year, category)
+
+def display_by_year(year, category=None):
+    logger.info(f"Displaying tasks by year: {year}, Category: {category}")
+    return todo.display_by_year(year, category)
+
+def display_analysis():
+    logger.info("Displaying analysis")
+    return todo.display_analysis()

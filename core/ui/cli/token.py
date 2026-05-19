@@ -63,6 +63,10 @@ def command_handler(cmd, argument):
                 case "display":
                     logger.info(f"command = {cmd} and argument = {argument}")
                     return cmd_display(argument)
+
+                case "update":
+                    logger.info(f"command = {cmd} and argument = {argument}")
+                    return cmd_update(argument)
             
                 case "help":
                     
@@ -250,6 +254,49 @@ def cmd_status(argument):
         return uniform_return("status", "toggle-status", task_id=task_id, flags={"priority": None, "status": status})
     
     return uniform_return("status", "error-no-task-id", flags={"priority": None, "status": False})
+
+def cmd_update(argument):
+    if len(argument) < 1:
+        logger.warning("No task name provided by user")
+        return uniform_return("update", "error-no-task-id", flags={"priority": None, "status": False})
+    if "-id" in argument:
+        index = find_index(argument, "-id")
+        task_id = argument[index + 1] if index + 1 < len(argument) else None
+
+        if task_id and (task_id.startswith("--") or task_id.startswith("-")):
+            task_id = None
+
+        if task_id is None:
+            logger.warning("No task ID provided for update command")
+            return uniform_return("update", "error-no-task-id", flags={"priority": None, "status": False})
+        
+        new_name = None
+        if "-t" in argument:
+            index = find_index(argument, "-t")
+            new_name = argument[index + 1] if index + 1 < len(argument) else None
+
+            if new_name and (new_name.startswith("--") or new_name.startswith("-")):
+                new_name = None
+
+        priority = None
+        if "--p" in argument:
+            index = find_index(argument, "--p")
+            priority = argument[index + 1] if index + 1 < len(argument) else None
+            if priority and (priority.startswith("--") or priority.startswith("-")):
+                priority = "Normal"
+            elif priority not in ["low", "normal", "high"]:
+                logger.warning("Invalid priority value provided for update command")
+                priority = "Normal"
+        
+        status = None
+        if "--md" in argument:
+            status = True
+        elif "--mu" in argument:
+            status = False
+        
+        return uniform_return("update", "update-task", task_id=task_id, task_name=new_name, flags={"priority": priority, "status": status})
+    
+    return uniform_return("update", "error-no-task-id", flags={"priority": None, "status": False})
 
 def cmd_display(argument):
     
