@@ -204,6 +204,8 @@ class TaskPage:
             category=category
         )
 
+#-----------------------------Data handling for persistence--------------------------------------
+
     def category_datapath_dict(self):
         category_list = {}
         if self.taskpage:
