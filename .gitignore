@@ -7,4 +7,5 @@ data/*
 !data/.gitkeep
 test.py
 TODO.py
+tree.txt
 .vscode
