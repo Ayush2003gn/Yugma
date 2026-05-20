@@ -1,6 +1,6 @@
 import tempfile
 import os
-from core import storage
+from core.services import storage
 
 
 def test_ensure_datafile():

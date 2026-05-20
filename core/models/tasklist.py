@@ -15,7 +15,7 @@ class TaskList:
         self.changed = False
 
     #----------------------------------Create task---------------------------------------------
-    def add_task(self,task):
+    def add_task_internal_id(self,task):
         internal_id = str(uuid.uuid4())
         ui_id = self.ui_id_generator()
 

@@ -121,9 +121,9 @@ class TaskPage:
         )
     
     #----------------------------------Display task---------------------------------------------
-    def _execute_page_display(self,type_display,*args,category = "*"):
+    def _execute_page_display(self,type_display,*args,category = None):
         display = []
-        if category == "*":
+        if category == None or category == "*":
             for page in self.taskpage:
                 method = getattr(page, type_display)
                 method_data = method(*args)
