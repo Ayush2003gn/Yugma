@@ -1,6 +1,6 @@
-import logging
+'''import logging
 from core.models.taskpage import TaskPage
-import core.storage as storage
+import core.services.storage as storage
 logger = logging.getLogger(__name__)
 
 Todo = TaskPage()
@@ -147,7 +147,7 @@ def cmd_add(arg):
 
     while count < len(arg):
         current = arg[count]
-        if current in ["--P","--priorty"]:
+        if current in ["--P","--priority"]:
             level = arg[count + 1].lower()
             if level in ["high","low","normal"]:
 
@@ -198,7 +198,7 @@ def cmd_remove(arg):
     action = Todo.remove_task(id , category)
     print(action["message"])
     
-def cmd_priorty(arg):
+def cmd_priority(arg):
     if len(arg) < 3:
         print("Something Wrong in argument")
         logger.error("Something Wrong in argument")
@@ -234,8 +234,8 @@ def cmd_priorty(arg):
             
             print(action["message"])
         else:
-            print("Not enter priorty properly")
-            logger.error("Not enter priorty properly")
+            print("Not enter priority properly")
+            logger.error("Not enter priority properly")
             return
     else:
         print("didn't enter argument properly")
@@ -410,4 +410,14 @@ EXIT
 exit
 
 ================================================
-""")
+""")'''
+
+import logging
+import core.ui.cli.loop as cli_loop
+logger = logging.getLogger(__name__)   
+
+def start():
+    logger.info("Starting Yukta application")
+    cli_loop.start_up_loop()
+
+    

@@ -1,21 +1,21 @@
 from core.models.taskpage import TaskPage
 import logging
+import core.services.storage as storage
 logger = logging.getLogger(__name__)
 
-def todo():
-    taskpage = TaskPage()
-    logger.info("Initializing task page")
-    return taskpage
+todo = TaskPage()
+
 
 def ui_return_to_action(token_return):
-    command = token_return.get("command")
-    action = token_return.get("action")
-    page_name = token_return.get("page_name")
-    task_id = token_return.get("task_id")
-    task_name = token_return.get("task_name")
-    date = token_return.get("date")
-    flags = token_return.get("flags")
-    logger.info(f"Token return received: Command: {command}, Action: {action}, Page Name: {page_name}, Task ID: {task_id}, Task Name: {task_name}, Date: {date}, Flags: {flags}")
+    if token_return:
+        command = token_return.get("command")
+        action = token_return.get("action")
+        page_name = token_return.get("page_name")
+        task_id = token_return.get("task_id")
+        task_name = token_return.get("task_name")
+        date = token_return.get("date")
+        flags = token_return.get("flags")
+        logger.info(f"Token return received: Command: {command}, Action: {action}, Page Name: {page_name}, Task ID: {task_id}, Task Name: {task_name}, Date: {date}, Flags: {flags}")
 
     if command == "page":
         if action == "add":
@@ -140,11 +140,11 @@ def remove_page(category):
 def set_default(category):
     return todo.set_default(category)
 
-def add_task(task,category=None):
+def add_task(task,category="*"):
     logger.info(f"Adding task: {task}")
     return todo.add_task(task,category)
 
-def remove_task(task,category=None):
+def remove_task(task,category="*"):
     logger.info(f"Removing task: {task}")
     return todo.remove_task(task,category)
 
@@ -160,38 +160,40 @@ def mark_undone(id):
     logger.info(f"Marking task as undone: {id}")
     return todo.mark_undone(id)
 
-def update_task(id, task, category=None):
+def update_task(id, task, category="*"):
     logger.info(f"Updating task: {id}, New Task: {task}, Category: {category}")
     return todo.update_task(id, task, category)
 
-def display_all(category=None):
+def display_all(category="*"):
     logger.info(f"Displaying all tasks for category: {category}")
     return todo.display_all(category)
 
-def display_done(category=None):
+def display_done(category="*"):
     logger.info(f"Displaying done tasks for category: {category}")
     return todo.display_done(category)
 
-def display_pending(category=None):
+def display_pending(category="*"):
     logger.info(f"Displaying pending tasks for category: {category}")
     return todo.display_pending(category)
 
-def display_by_day(day, months, year, category=None):
+def display_by_day(day, months, year, category="*"):
     logger.info(f"Displaying tasks by day: {day}, Months: {months}, Year: {year}, Category: {category}")
     return todo.display_by_day(day, months, year, category)
 
-def display_by_months(months,year, category=None):
+def display_by_months(months,year, category="*"):
     logger.info(f"Displaying tasks by months: {months}, Year: {year}, Category: {category}")
     return todo.display_by_months(months, year, category)
 
-def display_by_week(week, year, category=None):
+def display_by_week(week, year, category="*"):
     logger.info(f"Displaying tasks by week: {week}, Year: {year}, Category: {category}")
     return todo.display_by_week(week, year, category)
 
-def display_by_year(year, category=None):
+def display_by_year(year, category="*"):
     logger.info(f"Displaying tasks by year: {year}, Category: {category}")
     return todo.display_by_year(year, category)
 
 def display_analysis():
     logger.info("Displaying analysis")
     return todo.display_analysis()
+
+

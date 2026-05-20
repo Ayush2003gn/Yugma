@@ -26,7 +26,7 @@ def find_index(lst, value):
             return i
     return None
 
-def command_breakdown(command):
+def parse_command(command):
     parts = shlex.split(command.strip().lower())
     if not parts:
          return None, []
