@@ -129,7 +129,13 @@ def ui_return_to_action(token_return):
     else:
         logger.error(f"Unknown command: {command}")
         return {"success": False, "message": f"Unknown command: {command}", "data": None}
-    
+
+def command_paths():
+    default = todo.default
+    if default == None:
+        return "Yukta/root/-"
+    else:
+        return "Yukta/root/"+str(default.category)+"/-"    
 
 def add_page(category):
     return todo.add_page(category)
