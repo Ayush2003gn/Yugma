@@ -8,6 +8,7 @@ logger = logging.getLogger(__name__)
 
 def start_up_loop():
     running = True
+    renderer.welcome_message()
     while running:
         try:
             command_input = input(f"{action.command_paths()} > ")
@@ -23,17 +24,10 @@ def start_up_loop():
                 continue
             result = action.execute_command(result_command_handler)
             logger.info(f"Action result: {result}")
+            
             if result_command_handler is None:
                 continue
-            if result["success"]:
-                if cmd == "display":
-                    renderer.display_task_list(result["data"])
-                else:                    
-                    renderer.display_message(result["message"])
-            else:
-                renderer.display_error(result["message"])
-            
-            
+            renderer.decision_renderer(cmd, result)
 
         except KeyboardInterrupt:
             logger.critical("Keyboard Interrupt by the user")
