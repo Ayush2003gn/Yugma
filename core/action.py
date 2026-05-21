@@ -59,7 +59,7 @@ def execute_command(token_return):
         
         return remove_task(task_id, category=page_name)
     
-    elif command == "set_priority":
+    elif command == "priority":
 
         if action.startswith("error"):
             logger.error(f"Error in set_priority command: {action}")
