@@ -168,11 +168,11 @@ def execute_command(token_return):
 
 def command_paths():
     default = todo.default
-    
+
     if default == None:
         return "Yukta/root/-"
     else:
-        return "Yukta/root/"+str(default.category)+"/-"    
+        return f"Yukta/root/{default.category}/-"    
 
 def add_page(category):
     return todo.add_page(category)
@@ -239,5 +239,3 @@ def display_by_year(year, category="*"):
 def display_analysis():
     logger.info("Displaying analysis")
     return todo.display_analysis()
-
-
