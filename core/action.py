@@ -16,7 +16,9 @@ def execute_command(token_return):
         date = token_return.get("date")
         flags = token_return.get("flags")
         logger.info(f"Token return received: Command: {command}, Action: {action}, Page Name: {page_name}, Task ID: {task_id}, Task Name: {task_name}, Date: {date}, Flags: {flags}")
-
+    else:
+        logger.error("No token return received")
+        return {"success": False, "message": "No token return received", "data": None}
     if command == "page":
         if action == "add":
             add_page_action = add_page(page_name)
