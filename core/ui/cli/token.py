@@ -225,7 +225,7 @@ def cmd_priority(argument):
         if priority not in ["low", "normal", "high"]:
             logger.warning("Invalid priority value provided for priority command")
             return uniform_return("priority", "error-invalid-priority-value", flags={"priority": None, "status": False})
-        return uniform_return("priority", "set-priority", task_id=task_id, flags={"priority": priority, "status": False})
+        return uniform_return("priority", "set_priority", task_id=task_id, flags={"priority": priority, "status": False})
     
     return uniform_return("priority", "error-no-task-id", flags={"priority": None, "status": False})
 

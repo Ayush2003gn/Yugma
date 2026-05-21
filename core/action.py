@@ -26,6 +26,7 @@ def execute_command(token_return):
                 if flags["default"] is True:
                     set_default(page_name)
                     logger.info(f"Page set as default: {page_name}")
+
             return add_page_action
         
         elif action == "remove":
@@ -41,6 +42,7 @@ def execute_command(token_return):
         if action.startswith("error"):
             logger.error(f"Error in add command: {action}")
             return {"success": False, "message": f"Add command error: {action}", "data": None}
+        
         if "status" in flags:
             logger.info(f"Adding task with status flag: {task_name}, Status: {flags['status']}")
 
@@ -48,54 +50,71 @@ def execute_command(token_return):
         return add_task(task_name, page_name)
 
     elif command == "remove":
+
         if action.startswith("error"):
             logger.error(f"Error in remove command: {action}")
             return {"success": False, "message": f"Remove command error: {action}", "data": None}
-        return remove_task(task_name, category=page_name)
+        
+        return remove_task(task_id, category=page_name)
     
     elif command == "set_priority":
+
         if action.startswith("error"):
             logger.error(f"Error in set_priority command: {action}")
             return {"success": False, "message": f"Set priority command error: {action}", "data": None}
+        
         priority = flags.get("priority")
+
         if priority is not None:
-            return set_priority(task_name, priority)
+
+            return set_priority(task_id, priority)
         else:
             logger.error("Priority flag missing in set_priority command")
             return {"success": False, "message": "Priority flag missing in set_priority command", "data": None}
 
     elif command == "mark_done":
+
         if action.startswith("error"):
             logger.error(f"Error in mark_done command: {action}")
             return {"success": False, "message": f"Mark done command error: {action}", "data": None}
+        
         return mark_done(task_id)
     
     elif command == "mark_undone":
+
         if action.startswith("error"):
             logger.error(f"Error in mark_undone command: {action}")
             return {"success": False, "message": f"Mark undone command error: {action}", "data": None}
+        
         return mark_undone(task_id)
     
     elif command == "update":
+
         if action.startswith("error"):
             logger.error(f"Error in update command: {action}")
             return {"success": False, "message": f"Update command error: {action}", "data": None}
+        
         return update_task(task_id, task_name, category=page_name)
     
     elif command == "display":
+
         if action.startswith("error"):
             logger.error(f"Error in display command: {action}")
             return {"success": False, "message": f"Display command error: {action}", "data": None}
         # Display command is handled in the UI, so we just return success here
+        
         if action == "display-all":
             logger.info(f"Display all command received for category: {page_name}")
             return display_all(category=page_name)
+        
         elif action == "display-done":
             logger.info(f"Display done command received for category: {page_name}")
             return display_done(category=page_name)
+        
         elif action == "display-pending":
             logger.info(f"Display pending command received for category: {page_name}")
             return display_pending(category=page_name)
+        
         elif action == "display-by-day":
             day = flags.get("day")
             month = flags.get("month")
@@ -105,40 +124,51 @@ def execute_command(token_return):
             else:
                 logger.error("Day, month, or year flag missing in display-by-day command")
                 return {"success": False, "message": "Day, month, or year flag missing in display-by-day command", "data": None}
+            
         elif action == "display-by-months":
             month = flags.get("month")
             year = flags.get("year")
+
             if month is not None and year is not None:
                 return display_by_months(month, year, category=page_name)
             else:
                 logger.error("Month or year flag missing in display-by-months command")
                 return {"success": False, "message": "Month or year flag missing in display-by-months command", "data": None}
+        
         elif action == "display-by-week":
             week = flags.get("week")
             year = flags.get("year")
+
             if week is not None and year is not None:
                 return display_by_week(week, year, category=page_name)
             else:
                 logger.error("Week or year flag missing in display-by-week command")
                 return {"success": False, "message": "Week or year flag missing in display-by-week command", "data": None}
+       
         elif action == "display-by-year":
             year = flags.get("year")
+
             if year is not None:
                 return display_by_year(year, category=page_name)
             else:
                 logger.error("Year flag missing in display-by-year command")
                 return {"success": False, "message": "Year flag missing in display-by-year command", "data": None}
+    
     elif command == "display_analysis":
+
         if action.startswith("error"):
             logger.error(f"Error in display_analysis command: {action}")
             return {"success": False, "message": f"Display analysis command error: {action}", "data": None}
+        
         return display_analysis()
+    
     else:
         logger.error(f"Unknown command: {command}")
         return {"success": False, "message": f"Unknown command: {command}", "data": None}
 
 def command_paths():
     default = todo.default
+    
     if default == None:
         return "Yukta/root/-"
     else:
@@ -158,13 +188,13 @@ def add_task(task,category="*"):
     logger.info(f"Adding task: {task}")
     return todo.add_task(task,category)
 
-def remove_task(task,category="*"):
-    logger.info(f"Removing task: {task}")
-    return todo.remove_task(task,category)
+def remove_task(task_id,category="*"):
+    logger.info(f"Removing task: {task_id}")
+    return todo.remove_task(task_id,category)
 
-def set_priority(task, priority):
-    logger.info(f"Setting priority for task: {task}, Priority: {priority}")
-    return todo.set_priority(task, priority)
+def set_priority(task_id, priority):
+    logger.info(f"Setting priority for task: {task_id}, Priority: {priority}")
+    return todo.set_priority(task_id, priority)
 
 def mark_done(id):
     logger.info(f"Marking task as done: {id}")
