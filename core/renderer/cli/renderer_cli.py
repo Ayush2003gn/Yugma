@@ -5,7 +5,7 @@ logger = logging.getLogger(__name__)
 
 def display_message(message):
     print()
-    print(f"[white]{message}[/white]")
+    print(f"[green]{message}[/green]")
     print()
 
 def display_task_list(task_list):

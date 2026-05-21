@@ -128,7 +128,7 @@ class TaskPage:
                 method = getattr(page, type_display)
                 method_data = method(*args)
                 display.append(method_data)
-            return {"success":True, "message":"Ready for display","data":display}
+            return {"success": True, "message": "Ready for display", "data": display}
         else:
             page_dict = self.category_finder(category)
             if page_dict["success"]:
@@ -136,7 +136,7 @@ class TaskPage:
                 method = getattr(page, type_display)
                 method_data = method(*args)
                 display.append(method_data)
-                return {"success":True, "message":"Ready for display","data":display}
+                return {"success": True, "message": "Ready for display", "data": display}
         logger.warning(f"Page Category not found: {category}")
         return page
             

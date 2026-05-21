@@ -19,12 +19,14 @@ def ui_return_to_action(token_return):
 
     if command == "page":
         if action == "add":
+            add_page_action = add_page(page_name)
             if "default" in flags:
-                logger.info(f"Adding page with default flag: {page_name}")
+                logger.info(f"page :{page_name} and default flag: {flags['default']}")
 
                 if flags["default"] is True:
                     set_default(page_name)
-            return add_page(page_name)
+                    logger.info(f"Page set as default: {page_name}")
+            return add_page_action
         
         elif action == "remove":
             return remove_page(page_name)
@@ -33,6 +35,7 @@ def ui_return_to_action(token_return):
         elif action.startswith("error"):
             logger.error(f"Error in page command: {action}")
             return {"success": False, "message": f"Page command error: {action}", "data": None}
+        
 
     elif command == "add":
         if action.startswith("error"):
@@ -78,16 +81,20 @@ def ui_return_to_action(token_return):
             logger.error(f"Error in update command: {action}")
             return {"success": False, "message": f"Update command error: {action}", "data": None}
         return update_task(task_id, task_name, category=page_name)
+    
     elif command == "display":
         if action.startswith("error"):
             logger.error(f"Error in display command: {action}")
             return {"success": False, "message": f"Display command error: {action}", "data": None}
         # Display command is handled in the UI, so we just return success here
         if action == "display-all":
+            logger.info(f"Display all command received for category: {page_name}")
             return display_all(category=page_name)
         elif action == "display-done":
+            logger.info(f"Display done command received for category: {page_name}")
             return display_done(category=page_name)
         elif action == "display-pending":
+            logger.info(f"Display pending command received for category: {page_name}")
             return display_pending(category=page_name)
         elif action == "display-by-day":
             day = flags.get("day")
@@ -144,6 +151,7 @@ def remove_page(category):
     return todo.remove_page(category)
 
 def set_default(category):
+    logger.info(f"Setting default page: {category} in action module function: set_default")
     return todo.set_default(category)
 
 def add_task(task,category="*"):
