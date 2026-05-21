@@ -8,10 +8,11 @@ def display_message(message):
     print(f"[green]{message}[/green]")
     print()
 
-def display_task_list(task_list):
+def display_task_list(taskpage):
     print()
-    for task in task_list:
-        print(f"- [blue]{task}[/blue]")
+    for task_page in taskpage:
+        for task in task_page["data"]:
+            print(f"- [blue]{task}[/blue]")
     print()
 
 

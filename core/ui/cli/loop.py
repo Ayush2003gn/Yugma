@@ -26,6 +26,7 @@ def start_up_loop():
             logger.info(f"Action result: {result}")
             if result["success"]:
                 if cmd == "display":
+                    print(result)
                     renderer.display_task_list(result["data"])
                 else:                    
                     renderer.display_message(result["message"])
