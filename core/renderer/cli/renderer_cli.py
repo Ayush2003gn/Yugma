@@ -11,7 +11,8 @@ def display_message(message):
 def display_task_list(taskpage):
     print()
     for task_page in taskpage:
-        print(f"- [blue]{task_page}[/blue]")
+        for task in task_page:
+            print(f"- [blue]{task}[/blue]")
     print()
 
 

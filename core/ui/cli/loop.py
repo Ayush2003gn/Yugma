@@ -14,16 +14,17 @@ def start_up_loop():
             logger.info(f"User input received: {command_input}")
 
             cmd,arguments = cli_token.parse_command(command_input)
-            if cmd == "exit":
-                logger.info("Exit command received. Terminating the loop.")
-                running = False
-                continue
             logger.info(f"Tokenized command: {cmd}, Arguments: {arguments}")
 
             result_command_handler = cli_token.command_handler(cmd, arguments)
 
-            result = action.ui_return_to_action(result_command_handler)
+            if result_command_handler["command"] == "exit":
+                running = False
+                continue
+            result = action.execute_command(result_command_handler)
             logger.info(f"Action result: {result}")
+            if result_command_handler is None:
+                continue
             if result["success"]:
                 if cmd == "display":
                     renderer.display_task_list(result["data"])

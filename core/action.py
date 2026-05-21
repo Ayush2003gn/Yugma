@@ -6,7 +6,7 @@ logger = logging.getLogger(__name__)
 todo = TaskPage()
 
 
-def ui_return_to_action(token_return):
+def execute_command(token_return):
     if token_return:
         command = token_return.get("command")
         action = token_return.get("action")
