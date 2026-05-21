@@ -131,7 +131,7 @@ class TaskList:
             logger.warning("{self.category} page: No tasks available ")
             display.append("No tasks available")
             display.append("")
-            return {"success": False, "message":"No tasks available", "data": display}
+            return display
         
         for task in self.tasklist:
             display.append(str(task))
@@ -139,7 +139,7 @@ class TaskList:
         display.append("")
         
         logger.debug(f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ")
-        return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+        return display
 
 
     def display_by_months(self,months,year):
@@ -147,83 +147,74 @@ class TaskList:
         count = 0
 
         if not self.tasklist:
-            logger.warning("{self.category} page: No tasks available ")
+            logger.warning(f"{self.category} page: No tasks available")
             display.append("No tasks available")
             display.append("")
-            return {"success": False, "message":"No tasks available", "data": display}
+            return display
         
         for task in self.tasklist:
             if task.created_date.strftime("%B").lower() == months.lower() and task.created_date.year == year:
                 display.append(str(task))
-        
                 count += 1
-            else:
-                continue
         
         if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks ")
+            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-            return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            return display
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-        return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        return display
 
 
     def display_by_week(self,week,year):
         display = [f"# {self.category}"]
         count = 0
         if not self.tasklist:
-            logger.warning("{self.category} page: No tasks available ")
+            logger.warning(f"{self.category} page: No tasks available")
             display.append("No tasks available")
             display.append("")
-            return {"success": False, "message":"No tasks available", "data": display}
+            return display
         
         for task in self.tasklist:
             if int(task.created_date.isocalendar().week) == week and task.created_date.year == year:
                 display.append(str(task))
-        
                 count += 1
-            else:
-                continue
         
         if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks ")
+            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-            return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            return display
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-        return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}   
+        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        return display   
     
 
     def display_by_year(self,year):
         display = [f"# {self.category}"]
         count = 0
         if not self.tasklist:
-            logger.warning("{self.category} page: No tasks available ")
+            logger.warning(f"{self.category} page: No tasks available")
             display.append("No tasks available")
             display.append("")
-            return {"success": False, "message":"No tasks available", "data": display}
+            return display
         for task in self.tasklist:
             if task.created_date.year == year:
                 display.append(str(task))
-        
                 count += 1
-            else:
-                continue
         
         if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks ")
+            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-            return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            return display
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-        return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        return display
 
 
 
@@ -231,55 +222,49 @@ class TaskList:
         display = [f"# {self.category}"]
         count = 0
         if not self.tasklist:
-            logger.warning("{self.category} page: No tasks available ")
+            logger.warning(f"{self.category} page: No tasks available")
             display.append("No tasks available")
             display.append("")
-            return {"success": False, "message":"No tasks available", "data": display}
+            return display
         
         for task in self.tasklist:
             if task.done == True:
                 display.append(str(task))
-
                 count += 1
-            else:
-                continue
         
         if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks ")
+            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-            return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            return display
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-        return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        return display
 
     def display_by_pending(self):
         display = [f"# {self.category}"]
         count = 0
         if not self.tasklist:
-            logger.warning("{self.category} page: No tasks available ")
+            logger.warning(f"{self.category} page: No tasks available")
             display.append("No tasks available")
             display.append("")
-            return {"success": False, "message":"No tasks available", "data": display}
+            return display
         
         for task in self.tasklist:
             if task.done == False :
                 display.append(str(task))
-                
                 count += 1
-            else:
-                continue
         
         if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks ")
+            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-            return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            return display
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks ")
-        return {"success": True, "message":f"Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks in {self.category} page", "data": display}
+        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        return display
 
 
     def percent_done(self):
