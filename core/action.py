@@ -16,10 +16,14 @@ def execute_command(token_return):
         date = token_return.get("date")
         flags = token_return.get("flags")
         logger.info(f"Token return received: Command: {command}, Action: {action}, Page Name: {page_name}, Task ID: {task_id}, Task Name: {task_name}, Date: {date}, Flags: {flags}")
+    
     else:
         logger.error("No token return received")
         return {"success": False, "message": "No token return received", "data": None}
     if command == "page":
+        if action is None:
+            logger.error("No action specified for page command")
+            return {"success": False, "message": "No action specified for page command", "data": None}
         if action == "add":
             add_page_action = add_page(page_name)
             if "default" in flags:
@@ -41,6 +45,9 @@ def execute_command(token_return):
         
 
     elif command == "add":
+        if action is None:
+            logger.error("No action specified for add command")
+            return {"success": False, "message": "No action specified for add command", "data": None}
         if action.startswith("error"):
             logger.error(f"Error in add command: {action}")
             return {"success": False, "message": f"Add command error: {action}", "data": None}
@@ -52,7 +59,9 @@ def execute_command(token_return):
         return add_task(task_name, page_name)
 
     elif command == "remove":
-
+        if action is None:
+            logger.error("No action specified for remove command")
+            return {"success": False, "message": "No action specified for remove command", "data": None}
         if action.startswith("error"):
             logger.error(f"Error in remove command: {action}")
             return {"success": False, "message": f"Remove command error: {action}", "data": None}
@@ -60,7 +69,9 @@ def execute_command(token_return):
         return remove_task(task_id, category=page_name)
     
     elif command == "priority":
-
+        if action is None:
+            logger.error("No action specified for priority command")
+            return {"success": False, "message": "No action specified for priority command", "data": None}
         if action.startswith("error"):
             logger.error(f"Error in set_priority command: {action}")
             return {"success": False, "message": f"Set priority command error: {action}", "data": None}
@@ -76,6 +87,10 @@ def execute_command(token_return):
 
     elif command == "mark_done":
 
+        if action is None:
+            logger.error("No action specified for mark_done command")
+            return {"success": False, "message": "No action specified for mark_done command", "data": None}
+
         if action.startswith("error"):
             logger.error(f"Error in mark_done command: {action}")
             return {"success": False, "message": f"Mark done command error: {action}", "data": None}
@@ -84,6 +99,10 @@ def execute_command(token_return):
     
     elif command == "mark_undone":
 
+        if action is None:
+            logger.error("No action specified for mark_undone command")
+            return {"success": False, "message": "No action specified for mark_undone command", "data": None}
+
         if action.startswith("error"):
             logger.error(f"Error in mark_undone command: {action}")
             return {"success": False, "message": f"Mark undone command error: {action}", "data": None}
@@ -91,7 +110,9 @@ def execute_command(token_return):
         return mark_undone(task_id)
     
     elif command == "update":
-
+        if action is None:
+            logger.error("No action specified for update command")
+            return {"success": False, "message": "No action specified for update command", "data": None}
         if action.startswith("error"):
             logger.error(f"Error in update command: {action}")
             return {"success": False, "message": f"Update command error: {action}", "data": None}
@@ -100,6 +121,9 @@ def execute_command(token_return):
     
     elif command == "display":
 
+        if action is None:
+            logger.error("No action specified for display command")
+            return {"success": False, "message": "No action specified for display command", "data": None}
         if action.startswith("error"):
             logger.error(f"Error in display command: {action}")
             return {"success": False, "message": f"Display command error: {action}", "data": None}
