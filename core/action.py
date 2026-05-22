@@ -33,7 +33,7 @@ def execute_command(token_return):
         
         elif action == "remove":
             return remove_page(page_name)
-        elif action == "set_default":
+        elif action == "set-default":
             return set_default(page_name)
         elif action.startswith("error"):
             logger.error(f"Error in page command: {action}")

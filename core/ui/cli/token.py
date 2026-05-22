@@ -77,18 +77,22 @@ def command_handler(cmd, argument):
             
                 case "exit" | "bye":
                     return uniform_return("exit", None, flags={"default": False})
+        
                 case None | "":
                     logger.warning("No command from user")
                     return uniform_return(None, "error-no-command", flags={"default": False})
+        
                 case _:
                     logger.error(f"Invalid command received: '{cmd}'")
                     return uniform_return(cmd, "error-invalid-command", flags={"default": False})
+        
                     
 #-----------------page command handler-----------------            
 def cmd_page(argument):
     if len(argument) < 1:
         logger.warning("No page name provided by user")
         return uniform_return("page", "error", flags={"default": False})
+    
     if "add" in argument:
         index = find_index(argument, "add")
         page_name = argument[index + 1] if index + 1 < len(argument) else None
@@ -121,12 +125,15 @@ def cmd_page(argument):
     if "set-default" in argument:
         index = find_index(argument, "set-default")
         page_name = argument[index + 1] if index + 1 < len(argument) else None
+
         if page_name and (page_name.startswith("--") or page_name.startswith("-")):
             page_name = None
+
         if page_name is None:
             logger.warning("No page name provided for set-default command")
             return uniform_return("page", "error-no-page-name", flags={"default": False})
-        return uniform_return("page", "set_default", page_name=page_name, flags={"default": True})
+        
+        return uniform_return("page", "set-default", page_name=page_name, flags={"default": True})
     
         
 #-----------------task in page command handler-----------------
@@ -149,6 +156,7 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
 
         action = "add-task"
         page_name = None
+
         if "--c" in argument:
             index = find_index(argument, "--c")
             page_name = argument[index + 1] if index + 1 < len(argument) else None
@@ -160,20 +168,25 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
 
             if page_name is None:
                 logger.warning("No page name provided for add command, using default page")
+
         else:
             logger.info("No page name provided for add command, using default page")
 
         priority = None
+
         if "--p" in argument:
             index = find_index(argument, "--p")
             priority = argument[index + 1] if index + 1 < len(argument) else None
+
             if priority and (priority.startswith("--") or priority.startswith("-")):
                 priority = "Normal"
+
             elif priority not in ["low", "normal", "high"]:
                 logger.warning("Invalid priority value provided for add command")
                 priority = "Normal"
         
         status = False
+
         if "--md" in argument:
             status = True
         
@@ -182,10 +195,13 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
     return uniform_return("add", None, flags={"priority": None, "status": False})
 
 def cmd_remove(argument):
+
     if len(argument) < 1:
         logger.warning("No task name provided by user")
         return uniform_return("remove", "error-no-task-id", flags={"priority": None, "status": False})
+    
     if "-id" in argument:
+
         index = find_index(argument, "-id")
         task_id = argument[index + 1] if index + 1 < len(argument) else None
 
@@ -201,9 +217,11 @@ def cmd_remove(argument):
     return uniform_return("remove", "error-no-task-id", flags={"priority": None, "status": False})
 
 def cmd_priority(argument):
+
     if len(argument) < 1:
         logger.warning("No task name provided by user")
         return uniform_return("priority", "error-no-task-id", flags={"priority": None, "status": False})
+    
     if "-id" in argument and "--p" in argument:
         index_id = find_index(argument, "-id")
         task_id = argument[index_id + 1] if index_id + 1 < len(argument) else None
@@ -224,18 +242,23 @@ def cmd_priority(argument):
         if priority is None:
             logger.warning("No priority value provided for priority command")
             return uniform_return("priority", "error-no-priority-value", flags={"priority": None, "status": False})
-        if priority not in ["low", "normal", "high"]:
+        
+        if priority.lower() not in ["low", "normal", "high"]:
             logger.warning("Invalid priority value provided for priority command")
             return uniform_return("priority", "error-invalid-priority-value", flags={"priority": None, "status": False})
+        
         return uniform_return("priority", "set_priority", task_id=task_id, flags={"priority": priority, "status": False})
+    
     
     return uniform_return("priority", "error-no-task-id", flags={"priority": None, "status": False})
 
 
 def cmd_mark_done(argument):
+
     if len(argument) < 1:
         logger.warning("No task name provided by user")
         return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
+    
     if "-id" in argument:
         index = find_index(argument, "-id")
         task_id = argument[index + 1] if index + 1 < len(argument) else None
@@ -252,9 +275,11 @@ def cmd_mark_done(argument):
     return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
 
 def cmd_mark_undone(argument):
+
     if len(argument) < 1:
         logger.warning("No task name provided by user")
         return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
+    
     if "-id" in argument:
         index = find_index(argument, "-id")
         task_id = argument[index + 1] if index + 1 < len(argument) else None
@@ -271,9 +296,11 @@ def cmd_mark_undone(argument):
     return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
 
 def cmd_update(argument):
+
     if len(argument) < 1:
         logger.warning("No task name provided by user")
         return uniform_return("update", "error-no-task-id", flags={"priority": None, "status": False})
+    
     if "-id" in argument:
         index = find_index(argument, "-id")
         task_id = argument[index + 1] if index + 1 < len(argument) else None
@@ -294,18 +321,23 @@ def cmd_update(argument):
                 new_name = None
 
         priority = None
+
         if "--p" in argument:
             index = find_index(argument, "--p")
             priority = argument[index + 1] if index + 1 < len(argument) else None
+
             if priority and (priority.startswith("--") or priority.startswith("-")):
                 priority = "Normal"
-            elif priority not in ["low", "normal", "high"]:
+                
+            elif priority.lower() not in ["low", "normal", "high"]:
                 logger.warning("Invalid priority value provided for update command")
                 priority = "Normal"
         
         status = None
+
         if "--md" in argument:
             status = True
+
         elif "--mu" in argument:
             status = False
         
@@ -325,6 +357,7 @@ def cmd_display(argument):
     # ---------------- CATEGORY ----------------
     if "--c" in argument:
         index = find_index(argument, "--c")
+
         if index + 1 < len(argument):
             category = argument[index + 1]
 
@@ -347,6 +380,7 @@ def cmd_display(argument):
             return uniform_return("display", "error-year-missing", date={"day": None, "month": None, "year": None})
         try:
             year = int(argument[index + 1])
+
         except ValueError:
             logger.warning("Invalid year value")
             return uniform_return("display", "error-invalid-year", date={"day": None, "month": None, "year": None})
@@ -360,9 +394,11 @@ def cmd_display(argument):
         if index + 2 >= len(argument):
             logger.warning("Month or Year missing")
             return uniform_return("display", "error-month-year-missing", date={"day": None, "month": None, "year": None})
+        
         try:
             month = argument[index + 1]
             year = int(argument[index + 2])
+
         except ValueError:
             logger.warning("Invalid month or year value")
             return uniform_return("display", "error-invalid-month-year", date={"day": None, "month": None, "year": None})
@@ -376,9 +412,11 @@ def cmd_display(argument):
         if index + 2 >= len(argument):
             logger.warning("Week or Year missing")
             return uniform_return("display", "error-week-year-missing", date={"day": None, "month": None, "year": None})
+        
         try:
             week = int(argument[index + 1])
             year = int(argument[index + 2])
+
         except ValueError:
             logger.warning("Invalid week or year value")
             return uniform_return("display", "error-invalid-week-year", date={"day": None, "month": None, "year": None})
@@ -396,6 +434,7 @@ def cmd_display(argument):
             day = int(argument[index + 1])
             month = int(argument[index + 2])
             year = int(argument[index + 3])
+            
         except ValueError:
             logger.warning("Invalid day, month, or year value")
             return uniform_return("display", "error-invalid-day-month-year", date={"day": None, "month": None, "year": None})
