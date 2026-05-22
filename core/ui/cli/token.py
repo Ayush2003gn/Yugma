@@ -29,12 +29,10 @@ def find_index(lst, value):
 def parse_command(command):
     parts = shlex.split(command.strip())
     if not parts:
+         logger.warning("No command provided by user")
          return None, []
-    cmd = parts[0]
-    if cmd is None:
-        logger.warning("No command provided by user")
-        return None, []
-    cmd = cmd.lower()
+    cmd = parts[0].lower()
+
     argument = parts[1:]
     return cmd, argument
 
@@ -56,9 +54,13 @@ def command_handler(cmd, argument):
                     logger.info(f"command = {cmd} and argument = {argument}")
                     return cmd_priority(argument)
             
-                case "status":
+                case "mark-done":
                     logger.info(f"command = {cmd} and argument = {argument}")
-                    return cmd_status(argument)
+                    return cmd_mark_done(argument)
+        
+                case "mark-undone":
+                    logger.info(f"command = {cmd} and argument = {argument}")
+                    return cmd_mark_undone(argument)
             
                 case "display":
                     logger.info(f"command = {cmd} and argument = {argument}")
@@ -229,10 +231,11 @@ def cmd_priority(argument):
     
     return uniform_return("priority", "error-no-task-id", flags={"priority": None, "status": False})
 
-def cmd_status(argument):
+
+def cmd_mark_done(argument):
     if len(argument) < 1:
         logger.warning("No task name provided by user")
-        return uniform_return("status", "error-no-task-id", flags={"priority": None, "status": False})
+        return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
     if "-id" in argument:
         index = find_index(argument, "-id")
         task_id = argument[index + 1] if index + 1 < len(argument) else None
@@ -241,19 +244,31 @@ def cmd_status(argument):
             task_id = None
 
         if task_id is None:
-            logger.warning("No task ID provided for status command")
-            return uniform_return("status", "error-no-task-id", flags={"priority": None, "status": False})
-        if "--md" in argument:
-            status = True
-        elif "--mu" in argument:
-            status = False
-        else:
-            logger.warning("No status value provided for status command")
-            return uniform_return("status", "error-no-status-value", flags={"priority": None, "status": False})
+            logger.warning("No task ID provided for mark_done command")
+            return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
         
-        return uniform_return("status", "toggle-status", task_id=task_id, flags={"priority": None, "status": status})
+        return uniform_return("mark_done", "mark_done", task_id=task_id, flags={"priority": None, "status": True})
     
-    return uniform_return("status", "error-no-task-id", flags={"priority": None, "status": False})
+    return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
+
+def cmd_mark_undone(argument):
+    if len(argument) < 1:
+        logger.warning("No task name provided by user")
+        return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
+    if "-id" in argument:
+        index = find_index(argument, "-id")
+        task_id = argument[index + 1] if index + 1 < len(argument) else None
+
+        if task_id and (task_id.startswith("--") or task_id.startswith("-")):
+            task_id = None
+
+        if task_id is None:
+            logger.warning("No task ID provided for mark_undone command")
+            return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
+        
+        return uniform_return("mark_undone", "mark_undone", task_id=task_id, flags={"priority": None, "status": False})
+    
+    return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
 
 def cmd_update(argument):
     if len(argument) < 1:

@@ -18,15 +18,19 @@ def start_up_loop():
             logger.info(f"Tokenized command: {cmd}, Arguments: {arguments}")
 
             result_command_handler = cli_token.command_handler(cmd, arguments)
-
-            if result_command_handler["command"] == "exit":
-                running = False
-                continue
-            result = action.execute_command(result_command_handler)
-            logger.info(f"Action result: {result}")
             
             if result_command_handler is None:
                 continue
+            
+            if result_command_handler["command"] == "exit":
+                running = False
+                continue
+            
+            result = action.execute_command(result_command_handler)
+            logger.info(f"Action result: {result}")
+            
+            action = result_command_handler["action"]
+            
             renderer.decision_renderer(cmd, result)
 
         except KeyboardInterrupt:

@@ -3,12 +3,22 @@ from rich import print
 
 logger = logging.getLogger(__name__)
 
-def decision_renderer(cmd, result):
+
+def decision_renderer(action, result):
+
     if result["success"]:
-        if cmd == "display":
-            display_task_list(result["data"])
-        else:                    
+
+        if action and "display" in action:
+
+            if "analysis" in action:
+                display_analysis(result["data"])
+
+            else:
+                display_task_list(result["data"])
+
+        else:
             display_message(result["message"])
+
     else:
         display_error(result["message"])
 
@@ -30,6 +40,11 @@ def display_task_list(taskpage):
             print(f"- [blue]{task}[/blue]")
     print()
 
+def display_analysis(message):
+    print()
+    for line in message:
+        print(f"[yellow]{line}[/yellow]")
+    print()
 
 def display_error(error_message):
     print()
