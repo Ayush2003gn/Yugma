@@ -286,3 +286,35 @@ Task Commands:
 8. display_analysis: Display analysis of tasks.
 """
     return {"success": True, "message": "Help command executed", "data": help_message}
+
+def import_data():
+    logger.info("Importing data from JSON files")
+    file_paths = storage.pathcategory_finder()
+    for category, path in file_paths.items():
+        data_list = storage.json_to_py(path)
+        for task_data in data_list:
+            task_name = task_data.get("task")
+            status = task_data.get("status", "pending")
+            priority = task_data.get("priority", "normal")
+            if task_name:
+                add_result = add_task(task_name, category=category)
+                if add_result["success"]:
+                    task_id = add_result["data"]["id"]
+                    set_priority(task_id, priority)
+                    if status == "done":
+                        mark_done(task_id)
+
+def export_data():
+    logger.info("Exporting data to JSON files")
+    file_paths = storage.pathcategory_finder()
+    for category, path in file_paths.items():
+        tasks = todo.category_finder(category)
+        if tasks["success"]:
+            task_list = []
+            for task in tasks["data"].tasks:
+                task_list.append({
+                    "task": task.task,
+                    "status": "done" if task.done else "pending",
+                    "priority": task.priority
+                })
+            storage.exporting_data(path, task_list)

@@ -7,6 +7,7 @@ logger = logging.getLogger(__name__)
 
 
 def start_up_loop():
+    action.import_data()
     running = True
     renderer.welcome_message()
     while running:
@@ -24,6 +25,9 @@ def start_up_loop():
             
             if result_command_handler["command"] == "exit":
                 running = False
+                print("Exiting....")
+                print("Saving data...")
+                action.export_data()
                 continue
             
             result = action.execute_command(result_command_handler)
@@ -32,10 +36,12 @@ def start_up_loop():
             action_name = result_command_handler["action"]
             
             renderer.decision_renderer(action_name, result)
-
+            action.export_data()
         except KeyboardInterrupt:
             logger.critical("Keyboard Interrupt by the user")
             print("Exiting....")
+            print("Saving data...")
+            action.export_data()
             break
 
         
