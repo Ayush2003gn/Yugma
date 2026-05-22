@@ -156,13 +156,13 @@ def execute_command(token_return):
                 logger.error("Year flag missing in display-by-year command")
                 return {"success": False, "message": "Year flag missing in display-by-year command", "data": None}
     
-    elif command == "display_analysis":
+        elif action == "display-analysis":
 
-        if action.startswith("error"):
-            logger.error(f"Error in display_analysis command: {action}")
-            return {"success": False, "message": f"Display analysis command error: {action}", "data": None}
-        
-        return display_analysis()
+            if action.startswith("error"):
+                logger.error(f"Error in display_analysis command: {action}")
+                return {"success": False, "message": f"Display analysis command error: {action}", "data": None}
+            
+            return display_analysis()
     elif command == "help":
         # Help command is handled in the UI, so we just return success here
         logger.info("Help command received")
@@ -206,9 +206,9 @@ def set_priority(task_id, priority):
         if priority.lower() == "high":
             priority = "High"
             return todo.high_priority_task(task_id, priority)
-        elif priority.lower() == "medium":
-            priority = "Medium"
-            return todo.medium_priority_task(task_id, priority)
+        elif priority.lower() == "normal":
+            priority = "normal"
+            return todo.normal_priority_task(task_id, priority)
         elif priority.lower() == "low":
             priority = "Low"
             return todo.low_priority_task(task_id, priority)
