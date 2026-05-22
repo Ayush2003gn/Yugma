@@ -1,7 +1,7 @@
 import logging
 import os
 def start_up():
-    base = os.path.dirname(os.path.dirname(__file__))
+    base = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
     log_dir = os.path.join(base,"debug")
 
     if not os.path.exists(log_dir):
