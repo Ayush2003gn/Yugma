@@ -8,7 +8,6 @@ base = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 datafolder_Path = os.path.join(base, "data") 
 
 def filecategory_finder():
-    file_names = []
     file_and_category = {}
     for file in Path(datafolder_Path).glob("*.json"):
         filename = str(file.stem)
@@ -18,13 +17,13 @@ def filecategory_finder():
 
     return file_and_category
 
-def pathcategory_finder():
+def pathcategory_maker():
     filecategory = filecategory_finder()
     path_category = {}
     if filecategory:
-        for file in filecategory:
-            datafile = os.path.join(datafolder_Path,filecategory[file]+".json")
-            path_category[file] = datafile
+        for category, filename in filecategory.items():
+            datafile = os.path.join(datafolder_Path, filename + ".json")
+            path_category[category] = datafile
     return path_category
 
 def json_to_py(path):

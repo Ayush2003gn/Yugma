@@ -316,4 +316,4 @@ class TaskList:
             jlist = task.to_dict()
             json_list.append(jlist)
         logger.debug(f"{self.category} page: Prepared {len(json_list)} tasks for saving")
-        return {"success": True, "message":None, "data":json_list}
+        return json_list

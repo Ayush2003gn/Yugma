@@ -311,34 +311,21 @@ Task Commands:
 """
     return {"success": True, "message": "Help command executed", "data": help_message}
 
-def import_data():
-    logger.info("Importing data from JSON files")
-    file_paths = storage.pathcategory_finder()
-    for category, path in file_paths.items():
-        data_list = storage.json_to_py(path)
-        for task_data in data_list:
-            task_name = task_data.get("task")
-            status = task_data.get("status", "pending")
-            priority = task_data.get("priority", "medium")
-            if task_name:
-                add_result = add_task(task_name, category=category)
-                if add_result["success"]:
-                    task_id = add_result["data"]["id"]
-                    set_priority(task_id, priority)
-                    if status == "done":
-                        mark_done(task_id)
-
 def export_data():
     logger.info("Exporting data to JSON files")
-    file_paths = storage.pathcategory_finder()
-    for category, path in file_paths.items():
-        tasks = todo.category_finder(category)
-        if tasks["success"]:
-            task_list = []
-            for task in tasks["data"].tasks:
-                task_list.append({
-                    "task": task.task,
-                    "status": "done" if task.done else "pending",
-                    "priority": task.priority
-                })
-            storage.exporting_data(path, task_list)
+    file_name = todo.category_datapath_dict()
+    for file, category in file_name.items():
+        data_list = todo.serialize_tasksofpage(category)
+        file_path = storage.path_make(file)
+        storage.exporting_data(file_path, data_list)
+
+
+def import_data():
+    logger.info("Importing data from JSON files")
+    print("Importing data...")
+    file_name = storage.pathcategory_maker()
+    print(file_name)
+    for category, file_path in file_name.items():
+        data_list = storage.json_to_py(file_path)
+        print(f"file_path : {file_path}, category : {category}, data_list : {data_list}")
+        todo.import_category_data(category, data_list)

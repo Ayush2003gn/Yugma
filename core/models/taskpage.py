@@ -220,3 +220,10 @@ class TaskPage:
         if page["success"]:
             return page["data"].serialize_tasks()
 
+    def import_category_data(self,category,data_list):
+        page = self.add_page(category)
+        if page["success"]:
+            page = page["data"]
+            for data in data_list:
+                page.importing_task(data["Task"],data["Internal_Id"],data["Date Created"],data["Date Modified"],data["Priority"],data["Done"])
+            return page
