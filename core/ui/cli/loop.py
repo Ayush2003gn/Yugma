@@ -28,10 +28,10 @@ def start_up_loop():
             
             result = action.execute_command(result_command_handler)
             logger.info(f"Action result: {result}")
+
+            action_name = result_command_handler["action"]
             
-            action = result_command_handler["action"]
-            
-            renderer.decision_renderer(cmd, result)
+            renderer.decision_renderer(action_name, result)
 
         except KeyboardInterrupt:
             logger.critical("Keyboard Interrupt by the user")

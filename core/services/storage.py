@@ -4,7 +4,7 @@ import os
 import json
 logger = logging.getLogger(__name__)
 
-base = os.path.dirname(os.path.dirname(__file__))
+base = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
 datafolder_Path = os.path.join(base, "data") 
 
 def filecategory_finder():

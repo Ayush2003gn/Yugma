@@ -163,7 +163,10 @@ def execute_command(token_return):
             return {"success": False, "message": f"Display analysis command error: {action}", "data": None}
         
         return display_analysis()
-    
+    elif command == "help":
+        # Help command is handled in the UI, so we just return success here
+        logger.info("Help command received")
+        return help()
     else:
         logger.error(f"Unknown command: {command}")
         return {"success": False, "message": f"Unknown command: {command}", "data": None}
@@ -196,7 +199,23 @@ def remove_task(task_id,category="*"):
 
 def set_priority(task_id, priority):
     logger.info(f"Setting priority for task: {task_id}, Priority: {priority}")
-    return todo.set_priority(task_id, priority)
+    if priority.lower() not in ["low", "medium", "high","High"]:
+        logger.error(f"Invalid priority level: {priority}")
+        return {"success": False, "message": f"Invalid priority level: {priority}", "data": None}
+    else:
+        if priority.lower() == "high":
+            priority = "High"
+            return todo.high_priority_task(task_id, priority)
+        elif priority.lower() == "medium":
+            priority = "Medium"
+            return todo.medium_priority_task(task_id, priority)
+        elif priority.lower() == "low":
+            priority = "Low"
+            return todo.low_priority_task(task_id, priority)
+        else:
+            logger.error(f"Invalid priority level: {priority}")
+            return {"success": False, "message": f"Invalid priority level: {priority}", "data": None}
+        
 
 def mark_done(id):
     logger.info(f"Marking task as done: {id}")
@@ -241,3 +260,29 @@ def display_by_year(year, category="*"):
 def display_analysis():
     logger.info("Displaying analysis")
     return todo.display_analysis()
+
+def help():
+    logger.info("Displaying help")
+    help_message = """Available commands:
+1. page add <page_name> [--default]: Add a new page. Use --default flag to set it as default page.
+2. page remove <page_name>: Remove a page.
+3. help: Display this help message.
+Task Commands:
+1. add <task_name> --page <page_name>: Add a new task to a page. If --page is not specified, task will be added to default page.
+2. remove <task_id> --page <page_name>: Remove a task from a page
+3. priority <task_id> --priority <priority_level>: Set priority for a task.
+4. mark_done <task_id>: Mark a task as done.
+5. mark_undone <task_id>: Mark a task as undone.
+6. update <task_id> <new_task_name> --page <page_name>: Update the name of a task in a page.
+7. display <display_type> --page <page_name>: Display tasks in a page.
+    Display types:
+    - display-all: Display all tasks.
+    - display-done: Display only done tasks.
+    - display-pending: Display only pending tasks.
+    - display-by-day --day <day> --month <month> --year <year>: Display tasks for a specific day.
+    - display-by-months --month <month> --year <year>: Display tasks for a specific month.
+    - display-by-week --week <week> --year <year>: Display tasks for a specific week.
+    - display-by-year --year <year>: Display tasks for a specific year.
+8. display_analysis: Display analysis of tasks.
+"""
+    return {"success": True, "message": "Help command executed", "data": help_message}

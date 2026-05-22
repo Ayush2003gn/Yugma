@@ -216,7 +216,29 @@ class TaskList:
         logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
         return display
 
-
+    def display_by_day(self,day,month,year):
+        display = [f"# {self.category}"]
+        count = 0
+        if not self.tasklist:
+            logger.warning(f"{self.category} page: No tasks available")
+            display.append("No tasks available")
+            display.append("")
+            return display
+        
+        for task in self.tasklist:
+            if task.created_date.day == day and task.created_date.month == month and task.created_date.year == year:
+                display.append(str(task))
+                count += 1
+        
+        if count == 0:
+            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
+            display.append("")
+            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            return display
+        
+        display.append("")
+        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        return display
 
     def display_by_done(self):
         display = [f"# {self.category}"]

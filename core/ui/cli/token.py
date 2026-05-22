@@ -126,7 +126,7 @@ def cmd_page(argument):
         if page_name is None:
             logger.warning("No page name provided for set-default command")
             return uniform_return("page", "error-no-page-name", flags={"default": False})
-        return uniform_return("page", "set-default", page_name=page_name, flags={"default": True})
+        return uniform_return("page", "set_default", page_name=page_name, flags={"default": True})
     
         
 #-----------------task in page command handler-----------------

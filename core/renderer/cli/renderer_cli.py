@@ -15,6 +15,9 @@ def decision_renderer(action, result):
 
             else:
                 display_task_list(result["data"])
+        
+        elif action and "help" in action:
+            display_help(result["message"])
 
         else:
             display_message(result["message"])
@@ -49,4 +52,9 @@ def display_analysis(message):
 def display_error(error_message):
     print()
     print(f"[red]Error: {error_message}[/red]")
+    print()
+
+def display_help(help_message):
+    print()
+    print(f"[cyan]{help_message}[/cyan]")
     print()
