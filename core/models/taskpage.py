@@ -106,9 +106,9 @@ class TaskPage:
             category=category
         )
 
-    def normal_priority_task(self,id,category = None):
+    def medium_priority_task(self,id,category = None):
         return self._execute_page_method(
-            "normal_priority_task_internal_id",
+            "medium_priority_task_internal_id",
             id,
             category=category
         )

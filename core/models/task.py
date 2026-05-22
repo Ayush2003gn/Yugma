@@ -7,7 +7,7 @@ class Task:
         self.ui_id = ui_id #TODO: work on external id
         self.created_date = created_date
         self.modified_date = modified_date
-        self.priority = priority #1 = high | 2 = Normal | 3 = low
+        self.priority = priority #1 = high | 2 = medium | 3 = low
         self.done = done
         
     def correction(self, task, modified_date):
@@ -28,7 +28,7 @@ class Task:
         self.priority = "High"
         self.modified_date = modified_date
 
-    def priority_normal(self, modified_date):
+    def priority_medium(self, modified_date):
         self.priority = "Medium"
         self.modified_date = modified_date
 

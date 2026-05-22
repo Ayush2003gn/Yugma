@@ -230,9 +230,9 @@ def set_priority(task_id, priority):
         if priority.lower() == "high":
             priority = "High"
             return todo.high_priority_task(task_id, priority)
-        elif priority.lower() == "normal":
-            priority = "normal"
-            return todo.normal_priority_task(task_id, priority)
+        elif priority.lower() == "medium":
+            priority = "medium"
+            return todo.medium_priority_task(task_id, priority)
         elif priority.lower() == "low":
             priority = "Low"
             return todo.low_priority_task(task_id, priority)
@@ -319,7 +319,7 @@ def import_data():
         for task_data in data_list:
             task_name = task_data.get("task")
             status = task_data.get("status", "pending")
-            priority = task_data.get("priority", "normal")
+            priority = task_data.get("priority", "medium")
             if task_name:
                 add_result = add_task(task_name, category=category)
                 if add_result["success"]:

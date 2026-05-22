@@ -179,11 +179,11 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
             priority = argument[index + 1] if index + 1 < len(argument) else None
 
             if priority and (priority.startswith("--") or priority.startswith("-")):
-                priority = "Normal"
+                priority = "medium"
 
-            elif priority not in ["low", "normal", "high"]:
+            elif priority not in ["low", "medium", "high"]:
                 logger.warning("Invalid priority value provided for add command")
-                priority = "Normal"
+                priority = "medium"
         
         status = False
 
@@ -243,7 +243,7 @@ def cmd_priority(argument):
             logger.warning("No priority value provided for priority command")
             return uniform_return("priority", "error-no-priority-value", flags={"priority": None, "status": False})
         
-        if priority.lower() not in ["low", "normal", "high"]:
+        if priority.lower() not in ["low", "medium", "high"]:
             logger.warning("Invalid priority value provided for priority command")
             return uniform_return("priority", "error-invalid-priority-value", flags={"priority": None, "status": False})
         
@@ -327,11 +327,11 @@ def cmd_update(argument):
             priority = argument[index + 1] if index + 1 < len(argument) else None
 
             if priority and (priority.startswith("--") or priority.startswith("-")):
-                priority = "Normal"
+                priority = "medium"
                 
-            elif priority.lower() not in ["low", "normal", "high"]:
+            elif priority.lower() not in ["low", "medium", "high"]:
                 logger.warning("Invalid priority value provided for update command")
-                priority = "Normal"
+                priority = "medium"
         
         status = None
 
@@ -403,7 +403,7 @@ def cmd_display(argument):
             logger.warning("Invalid month or year value")
             return uniform_return("display", "error-invalid-month-year", date={"day": None, "month": None, "year": None})
 
-        return uniform_return("display", "display-by-month", date={"day": None, "month": month, "year": year})
+        return uniform_return("display", "display-by-months", date={"day": None, "month": month, "year": year})
 
     # ---------------- WEEK ----------------
     elif "--week" in argument:

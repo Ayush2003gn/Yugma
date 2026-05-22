@@ -36,10 +36,10 @@ def test_priority_high():
     assert task.priority == "High"
 
 
-def test_priority_normal():
+def test_priority_medium():
     task = sample_task()
 
-    task.priority_normal(datetime.datetime.now())
+    task.priority_medium(datetime.datetime.now())
 
     assert task.priority == "Medium"
 

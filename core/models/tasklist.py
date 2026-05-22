@@ -101,10 +101,10 @@ class TaskList:
         logger.warning(f"{self.category} page: Task ID not found: {internal_id} ")
         return {"success": False, "message":f"Id not found in {self.category} page", "data": None}
 
-    def normal_priority_task_internal_id(self,internal_id):
+    def medium_priority_task_internal_id(self,internal_id):
         task_found = self.internal_id_find(internal_id)
         if task_found["success"]:
-            task_found["data"].priority_normal(datetime_now())
+            task_found["data"].priority_medium(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {internal_id}")
             self.changed = True
             return {"success": True,"message":f"successfully Update priority level of id {internal_id} in {self.category} page","data":task_found["data"]}
