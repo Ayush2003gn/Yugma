@@ -118,9 +118,9 @@ def execute_command(token_return):
             return display_pending(category=page_name)
         
         elif action == "display-by-day":
-            day = flags.get("day")
-            month = flags.get("month")
-            year = flags.get("year")
+            day = date.get("day")
+            month = date.get("month")
+            year = date.get("year")
             if day is not None and month is not None and year is not None:
                 return display_by_day(day, month, year, category=page_name)
             else:
@@ -128,8 +128,8 @@ def execute_command(token_return):
                 return {"success": False, "message": "Day, month, or year flag missing in display-by-day command", "data": None}
             
         elif action == "display-by-months":
-            month = flags.get("month")
-            year = flags.get("year")
+            month = date.get("month")
+            year = date.get("year")
 
             if month is not None and year is not None:
                 return display_by_months(month, year, category=page_name)
@@ -138,8 +138,8 @@ def execute_command(token_return):
                 return {"success": False, "message": "Month or year flag missing in display-by-months command", "data": None}
         
         elif action == "display-by-week":
-            week = flags.get("week")
-            year = flags.get("year")
+            week = date.get("week")
+            year = date.get("year")
 
             if week is not None and year is not None:
                 return display_by_week(week, year, category=page_name)
@@ -148,7 +148,7 @@ def execute_command(token_return):
                 return {"success": False, "message": "Week or year flag missing in display-by-week command", "data": None}
        
         elif action == "display-by-year":
-            year = flags.get("year")
+            year = date.get("year")
 
             if year is not None:
                 return display_by_year(year, category=page_name)
