@@ -13,11 +13,12 @@ def decision_renderer(action, result):
             if "analysis" in action:
                 display_analysis(result["data"])
 
+            elif "help" in action:
+                display_help(result["data"])
+
             else:
                 display_task_list(result["data"])
         
-        elif action and "help" in action:
-            display_help(result["message"])
 
         else:
             display_message(result["message"])
