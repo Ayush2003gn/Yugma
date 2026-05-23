@@ -35,6 +35,14 @@ def json_to_py(path):
     except json.JSONDecodeError:
         logger.error("JSON is corrupted, resetting file", exc_info=True)
         return []
+    except FileNotFoundError:
+        logger.error("File not found, creating new file", exc_info=True)
+        with open(path, "w") as f:
+            json.dump([], f)
+        return []
+    except Exception as e:
+        logger.error(f"An unexpected error occurred: {str(e)}", exc_info=True)
+        return []
 def path_make(filename):
     return os.path.join(datafolder_Path,filename)
 
