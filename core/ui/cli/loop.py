@@ -14,7 +14,8 @@ def start_up_loop():
         try:
             command_input = input(f"{action.command_paths()} > ")
             logger.info(f"User input received: {command_input}")
-
+            if not command_input.strip():
+                continue
             cmd,arguments = cli_token.parse_command(command_input)
             logger.info(f"Tokenized command: {cmd}, Arguments: {arguments}")
 

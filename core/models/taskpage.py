@@ -21,7 +21,7 @@ class TaskPage:
         
     def category_finder(self,category):
         for page in self.taskpage:
-            if page.category == category:
+            if page.category.lower() == category.lower():
                 return {"success": True, "message":f"Page Category found: {category}", "data":page}
         return {"success": False, "message":f"Page Category not found: {category}", "data":None}
     
