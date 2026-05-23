@@ -8,7 +8,7 @@ def uniform_return(command, action, page_name=None, task_id=None, task_name=None
     if flags is None:
         flags = {}
     if date is None:
-        date = {"day": None, "month": None, "year": None}
+        date = {"day": None, "month": None, "year": None, "week": None}
     
     return {
         "command": command,
@@ -467,9 +467,9 @@ def cmd_display(argument):
 
         except ValueError:
             logger.warning("Invalid week or year value")
-            return uniform_return("display", "error-invalid-week-year", date={"day": None, "month": None, "year": None})
+            return uniform_return("display", "error-invalid-week-year", date={"week": None, "month": None, "year": None})
 
-        return uniform_return("display", "display-by-week", date={"day": week, "month": None, "year": year})
+        return uniform_return("display", "display-by-week", date={"week": week, "month": None, "year": year})
 
     # ---------------- DAY ----------------
     elif "--day" in argument:
