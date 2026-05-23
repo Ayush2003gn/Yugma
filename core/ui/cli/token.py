@@ -181,7 +181,7 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
             if priority and (priority.startswith("--") or priority.startswith("-")):
                 priority = "medium"
 
-            elif priority not in ["low", "medium", "high"]:
+            elif priority.lower() not in ["low", "medium", "high"]:
                 logger.warning("Invalid priority value provided for add command")
                 priority = "medium"
         
@@ -247,6 +247,19 @@ def cmd_priority(argument):
             logger.warning("Invalid priority value provided for priority command")
             return uniform_return("priority", "error-invalid-priority-value", flags={"priority": None, "status": False})
         
+        if "--c" in argument:
+            index = find_index(argument, "--c")
+            category = argument[index + 1] if index + 1 < len(argument) else None
+
+            if category and (category.startswith("--") or category.startswith("-")):
+                category = None
+
+            if category is None:
+                logger.warning("No category provided for priority command, using default page")
+                return uniform_return("priority", "set_priority", task_id=task_id, flags={"priority": priority, "status": False})
+            
+            return uniform_return("priority", "set_priority", task_id=task_id, page_name=category, flags={"priority": priority, "status": False})
+
         return uniform_return("priority", "set_priority", task_id=task_id, flags={"priority": priority, "status": False})
     
     
@@ -270,6 +283,17 @@ def cmd_mark_done(argument):
             logger.warning("No task ID provided for mark_done command")
             return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
         
+        if "--c" in argument:
+            index = find_index(argument, "--c")
+            category = argument[index + 1] if index + 1 < len(argument) else None
+
+            if category and (category.startswith("--") or category.startswith("-")):
+                category = None
+
+            if category is None:
+                logger.warning("No category provided for mark_done command, using default page")
+                return uniform_return("mark_done", "mark_done", task_id=task_id, flags={"priority": None, "status": True})
+
         return uniform_return("mark_done", "mark_done", task_id=task_id, flags={"priority": None, "status": True})
     
     return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
@@ -291,6 +315,17 @@ def cmd_mark_undone(argument):
             logger.warning("No task ID provided for mark_undone command")
             return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
         
+        if "--c" in argument:
+            index = find_index(argument, "--c")
+            category = argument[index + 1] if index + 1 < len(argument) else None
+
+            if category and (category.startswith("--") or category.startswith("-")):
+                category = None
+
+            if category is None:
+                logger.warning("No category provided for mark_undone command, using default page")
+                return uniform_return("mark_undone", "mark_undone", task_id=task_id, flags={"priority": None, "status": False})
+
         return uniform_return("mark_undone", "mark_undone", task_id=task_id, flags={"priority": None, "status": False})
     
     return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
@@ -341,6 +376,19 @@ def cmd_update(argument):
         elif "--mu" in argument:
             status = False
         
+        if "--c" in argument:
+            index = find_index(argument, "--c")
+            category = argument[index + 1] if index + 1 < len(argument) else None
+
+            if category and (category.startswith("--") or category.startswith("-")):
+                category = None
+
+            if category is None:
+                logger.warning("No category provided for update command, using default page")
+                return uniform_return("update", "update-task", task_id=task_id, task_name=new_name, flags={"priority": priority, "status": status})
+
+            return uniform_return("update", "update-task", task_id=task_id, task_name=new_name, page_name=category, flags={"priority": priority, "status": status})
+
         return uniform_return("update", "update-task", task_id=task_id, task_name=new_name, flags={"priority": priority, "status": status})
     
     return uniform_return("update", "error-no-task-id", flags={"priority": None, "status": False})

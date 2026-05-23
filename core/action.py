@@ -51,11 +51,25 @@ def execute_command(token_return):
         if action.startswith("error"):
             logger.error(f"Error in add command: {action}")
             return {"success": False, "message": f"Add command error: {action}", "data": None}
-        
+        newtask = add_task(task_name, category=page_name)
         if "status" in flags:
             logger.info(f"Adding task with status flag: {task_name}, Status: {flags['status']}")
-
-            return add_task(task_name, category=page_name)
+            if flags['status'].lower() == "done":
+                mark_done(newtask["data"].internal_id)
+        if "priority" in flags:
+            logger.info(f"Adding task with priority flag: {task_name}, Priority: {flags['priority']}")
+            if flags['priority'].lower() not in ["low", "medium", "high"]:
+                logger.error(f"Invalid priority level in add command: {flags['priority']}")
+                return {"success": False, "message": f"Invalid priority level in add command: {flags['priority']}", "data": None}
+            else:
+                priority = flags['priority'].lower()
+                if priority == "high":
+                    todo.high_priority_task(newtask["data"].internal_id)
+                elif priority == "medium":
+                    todo.medium_priority_task(newtask["data"].internal_id)
+                elif priority == "low":
+                    todo.low_priority_task(newtask["data"].internal_id)
+            return newtask
         return add_task(task_name, page_name)
 
     elif command == "remove":
@@ -80,7 +94,7 @@ def execute_command(token_return):
 
         if priority is not None:
 
-            return set_priority(task_id, priority)
+            return set_priority(task_id, priority, category=page_name)
         else:
             logger.error("Priority flag missing in set_priority command")
             return {"success": False, "message": "Priority flag missing in set_priority command", "data": None}
@@ -95,7 +109,7 @@ def execute_command(token_return):
             logger.error(f"Error in mark_done command: {action}")
             return {"success": False, "message": f"Mark done command error: {action}", "data": None}
         
-        return mark_done(task_id)
+        return mark_done(task_id, category=page_name)
     
     elif command == "mark_undone":
 
@@ -107,7 +121,7 @@ def execute_command(token_return):
             logger.error(f"Error in mark_undone command: {action}")
             return {"success": False, "message": f"Mark undone command error: {action}", "data": None}
         
-        return mark_undone(task_id)
+        return mark_undone(task_id, category=page_name)
     
     elif command == "update":
         if action is None:
@@ -221,33 +235,30 @@ def remove_task(task_id,category="*"):
     logger.info(f"Removing task: {task_id}")
     return todo.remove_task(task_id,category)
 
-def set_priority(task_id, priority):
-    logger.info(f"Setting priority for task: {task_id}, Priority: {priority}")
-    if priority.lower() not in ["low", "medium", "high","High"]:
+def set_priority(task_id, priority, category="*"):
+    logger.info(f"Setting priority for task: {task_id}, Priority: {priority}, Category: {category}")
+    if priority.lower() not in ["low", "medium", "high"]:
         logger.error(f"Invalid priority level: {priority}")
         return {"success": False, "message": f"Invalid priority level: {priority}", "data": None}
     else:
         if priority.lower() == "high":
-            priority = "High"
-            return todo.high_priority_task(task_id, priority)
+            return todo.high_priority_task(task_id, category)
         elif priority.lower() == "medium":
-            priority = "medium"
-            return todo.medium_priority_task(task_id, priority)
+            return todo.medium_priority_task(task_id, category)
         elif priority.lower() == "low":
-            priority = "Low"
-            return todo.low_priority_task(task_id, priority)
+            return todo.low_priority_task(task_id, category)
         else:
             logger.error(f"Invalid priority level: {priority}")
             return {"success": False, "message": f"Invalid priority level: {priority}", "data": None}
         
 
-def mark_done(id):
+def mark_done(id, category="*"):
     logger.info(f"Marking task as done: {id}")
-    return todo.mark_done(id)
+    return todo.mark_done(id, category=category)
 
-def mark_undone(id):
+def mark_undone(id, category="*"):
     logger.info(f"Marking task as undone: {id}")
-    return todo.mark_undone(id)
+    return todo.mark_undone(id, category=category)
 
 def update_task(id, task, category="*"):
     logger.info(f"Updating task: {id}, New Task: {task}, Category: {category}")
