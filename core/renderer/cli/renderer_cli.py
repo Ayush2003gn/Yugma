@@ -47,7 +47,7 @@ def display_task_list(taskpage):
 def display_analysis(message):
     print()
     for line in message:
-        print(f"[yellow]{line}[/yellow]")
+        print(f"[yellow]{line['data']}[/yellow]")
     print()
 
 def display_error(error_message):
