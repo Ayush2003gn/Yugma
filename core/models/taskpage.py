@@ -28,6 +28,8 @@ class TaskPage:
     def remove_page(self,category):
         page = self.category_finder(category)
         if page["success"] :
+            if self.default == page["data"]:
+                self.default = None
             self.taskpage.remove(page["data"])
             logger.info(f" Category : {category} is removed")
             return {"success": True, "message":f"Category : {category} is removed","data":None}
