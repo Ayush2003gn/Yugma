@@ -5,18 +5,21 @@ from dataclasses import dataclass, field
 logger = logging.getLogger(__name__)
 from typing import Any
 
-@dataclass
-class ValidationResult:
-    value: Any = None
-    is_valid: bool = False
-    used_default: bool = False
-    error: str | None = None
+
 @dataclass
 class ErrorData:
     error_boolean: bool = False
     error_message: str | None = None
     error_code: str | None = None
-
+    
+@dataclass
+class ValidationResult:
+    value: Any = None
+    is_valid: bool = False
+    used_default: bool = False
+    error: ErrorData = field(
+        default_factory=lambda: ErrorData(False, None, None)
+    )
 @dataclass
 class FlagsData:
     priority: str | None = None
@@ -58,40 +61,24 @@ class DateValidationResult:
         default_factory=lambda: ErrorData(False, None, None)
     )
 
-def safe_get_value(argument: list, flag: str) -> dict:
+def safe_get_value(argument: list, flag: str) -> ValidationResult:
 
     if flag not in argument:
-        return {
-    "value": None,
-    "is_valid": False,
-    "error": f"missing-{flag.lstrip('-')}"
-}
+        return ValidationResult(value=None, is_valid=False, used_default=False, error=f"missing-{flag.lstrip('-')}")
 
     index = argument.index(flag)
 
     if index + 1 >= len(argument):
-        return {
-    "value": None,
-    "is_valid": False,
-    "error": "missing-value"
-}
+        return ValidationResult(value=None, is_valid=False, used_default=False, error="missing-value")
 
     value = argument[index + 1]
 
     if value.startswith("-"):
-        return {
-    "value": None,
-    "is_valid": False,
-    "error": "missing-value"
-}
+        return ValidationResult(value=None, is_valid=False, used_default=False, error="missing-value")
 
-    return {
-    "value": value,
-    "is_valid": True,
-    "error": None
-}
+    return ValidationResult(value=value, is_valid=True, used_default=False, error=None)
 
-def safe_get_date(argument: list, date_type: str) -> dict:
+def safe_get_date(argument: list[str], date_type: str) -> DateValidationResult:
 
     if date_type == "--year":
         if date_type in argument:
@@ -183,80 +170,40 @@ def safe_get_date(argument: list, date_type: str) -> dict:
     )
 
 
-def validate_priority(priority):
+def validate_priority(priority) -> ValidationResult:
 
     if priority is None:
-        return {
-            "value": "medium",
-            "is_valid": True,
-            "used_default": True
-        }
+        return ValidationResult(value="medium", is_valid=True, used_default=True, error=None)
 
     priority = priority.lower()
 
     if priority not in ["low", "medium", "high"]:
-        return {
-            "value": "medium",
-            "is_valid": False,
-            "used_default": True
-        }
+        return ValidationResult(value="medium", is_valid=False, used_default=True, error=None)
 
-    return {
-        "value": priority,
-        "is_valid": True,
-        "used_default": False
-    }
+    return ValidationResult(value=priority, is_valid=True, used_default=False, error=None)
 
-def validate_status(status):
+def validate_status(status) -> ValidationResult:
 
     if status is None:
-        return {
-            "value": False,
-            "is_valid": True,
-            "used_default": True
-        }
+        return ValidationResult(value=False, is_valid=True, used_default=True, error=None)
 
     if status in ["--md", "--mark-done"]:
-        return {
-            "value": True,
-            "is_valid": True,
-            "used_default": False
-        }
+        return ValidationResult(value=True, is_valid=True, used_default=False, error=None)
 
     if status in ["--mu", "--mark-undone"]:
-        return {
-            "value": False,
-            "is_valid": True,
-            "used_default": False
-        }
+        return ValidationResult(value=False, is_valid=True, used_default=False, error=None)
 
-    return {
-        "value": False,
-        "is_valid": False,
-        "used_default": True
-    }
+    return ValidationResult(value=False, is_valid=False, used_default=True, error=None)
 
-def validate_default(default):
+def validate_default(default) -> ValidationResult:
 
     if default is None:
-        return {
-            "value": False,
-            "is_valid": True,
-            "used_default": True
-        }
+        return ValidationResult(value=False, is_valid=True, used_default=True, error=None)
 
     if default in ["--d", "--default"]:
-        return {
-            "value": True,
-            "is_valid": True,
-            "used_default": False
-        }
+        return ValidationResult(value=True, is_valid=True, used_default=False, error=None)
 
-    return {
-        "value": False,
-        "is_valid": False,
-        "used_default": True
-    }
+    return ValidationResult(value=False, is_valid=False, used_default=True, error=None)
 
 def parse_command(command):
     parts = shlex.split(command.strip())
@@ -351,11 +298,11 @@ def cmd_page(argument):
     if "add" in argument:
         page_name = safe_get_value(argument, "add")
         default_raw = safe_get_value(argument, "--default")
-        default = validate_default(default_raw["value"])
+        default = validate_default(default_raw.value)
         default_d_raw = safe_get_value(argument, "--d")
-        default_d = validate_default(default_d_raw["value"])
+        default_d = validate_default(default_d_raw.value)
 
-        if not page_name["is_valid"]:
+        if not page_name.is_valid:
             logger.warning("No page name provided for add command")
             return CommandResult(
                 command="page",
@@ -366,27 +313,27 @@ def cmd_page(argument):
                 )
             )
         
-        if default["value"] or default_d["value"]:
+        if default.value or default_d.value:
             return CommandResult(
                 command="page",
                 action="add",
-                page_name=page_name["value"],
-                flags=FlagsData(
-                    priority=None, 
-                    status=None, 
-                    default=default["value"]
-                )
+                page_name=page_name.value,
+                    flags=FlagsData(
+                        priority=None, 
+                        status=None, 
+                        default=default.value
+                    )
             )
         
         return CommandResult(
             command="page",
             action="add",
-            page_name=page_name["value"],
+            page_name=page_name.value,
         )
 
     if "remove" in argument:
         page_name = safe_get_value(argument, "remove")
-        if not page_name["is_valid"]:
+        if not page_name.is_valid:
             logger.warning("No page name provided for remove command")
             return CommandResult(
                 command="page",
@@ -399,12 +346,12 @@ def cmd_page(argument):
         return CommandResult(
             command="page",
             action="remove",
-            page_name=page_name["value"],
+            page_name=page_name.value,
         )
 
     if "set-default" in argument:
         page_name = safe_get_value(argument, "set-default")
-        if not page_name["is_valid"]:
+        if not page_name.is_valid:
             logger.warning("No page name provided for set-default command")
             return CommandResult(
                 command="page",
@@ -417,7 +364,7 @@ def cmd_page(argument):
         return CommandResult(
             command="page",
             action="set-default",
-            page_name=page_name["value"],
+            page_name=page_name.value,
             flags=FlagsData(
                 priority=None, 
                 status=None, 
@@ -441,7 +388,7 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
     page = safe_get_value(argument, "--c")
     priority_raw = safe_get_value(argument, "--p")
 
-    priority = validate_priority(priority_raw["value"])
+    priority = validate_priority(priority_raw.value)
     status_flag = None
 
     if "--md" in argument or "--mark-done" in argument:
@@ -452,7 +399,7 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
 
     status = validate_status(status_flag)
 
-    if not task["is_valid"]:
+    if not task.is_valid:
         logger.warning("No task name provided for add command")
         return CommandResult(
             command="add",
@@ -463,15 +410,15 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
                 )
         )
 
-    if "--c" in argument and not page["is_valid"]:
+    if "--c" in argument and not page.is_valid:
         logger.warning("No page name provided for add command, using default page")
         return CommandResult(
             command="add",
             action="add-task",
-            task_name=task["value"],
+            task_name=task.value,
             flags=FlagsData(
-                priority=priority["value"],
-                status=status["value"]
+                priority=priority.value,
+                status=status.value
             ),
             error=ErrorData(
                 error_boolean=True, 
@@ -480,21 +427,21 @@ def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" o
                 )
         )
 
-    if not page["is_valid"]:
+    if not page.is_valid:
         logger.info("No page name provided for add command, using default page")
         return CommandResult(
             command="add",
             action="add-task",
-            task_name=task["value"],
-            flags=FlagsData(priority=priority["value"], status=status["value"])
+            task_name=task.value,
+            flags=FlagsData(priority=priority.value, status=status.value)
         )
 
     return CommandResult(
         command="add",
         action="add-task",
-        page_name=page["value"],
-        task_name=task["value"],
-        flags=FlagsData(priority=priority["value"], status=status["value"])
+        page_name=page.value,
+        task_name=task.value,
+        flags=FlagsData(priority=priority.value, status=status.value)
     )
 
 def cmd_remove(argument):
@@ -510,10 +457,11 @@ def cmd_remove(argument):
             )
         ) 
     
+
     task_id = safe_get_value(argument, "-id")
     page = safe_get_value(argument, "--c")
 
-    if "--c" in argument and not page["is_valid"]:
+    if "--c" in argument and not page.is_valid:
         logger.warning("No page name provided for remove command")
         return CommandResult(
             command="remove",
@@ -524,7 +472,7 @@ def cmd_remove(argument):
             )
         )
     
-    if not task_id["is_valid"]:
+    if not task_id.is_valid:
         logger.warning("No task ID provided for remove command")
         return CommandResult(
             command="remove",
@@ -535,18 +483,18 @@ def cmd_remove(argument):
             )
         )
 
-    if page["is_valid"]:
+    if page.is_valid:
         return CommandResult(
             command="remove",
             action="remove-task",
-            task_id=task_id["value"],
-            page_name=page["value"]
+            task_id=task_id.value,
+            page_name=page.value
         )
 
     return CommandResult(
         command="remove",
         action="remove-task",
-        task_id=task_id["value"]
+        task_id=task_id.value
     )
 
 
@@ -566,10 +514,10 @@ def cmd_priority(argument):
     task_id = safe_get_value(argument, "-id")
     priority_raw = safe_get_value(argument, "--p")
 
-    priority = validate_priority(priority_raw["value"])
+    priority = validate_priority(priority_raw.value)
     page = safe_get_value(argument, "--c")
 
-    if "--c" in argument and not page["is_valid"]:
+    if "--c" in argument and not page.is_valid:
         logger.warning("No page name provided for priority command")
         return CommandResult(
             command="priority",
@@ -579,7 +527,7 @@ def cmd_priority(argument):
                 error_code="error-no-page-name"
             )
         )
-    if not priority["is_valid"]:
+    if not priority.is_valid:
         logger.warning("No priority provided for priority command")
         return CommandResult(
             command="priority",
@@ -590,7 +538,7 @@ def cmd_priority(argument):
             )
         )
     
-    if not task_id["is_valid"]:
+    if not task_id.is_valid:
         logger.warning("No task ID provided for priority command")
         return CommandResult(
             command="priority",
@@ -600,19 +548,19 @@ def cmd_priority(argument):
                 error_code="error-no-task-id"
             )
         )
-    if page["is_valid"]:
+    if page.is_valid:
         return CommandResult(
             command="priority",
             action="set-priority",
-            task_id=task_id["value"],
-            page_name=page["value"],
-            flags=FlagsData(priority=priority["value"])
+            task_id=task_id.value,
+            page_name=page.value,
+            flags=FlagsData(priority=priority.value)
         )
     return CommandResult(
         command="priority",
         action="set-priority",
-        task_id=task_id["value"],
-        flags=FlagsData(priority=priority["value"])
+        task_id=task_id.value,
+        flags=FlagsData(priority=priority.value)
     )
 
 def cmd_mark_done(argument):
@@ -630,7 +578,7 @@ def cmd_mark_done(argument):
     task_id = safe_get_value(argument, "-id")
     page = safe_get_value(argument, "--c")
 
-    if "--c" in argument and not page["is_valid"]:
+    if "--c" in argument and not page.is_valid:
         logger.warning("No page name provided for mark_done command")
         return CommandResult(
             command="mark_done",
@@ -640,7 +588,7 @@ def cmd_mark_done(argument):
                 error_code="error-no-page-name"
             )
         )
-    if not task_id["is_valid"]:
+    if not task_id.is_valid:
         logger.warning("No task ID provided for mark_done command")
         return CommandResult(
             command="mark_done",
@@ -650,17 +598,17 @@ def cmd_mark_done(argument):
                 error_code="error-no-task-id"
             )
         )
-    if page["is_valid"]:
+    if page.is_valid:
         return CommandResult(
             command="mark_done",
             action="mark-done",
-            task_id=task_id["value"],
-            page_name=page["value"]
+            task_id=task_id.value,
+            page_name=page.value
         )
     return CommandResult(
         command="mark_done",
         action="mark-done",
-        task_id=task_id["value"]
+        task_id=task_id.value
     )
 
 def cmd_mark_undone(argument):
@@ -678,7 +626,7 @@ def cmd_mark_undone(argument):
     task_id = safe_get_value(argument, "-id")
     page = safe_get_value(argument, "--c")
 
-    if "--c" in argument and not page["is_valid"]:
+    if "--c" in argument and not page.is_valid:
         logger.warning("No page name provided for mark_undone command")
         return CommandResult(
             command="mark_undone",
@@ -688,7 +636,7 @@ def cmd_mark_undone(argument):
                 error_code="error-no-page-name"
             )
         )
-    if not task_id["is_valid"]:
+    if not task_id.is_valid:
         logger.warning("No task ID provided for mark_undone command")
         return CommandResult(
             command="mark_undone",
@@ -698,17 +646,17 @@ def cmd_mark_undone(argument):
                 error_code="error-no-task-id"
             )
         )
-    if page["is_valid"]:
+    if page.is_valid:
         return CommandResult(
             command="mark_undone",
             action="mark-undone",
-            task_id=task_id["value"],
-            page_name=page["value"]
+            task_id=task_id.value,
+            page_name=page.value
         )
     return CommandResult(
         command="mark_undone",
         action="mark-undone",
-        task_id=task_id["value"]
+        task_id=task_id.value
     )
     
 def cmd_update(argument):
@@ -727,7 +675,7 @@ def cmd_update(argument):
     task_name = safe_get_value(argument, "-t")
     priority_raw = safe_get_value(argument, "--p")
 
-    priority = validate_priority(priority_raw["value"])
+    priority = validate_priority(priority_raw.value)
     page = safe_get_value(argument, "--c")
     status_flag = None
 
@@ -739,7 +687,7 @@ def cmd_update(argument):
 
     status = validate_status(status_flag)
 
-    if "--c" in argument and not page["is_valid"]:
+    if "--c" in argument and not page.is_valid:
         logger.warning("No page name provided for update command")
         return CommandResult(
             command="update",
@@ -749,7 +697,7 @@ def cmd_update(argument):
                 error_code="error-no-page-name"
             )
         )
-    if not task_id["is_valid"]:
+    if not task_id.is_valid:
         logger.warning("No task ID provided for update command")
         return CommandResult(
             command="update",
@@ -759,7 +707,7 @@ def cmd_update(argument):
                 error_code="error-no-task-id"
             )
         )
-    if not task_name["is_valid"]:
+    if not task_name.is_valid:
         logger.warning("No task name provided for update command")
         return CommandResult(
             command="update",
@@ -769,21 +717,21 @@ def cmd_update(argument):
                 error_code="error-no-task-name"
             )
         )
-    if page["is_valid"]:
+    if page.is_valid:
         return CommandResult(
             command="update",
             action="update",
-            task_id=task_id["value"],
-            task_name=task_name["value"],
-            page_name=page["value"],
-            flags=FlagsData(priority=priority["value"], status=status["value"])
+            task_id=task_id.value,
+            task_name=task_name.value,
+            page_name=page.value,
+            flags=FlagsData(priority=priority.value, status=status.value)
         )
     return CommandResult(
         command="update",
         action="update",
-        task_id=task_id["value"],
-        task_name=task_name["value"],
-        flags=FlagsData(priority=priority["value"], status=status["value"])
+        task_id=task_id.value,
+        task_name=task_name.value,
+        flags=FlagsData(priority=priority.value, status=status.value)
     )
 
 def cmd_display(argument):
@@ -794,10 +742,10 @@ def cmd_display(argument):
 
     # ---------------- CATEGORY ----------------
     page = safe_get_value(argument, "--c")
-    if "--c" in argument and page["is_valid"]:
-        category = page["value"]
+    if "--c" in argument and page.is_valid:
+        category = page.value
         
-    elif "--c" in argument and not page["is_valid"]:
+    elif "--c" in argument and not page.is_valid:
         logger.warning("No page name provided for display command")
         return CommandResult(
             command="display",
