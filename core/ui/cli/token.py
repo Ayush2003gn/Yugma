@@ -1,30 +1,262 @@
 import logging
 import shlex
+from dataclasses import dataclass, field
 
 logger = logging.getLogger(__name__)
+from typing import Any
 
-def uniform_return(command, action, page_name=None, task_id=None, task_name=None, date=None, flags=None):
-    """Helper function to create uniform return structure"""
-    if flags is None:
-        flags = {}
-    if date is None:
-        date = {"day": None, "month": None, "year": None, "week": None}
-    
+@dataclass
+class ValidationResult:
+    value: Any = None
+    is_valid: bool = False
+    used_default: bool = False
+    error: str | None = None
+@dataclass
+class ErrorData:
+    error_boolean: bool = False
+    error_message: str | None = None
+    error_code: str | None = None
+
+@dataclass
+class FlagsData:
+    priority: str | None = None
+    status: bool | None = None
+    default: bool | None = None
+
+@dataclass
+class DateData:
+    day: int | None = None
+    month: int | None = None
+    year: int | None =  None
+    week: int | None = None
+
+@dataclass
+class CommandResult:
+    command: str
+    action: str | None = None
+    page_name: str | None = None
+    task_id: str | None = None
+    task_name: str | None = None
+    date: DateData = field(
+        default_factory=lambda: DateData(None, None, None, None)
+    )
+    flags: FlagsData = field(
+        default_factory=lambda: FlagsData(None, None, None)
+    )
+    error: ErrorData = field(
+        default_factory=lambda: ErrorData(False, None, None)
+    )
+
+@dataclass
+class DateValidationResult:
+    is_valid: bool
+    day: int | None = None
+    month: int | None = None
+    year: int | None =  None
+    week: int | None = None
+    error: ErrorData = field(
+        default_factory=lambda: ErrorData(False, None, None)
+    )
+
+def safe_get_value(argument: list, flag: str) -> dict:
+
+    if flag not in argument:
+        return {
+    "value": None,
+    "is_valid": False,
+    "error": f"missing-{flag.lstrip('-')}"
+}
+
+    index = argument.index(flag)
+
+    if index + 1 >= len(argument):
+        return {
+    "value": None,
+    "is_valid": False,
+    "error": "missing-value"
+}
+
+    value = argument[index + 1]
+
+    if value.startswith("-"):
+        return {
+    "value": None,
+    "is_valid": False,
+    "error": "missing-value"
+}
+
     return {
-        "command": command,
-        "action": action,
-        "page_name": page_name,
-        "task_id": task_id,
-        "task_name": task_name,
-        "date": date,
-        "flags": flags
+    "value": value,
+    "is_valid": True,
+    "error": None
+}
+
+def safe_get_date(argument: list, date_type: str) -> dict:
+
+    if date_type == "--year":
+        if date_type in argument:
+            try:
+                year=int(argument[argument.index(date_type) + 1])
+            except (ValueError, IndexError):
+                return DateValidationResult(
+                    is_valid=False,
+                    error=ErrorData(
+                        error_boolean=True,
+                        error_message=f"invalid-{date_type.lstrip('-')}",
+                        error_code=f"error-invalid-{date_type.lstrip('-')}"
+                    )
+                )
+            return DateValidationResult(
+                is_valid=True,
+                year=year
+            )
+
+    if date_type == "--month":
+        if date_type in argument:
+            try:
+                month=int(argument[argument.index(date_type) + 1])
+                year=int(argument[argument.index(date_type) + 2])
+            except (ValueError, IndexError):
+                return DateValidationResult(
+                    is_valid=False,
+                    error=ErrorData(
+                        error_boolean=True,
+                        error_message=f"invalid-{date_type.lstrip('-')}",
+                        error_code=f"error-invalid-{date_type.lstrip('-')}"
+                    )
+                )
+            return DateValidationResult(
+                is_valid=True,
+                year=year,
+                month=month
+            )
+
+    if date_type == "--week":
+        if date_type in argument:
+            try:
+                week=int(argument[argument.index(date_type) + 1])
+                year=int(argument[argument.index(date_type) + 2])
+            except (ValueError, IndexError):
+                return DateValidationResult(
+                    is_valid=False,
+                    error=ErrorData(
+                        error_boolean=True,
+                        error_message=f"invalid-{date_type.lstrip('-')}",
+                        error_code=f"error-invalid-{date_type.lstrip('-')}"
+                    )
+                )
+            return DateValidationResult(
+                is_valid=True,
+                week=week,
+                year=year
+            )
+
+    if date_type == "--day":
+        if date_type in argument:
+            try:
+                day=int(argument[argument.index(date_type) + 1])
+                month=int(argument[argument.index(date_type) + 2])
+                year=int(argument[argument.index(date_type) + 3])
+            except (ValueError, IndexError):
+                return DateValidationResult(
+                    is_valid=False,
+                    error=ErrorData(
+                        error_boolean=True,
+                        error_message=f"invalid-{date_type.lstrip('-')}",
+                        error_code=f"error-invalid-{date_type.lstrip('-')}"
+                    )
+                )
+            return DateValidationResult(
+                is_valid=True,
+                day=day,
+                month=month,
+                year=year
+            )
+
+    return DateValidationResult(
+        is_valid=False,
+        error=ErrorData(
+            error_boolean=True,
+            error_message=f"missing-{date_type.lstrip('-')}",
+            error_code=f"error-missing-{date_type.lstrip('-')}"
+        )
+    )
+
+
+def validate_priority(priority):
+
+    if priority is None:
+        return {
+            "value": "medium",
+            "is_valid": True,
+            "used_default": True
+        }
+
+    priority = priority.lower()
+
+    if priority not in ["low", "medium", "high"]:
+        return {
+            "value": "medium",
+            "is_valid": False,
+            "used_default": True
+        }
+
+    return {
+        "value": priority,
+        "is_valid": True,
+        "used_default": False
     }
 
-def find_index(lst, value):
-    for i, item in enumerate(lst):
-        if item == value:
-            return i
-    return None
+def validate_status(status):
+
+    if status is None:
+        return {
+            "value": False,
+            "is_valid": True,
+            "used_default": True
+        }
+
+    if status in ["--md", "--mark-done"]:
+        return {
+            "value": True,
+            "is_valid": True,
+            "used_default": False
+        }
+
+    if status in ["--mu", "--mark-undone"]:
+        return {
+            "value": False,
+            "is_valid": True,
+            "used_default": False
+        }
+
+    return {
+        "value": False,
+        "is_valid": False,
+        "used_default": True
+    }
+
+def validate_default(default):
+
+    if default is None:
+        return {
+            "value": False,
+            "is_valid": True,
+            "used_default": True
+        }
+
+    if default in ["--d", "--default"]:
+        return {
+            "value": True,
+            "is_valid": True,
+            "used_default": False
+        }
+
+    return {
+        "value": False,
+        "is_valid": False,
+        "used_default": True
+    }
 
 def parse_command(command):
     parts = shlex.split(command.strip())
@@ -76,422 +308,615 @@ def command_handler(cmd, argument):
                     return cmd_help()
             
                 case "exit" | "bye":
-                    return uniform_return("exit", None, flags={"default": False})
-        
+                    return CommandResult(
+                        command=cmd,
+                        action="exit",
+                    )
+
                 case None | "":
                     logger.warning("No command from user")
-                    return uniform_return(None, "error-no-command", flags={"default": False})
-        
+                    return CommandResult(
+                        command="None",
+                        error=ErrorData(
+                            error_boolean=True, 
+                            error_message="No command provided by user", 
+                            error_code="error-no-command"
+                        )
+                    )
+
                 case _:
                     logger.error(f"Invalid command received: '{cmd}'")
-                    return uniform_return(cmd, "error-invalid-command", flags={"default": False})
-        
-                    
+                    return CommandResult(
+                        command="Invalid",
+                        error=ErrorData(
+                            error_boolean=True, 
+                            error_message=f"Invalid command received: '{cmd}'"
+                            , error_code="error-invalid-command"
+                            )
+                    )
+
 #-----------------page command handler-----------------            
 def cmd_page(argument):
     if len(argument) < 1:
         logger.warning("No page name provided by user")
-        return uniform_return("page", "error", flags={"default": False})
+        return CommandResult(
+            command="page",
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No page name provided by user", 
+                error_code="error-no-page-name"
+            )
+        )
     
     if "add" in argument:
-        index = find_index(argument, "add")
-        page_name = argument[index + 1] if index + 1 < len(argument) else None
+        page_name = safe_get_value(argument, "add")
+        default_raw = safe_get_value(argument, "--default")
+        default = validate_default(default_raw["value"])
+        default_d_raw = safe_get_value(argument, "--d")
+        default_d = validate_default(default_d_raw["value"])
 
-        if page_name and (page_name.startswith("--") or page_name.startswith("-")):
-            page_name = None
-
-        if page_name is None:
+        if not page_name["is_valid"]:
             logger.warning("No page name provided for add command")
-            return uniform_return("page", "error-no-page-name", flags={"default": False})
+            return CommandResult(
+                command="page",
+                error=ErrorData(
+                    error_boolean=True, 
+                    error_message="No page name provided for add command", 
+                    error_code="error-no-page-name"
+                )
+            )
         
-        if "--default" in argument:
-            return uniform_return("page", "add", page_name=page_name, flags={"default": True})
+        if default["value"] or default_d["value"]:
+            return CommandResult(
+                command="page",
+                action="add",
+                page_name=page_name["value"],
+                flags=FlagsData(
+                    priority=None, 
+                    status=None, 
+                    default=default["value"]
+                )
+            )
         
-        return uniform_return("page", "add", page_name=page_name, flags={"default": False})
-    
+        return CommandResult(
+            command="page",
+            action="add",
+            page_name=page_name["value"],
+        )
+
     if "remove" in argument:
-        index = find_index(argument, "remove")
-        page_name = argument[index + 1] if index + 1 < len(argument) else None
-
-        if page_name and (page_name.startswith("--") or page_name.startswith("-")):
-            page_name = None
-
-        if page_name is None:
+        page_name = safe_get_value(argument, "remove")
+        if not page_name["is_valid"]:
             logger.warning("No page name provided for remove command")
-            return uniform_return("page", "error-no-page-name", flags={"default": False})
-        
-        return uniform_return("page", "remove", page_name=page_name, flags={"default": False})
-    
+            return CommandResult(
+                command="page",
+                error=ErrorData(
+                    error_boolean=True,
+                    error_message="No page name provided for remove command",
+                    error_code="error-no-page-name"
+                )
+            )
+        return CommandResult(
+            command="page",
+            action="remove",
+            page_name=page_name["value"],
+        )
+
     if "set-default" in argument:
-        index = find_index(argument, "set-default")
-        page_name = argument[index + 1] if index + 1 < len(argument) else None
-
-        if page_name and (page_name.startswith("--") or page_name.startswith("-")):
-            page_name = None
-
-        if page_name is None:
+        page_name = safe_get_value(argument, "set-default")
+        if not page_name["is_valid"]:
             logger.warning("No page name provided for set-default command")
-            return uniform_return("page", "error-no-page-name", flags={"default": False})
-        
-        return uniform_return("page", "set-default", page_name=page_name, flags={"default": True})
-    
-        
+            return CommandResult(
+                command="page",
+                error=ErrorData(
+                    error_boolean=True,
+                    error_message="No page name provided for set-default command",
+                    error_code="error-no-page-name"
+                )
+            )
+        return CommandResult(
+            command="page",
+            action="set-default",
+            page_name=page_name["value"],
+            flags=FlagsData(
+                priority=None, 
+                status=None, 
+                default=True
+            ),
+        )
+
 #-----------------task in page command handler-----------------
 def cmd_add(argument):#i/p add -t "task name" (option --c "page category name" or use default page)
     if len(argument) < 1:
         logger.warning("No task name provided by user")
-        return uniform_return("add", "error-no-task-name", flags={"priority": None, "status": False})
+        return CommandResult(
+            command="add",
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No task name provided for add command", 
+                error_code="error-no-task-name")
+        )
 
-    if "-t" in argument:
-        
-        index = find_index(argument, "-t")
-        task_name = argument[index + 1] if index + 1 < len(argument) else None
+    task = safe_get_value(argument, "-t")
+    page = safe_get_value(argument, "--c")
+    priority_raw = safe_get_value(argument, "--p")
 
-        if task_name and (task_name.startswith("--") or task_name.startswith("-")):
-            task_name = None
+    priority = validate_priority(priority_raw["value"])
+    status_flag = None
 
-        if task_name is None:
-            logger.warning("No task name provided for add command")
-            return uniform_return("add", "error-no-task-name", flags={"priority": None, "status": False})
+    if "--md" in argument or "--mark-done" in argument:
+        status_flag = "--md"
 
-        action = "add-task"
-        page_name = None
+    elif "--mu" in argument or "--mark-undone" in argument:
+        status_flag = "--mu"
 
-        if "--c" in argument:
-            index = find_index(argument, "--c")
-            page_name = argument[index + 1] if index + 1 < len(argument) else None
+    status = validate_status(status_flag)
 
-            if page_name and (page_name.startswith("--") or page_name.startswith("-")):
-                page_name = None
-                logger.warning("No page name provided for add command")
-                return uniform_return("add", "error-no-page-name", flags={"priority": None, "status": False})
+    if not task["is_valid"]:
+        logger.warning("No task name provided for add command")
+        return CommandResult(
+            command="add",
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No task name provided for add command", 
+                error_code="error-no-task-name"
+                )
+        )
 
-            if page_name is None:
-                logger.warning("No page name provided for add command, using default page")
+    if "--c" in argument and not page["is_valid"]:
+        logger.warning("No page name provided for add command, using default page")
+        return CommandResult(
+            command="add",
+            action="add-task",
+            task_name=task["value"],
+            flags=FlagsData(
+                priority=priority["value"],
+                status=status["value"]
+            ),
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No page name provided for add command, using default page", 
+                error_code="error-no-page-name"
+                )
+        )
 
-        else:
-            logger.info("No page name provided for add command, using default page")
+    if not page["is_valid"]:
+        logger.info("No page name provided for add command, using default page")
+        return CommandResult(
+            command="add",
+            action="add-task",
+            task_name=task["value"],
+            flags=FlagsData(priority=priority["value"], status=status["value"])
+        )
 
-        priority = None
-
-        if "--p" in argument:
-            index = find_index(argument, "--p")
-            priority = argument[index + 1] if index + 1 < len(argument) else None
-
-            if priority and (priority.startswith("--") or priority.startswith("-")):
-                priority = "medium"
-
-            elif priority.lower() not in ["low", "medium", "high"]:
-                logger.warning("Invalid priority value provided for add command")
-                priority = "medium"
-        
-        status = False
-
-        if "--md" in argument:
-            status = True
-        
-        return uniform_return("add", action, page_name=page_name, task_name=task_name, flags={"priority": priority, "status": status})
-    
-    return uniform_return("add", None, flags={"priority": None, "status": False})
+    return CommandResult(
+        command="add",
+        action="add-task",
+        page_name=page["value"],
+        task_name=task["value"],
+        flags=FlagsData(priority=priority["value"], status=status["value"])
+    )
 
 def cmd_remove(argument):
 
     if len(argument) < 1:
         logger.warning("No task name provided by user")
-        return uniform_return("remove", "error-no-task-id", flags={"priority": None, "status": False})
+        return CommandResult(
+            command="remove",
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No task name provided for remove command", 
+                error_code="error-no-task-name"
+            )
+        ) 
     
-    if "-id" in argument:
+    task_id = safe_get_value(argument, "-id")
+    page = safe_get_value(argument, "--c")
 
-        index = find_index(argument, "-id")
-        task_id = argument[index + 1] if index + 1 < len(argument) else None
-
-        if task_id and (task_id.startswith("--") or task_id.startswith("-")):
-            task_id = None
-
-        if task_id is None:
-            logger.warning("No task ID provided for remove command")
-            return uniform_return("remove", "error-no-task-id", flags={"priority": None, "status": False})
-        
-        return uniform_return("remove", "remove-task", task_id=task_id, flags={"priority": None, "status": False})
+    if "--c" in argument and not page["is_valid"]:
+        logger.warning("No page name provided for remove command")
+        return CommandResult(
+            command="remove",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No page name provided for remove command",
+                error_code="error-no-page-name"
+            )
+        )
     
-    return uniform_return("remove", "error-no-task-id", flags={"priority": None, "status": False})
+    if not task_id["is_valid"]:
+        logger.warning("No task ID provided for remove command")
+        return CommandResult(
+            command="remove",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No task ID provided for remove command",
+                error_code="error-no-task-id"
+            )
+        )
+
+    if page["is_valid"]:
+        return CommandResult(
+            command="remove",
+            action="remove-task",
+            task_id=task_id["value"],
+            page_name=page["value"]
+        )
+
+    return CommandResult(
+        command="remove",
+        action="remove-task",
+        task_id=task_id["value"]
+    )
+
 
 def cmd_priority(argument):
 
     if len(argument) < 1:
         logger.warning("No task name provided by user")
-        return uniform_return("priority", "error-no-task-id", flags={"priority": None, "status": False})
+        return CommandResult(
+            command="priority",
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No task name provided for priority command", 
+                error_code="error-no-task-name"
+            )
+        )
+
+    task_id = safe_get_value(argument, "-id")
+    priority_raw = safe_get_value(argument, "--p")
+
+    priority = validate_priority(priority_raw["value"])
+    page = safe_get_value(argument, "--c")
+
+    if "--c" in argument and not page["is_valid"]:
+        logger.warning("No page name provided for priority command")
+        return CommandResult(
+            command="priority",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No page name provided for priority command",
+                error_code="error-no-page-name"
+            )
+        )
+    if not priority["is_valid"]:
+        logger.warning("No priority provided for priority command")
+        return CommandResult(
+            command="priority",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No priority provided for priority command",
+                error_code="error-no-priority"
+            )
+        )
     
-    if "-id" in argument and "--p" in argument:
-        index_id = find_index(argument, "-id")
-        task_id = argument[index_id + 1] if index_id + 1 < len(argument) else None
-
-        if task_id and (task_id.startswith("--") or task_id.startswith("-")):
-            task_id = None
-
-        if task_id is None:
-            logger.warning("No task ID provided for priority command")
-            return uniform_return("priority", "error-no-task-id", flags={"priority": None, "status": False})
-        
-        index_p = find_index(argument, "--p")
-        priority = argument[index_p + 1] if index_p + 1 < len(argument) else None
-
-        if priority and (priority.startswith("--") or priority.startswith("-")):
-            priority = None
-
-        if priority is None:
-            logger.warning("No priority value provided for priority command")
-            return uniform_return("priority", "error-no-priority-value", flags={"priority": None, "status": False})
-        
-        if priority.lower() not in ["low", "medium", "high"]:
-            logger.warning("Invalid priority value provided for priority command")
-            return uniform_return("priority", "error-invalid-priority-value", flags={"priority": None, "status": False})
-        
-        if "--c" in argument:
-            index = find_index(argument, "--c")
-            category = argument[index + 1] if index + 1 < len(argument) else None
-
-            if category and (category.startswith("--") or category.startswith("-")):
-                category = None
-
-            if category is None:
-                logger.warning("No category provided for priority command, using default page")
-                return uniform_return("priority", "set_priority", task_id=task_id, flags={"priority": priority, "status": False})
-            
-            return uniform_return("priority", "set_priority", task_id=task_id, page_name=category, flags={"priority": priority, "status": False})
-
-        return uniform_return("priority", "set_priority", task_id=task_id, flags={"priority": priority, "status": False})
-    
-    
-    return uniform_return("priority", "error-no-task-id", flags={"priority": None, "status": False})
-
+    if not task_id["is_valid"]:
+        logger.warning("No task ID provided for priority command")
+        return CommandResult(
+            command="priority",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No task ID provided for priority command",
+                error_code="error-no-task-id"
+            )
+        )
+    if page["is_valid"]:
+        return CommandResult(
+            command="priority",
+            action="set-priority",
+            task_id=task_id["value"],
+            page_name=page["value"],
+            flags=FlagsData(priority=priority["value"])
+        )
+    return CommandResult(
+        command="priority",
+        action="set-priority",
+        task_id=task_id["value"],
+        flags=FlagsData(priority=priority["value"])
+    )
 
 def cmd_mark_done(argument):
 
     if len(argument) < 1:
         logger.warning("No task name provided by user")
-        return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
-    
-    if "-id" in argument:
-        index = find_index(argument, "-id")
-        task_id = argument[index + 1] if index + 1 < len(argument) else None
+        return CommandResult(
+            command="mark_done",
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No task name provided for mark_done command", 
+                error_code="error-no-task-name"
+            )
+        )
+    task_id = safe_get_value(argument, "-id")
+    page = safe_get_value(argument, "--c")
 
-        if task_id and (task_id.startswith("--") or task_id.startswith("-")):
-            task_id = None
-
-        if task_id is None:
-            logger.warning("No task ID provided for mark_done command")
-            return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
-        
-        if "--c" in argument:
-            index = find_index(argument, "--c")
-            category = argument[index + 1] if index + 1 < len(argument) else None
-
-            if category and (category.startswith("--") or category.startswith("-")):
-                category = None
-
-            if category is None:
-                logger.warning("No category provided for mark_done command, using default page")
-                return uniform_return("mark_done", "mark_done", task_id=task_id, flags={"priority": None, "status": True})
-
-        return uniform_return("mark_done", "mark_done", task_id=task_id, flags={"priority": None, "status": True})
-    
-    return uniform_return("mark_done", "error-no-task-id", flags={"priority": None, "status": False})
+    if "--c" in argument and not page["is_valid"]:
+        logger.warning("No page name provided for mark_done command")
+        return CommandResult(
+            command="mark_done",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No page name provided for mark_done command",
+                error_code="error-no-page-name"
+            )
+        )
+    if not task_id["is_valid"]:
+        logger.warning("No task ID provided for mark_done command")
+        return CommandResult(
+            command="mark_done",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No task ID provided for mark_done command",
+                error_code="error-no-task-id"
+            )
+        )
+    if page["is_valid"]:
+        return CommandResult(
+            command="mark_done",
+            action="mark-done",
+            task_id=task_id["value"],
+            page_name=page["value"]
+        )
+    return CommandResult(
+        command="mark_done",
+        action="mark-done",
+        task_id=task_id["value"]
+    )
 
 def cmd_mark_undone(argument):
 
     if len(argument) < 1:
         logger.warning("No task name provided by user")
-        return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
+        return CommandResult(
+            command="mark_undone",
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No task name provided for mark_undone command", 
+                error_code="error-no-task-name"
+            )
+        )
+    task_id = safe_get_value(argument, "-id")
+    page = safe_get_value(argument, "--c")
+
+    if "--c" in argument and not page["is_valid"]:
+        logger.warning("No page name provided for mark_undone command")
+        return CommandResult(
+            command="mark_undone",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No page name provided for mark_undone command",
+                error_code="error-no-page-name"
+            )
+        )
+    if not task_id["is_valid"]:
+        logger.warning("No task ID provided for mark_undone command")
+        return CommandResult(
+            command="mark_undone",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No task ID provided for mark_undone command",
+                error_code="error-no-task-id"
+            )
+        )
+    if page["is_valid"]:
+        return CommandResult(
+            command="mark_undone",
+            action="mark-undone",
+            task_id=task_id["value"],
+            page_name=page["value"]
+        )
+    return CommandResult(
+        command="mark_undone",
+        action="mark-undone",
+        task_id=task_id["value"]
+    )
     
-    if "-id" in argument:
-        index = find_index(argument, "-id")
-        task_id = argument[index + 1] if index + 1 < len(argument) else None
-
-        if task_id and (task_id.startswith("--") or task_id.startswith("-")):
-            task_id = None
-
-        if task_id is None:
-            logger.warning("No task ID provided for mark_undone command")
-            return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
-        
-        if "--c" in argument:
-            index = find_index(argument, "--c")
-            category = argument[index + 1] if index + 1 < len(argument) else None
-
-            if category and (category.startswith("--") or category.startswith("-")):
-                category = None
-
-            if category is None:
-                logger.warning("No category provided for mark_undone command, using default page")
-                return uniform_return("mark_undone", "mark_undone", task_id=task_id, flags={"priority": None, "status": False})
-
-        return uniform_return("mark_undone", "mark_undone", task_id=task_id, flags={"priority": None, "status": False})
-    
-    return uniform_return("mark_undone", "error-no-task-id", flags={"priority": None, "status": False})
-
 def cmd_update(argument):
 
     if len(argument) < 1:
         logger.warning("No task name provided by user")
-        return uniform_return("update", "error-no-task-id", flags={"priority": None, "status": False})
-    
-    if "-id" in argument:
-        index = find_index(argument, "-id")
-        task_id = argument[index + 1] if index + 1 < len(argument) else None
+        return CommandResult(
+            command="update",
+            error=ErrorData(
+                error_boolean=True, 
+                error_message="No task name provided for update command", 
+                error_code="error-no-task-name"
+            )
+        )
+    task_id = safe_get_value(argument, "-id")
+    task_name = safe_get_value(argument, "-t")
+    priority_raw = safe_get_value(argument, "--p")
 
-        if task_id and (task_id.startswith("--") or task_id.startswith("-")):
-            task_id = None
+    priority = validate_priority(priority_raw["value"])
+    page = safe_get_value(argument, "--c")
+    status_flag = None
 
-        if task_id is None:
-            logger.warning("No task ID provided for update command")
-            return uniform_return("update", "error-no-task-id", flags={"priority": None, "status": False})
-        
-        new_name = None
-        if "-t" in argument:
-            index = find_index(argument, "-t")
-            new_name = argument[index + 1] if index + 1 < len(argument) else None
+    if "--md" in argument or "--mark-done" in argument:
+        status_flag = "--md"
 
-            if new_name and (new_name.startswith("--") or new_name.startswith("-")):
-                new_name = None
+    elif "--mu" in argument or "--mark-undone" in argument:
+        status_flag = "--mu"
 
-        priority = None
+    status = validate_status(status_flag)
 
-        if "--p" in argument:
-            index = find_index(argument, "--p")
-            priority = argument[index + 1] if index + 1 < len(argument) else None
-
-            if priority and (priority.startswith("--") or priority.startswith("-")):
-                priority = "medium"
-                
-            elif priority.lower() not in ["low", "medium", "high"]:
-                logger.warning("Invalid priority value provided for update command")
-                priority = "medium"
-        
-        status = None
-
-        if "--md" in argument:
-            status = True
-
-        elif "--mu" in argument:
-            status = False
-        
-        if "--c" in argument:
-            index = find_index(argument, "--c")
-            category = argument[index + 1] if index + 1 < len(argument) else None
-
-            if category and (category.startswith("--") or category.startswith("-")):
-                category = None
-
-            if category is None:
-                logger.warning("No category provided for update command, using default page")
-                return uniform_return("update", "update-task", task_id=task_id, task_name=new_name, flags={"priority": priority, "status": status})
-
-            return uniform_return("update", "update-task", task_id=task_id, task_name=new_name, page_name=category, flags={"priority": priority, "status": status})
-
-        return uniform_return("update", "update-task", task_id=task_id, task_name=new_name, flags={"priority": priority, "status": status})
-    
-    return uniform_return("update", "error-no-task-id", flags={"priority": None, "status": False})
+    if "--c" in argument and not page["is_valid"]:
+        logger.warning("No page name provided for update command")
+        return CommandResult(
+            command="update",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No page name provided for update command",
+                error_code="error-no-page-name"
+            )
+        )
+    if not task_id["is_valid"]:
+        logger.warning("No task ID provided for update command")
+        return CommandResult(
+            command="update",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No task ID provided for update command",
+                error_code="error-no-task-id"
+            )
+        )
+    if not task_name["is_valid"]:
+        logger.warning("No task name provided for update command")
+        return CommandResult(
+            command="update",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No task name provided for update command",
+                error_code="error-no-task-name"
+            )
+        )
+    if page["is_valid"]:
+        return CommandResult(
+            command="update",
+            action="update",
+            task_id=task_id["value"],
+            task_name=task_name["value"],
+            page_name=page["value"],
+            flags=FlagsData(priority=priority["value"], status=status["value"])
+        )
+    return CommandResult(
+        command="update",
+        action="update",
+        task_id=task_id["value"],
+        task_name=task_name["value"],
+        flags=FlagsData(priority=priority["value"], status=status["value"])
+    )
 
 def cmd_display(argument):
-    
-    # ---------------- DEFAULT ----------------
-    if not argument:
-        logger.info("Displaying all tasks")
-        return uniform_return("display", "display-all", flags={"default": False})
 
+    
+  
     category = "*"
 
     # ---------------- CATEGORY ----------------
-    if "--c" in argument:
-        index = find_index(argument, "--c")
-
-        if index + 1 < len(argument):
-            category = argument[index + 1]
-
+    page = safe_get_value(argument, "--c")
+    if "--c" in argument and page["is_valid"]:
+        category = page["value"]
+        
+    elif "--c" in argument and not page["is_valid"]:
+        logger.warning("No page name provided for display command")
+        return CommandResult(
+            command="display",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No page name provided for display command",
+                error_code="error-no-page-name"
+            )
+        )
     # ---------------- ALL TASKS ----------------
-    if "--all" in argument:
+    if not argument:
+        logger.info("Displaying all tasks")
+        return CommandResult(
+            command="display",
+            action="display-all",
+            page_name=category
+        )
+    
+    elif "--all" in argument:
         logger.info(f"Displaying all tasks in category: {category}")
-        return uniform_return("display", "display-all", page_name=category, flags={"default": False})
+        return CommandResult(
+            command="display",
+            action="display-all",
+            page_name=category
+        )
 
     # ---------------- ANALYSIS ----------------
     elif "--analysis" in argument or "--A" in argument:
         logger.info("Displaying analysis")
-        return uniform_return("display", "display-analysis", flags={"default": False})
-
+        return CommandResult(
+            command="display",
+            action="display-analysis"
+        )
+    
     # ---------------- YEAR ----------------
     elif "--year" in argument:
-        index = find_index(argument, "--year")
-
-        if index + 1 >= len(argument):
-            logger.warning("Year missing")
-            return uniform_return("display", "error-year-missing", date={"day": None, "month": None, "year": None})
-        try:
-            year = int(argument[index + 1])
-
-        except ValueError:
-            logger.warning("Invalid year value")
-            return uniform_return("display", "error-invalid-year", date={"day": None, "month": None, "year": None})
-
-        return uniform_return("display", "display-by-year", date={"day": None, "month": None, "year": year})
-
+         date_val = safe_get_date(argument, "--year")
+         if date_val.is_valid:
+            return CommandResult(
+                command="display",
+                action="display-by-year",
+                page_name=category,
+                date=DateData(year=date_val.year)
+            )
+         return CommandResult(
+            command="display",
+            error=ErrorData(
+                error_boolean=True,
+                error_message=date_val.error.error_message,
+                error_code=date_val.error.error_code
+            )
+         )
     # ---------------- MONTH ----------------
     elif "--month" in argument:
-        index = find_index(argument, "--month")
-
-        if index + 2 >= len(argument):
-            logger.warning("Month or Year missing")
-            return uniform_return("display", "error-month-year-missing", date={"day": None, "month": None, "year": None})
+        date_val = safe_get_date(argument, "--month")
+        if date_val.is_valid:
+            return CommandResult(
+                command="display",
+                action="display-by-month",
+                page_name=category,
+                date=DateData(month=date_val.month, year=date_val.year)
+            )
+        return CommandResult(
+            command="display",
+            error=ErrorData(
+                error_boolean=True,
+                error_message=date_val.error.error_message,
+                error_code=date_val.error.error_code
+            )
+         )
         
-        try:
-            month = argument[index + 1]
-            year = int(argument[index + 2])
-
-        except ValueError:
-            logger.warning("Invalid month or year value")
-            return uniform_return("display", "error-invalid-month-year", date={"day": None, "month": None, "year": None})
-
-        return uniform_return("display", "display-by-months", date={"day": None, "month": month, "year": year})
-
     # ---------------- WEEK ----------------
     elif "--week" in argument:
-        index = find_index(argument, "--week")
-
-        if index + 2 >= len(argument):
-            logger.warning("Week or Year missing")
-            return uniform_return("display", "error-week-year-missing", date={"day": None, "month": None, "year": None})
-        
-        try:
-            week = int(argument[index + 1])
-            year = int(argument[index + 2])
-
-        except ValueError:
-            logger.warning("Invalid week or year value")
-            return uniform_return("display", "error-invalid-week-year", date={"week": None, "month": None, "year": None})
-
-        return uniform_return("display", "display-by-week", date={"week": week, "month": None, "year": year})
-
+        date_val = safe_get_date(argument, "--week")
+        if date_val.is_valid:
+            return CommandResult(
+                command="display",
+                action="display-by-week",
+                page_name=category,
+                date=DateData(week=date_val.week, year=date_val.year)
+            )
+        return CommandResult(
+            command="display",
+            error=ErrorData(
+                error_boolean=True,
+                error_message=date_val.error.error_message,
+                error_code=date_val.error.error_code
+            )
+         )
     # ---------------- DAY ----------------
     elif "--day" in argument:
-        index = find_index(argument, "--day")
-
-        if index + 3 >= len(argument):
-            logger.warning("Day Month Year missing")
-            return uniform_return("display", "error-day-month-year-missing", date={"day": None, "month": None, "year": None})
-        try:
-            day = int(argument[index + 1])
-            month = int(argument[index + 2])
-            year = int(argument[index + 3])
-            
-        except ValueError:
-            logger.warning("Invalid day, month, or year value")
-            return uniform_return("display", "error-invalid-day-month-year", date={"day": None, "month": None, "year": None})
-
-        return uniform_return("display", "display-by-day", date={"day": day, "month": month, "year": year})
-
+        date_val = safe_get_date(argument, "--day")
+        if date_val.is_valid:
+            return CommandResult(
+                command="display",
+                page_name=category,
+                action="display-by-day",
+                date=DateData(day=date_val.day, month=date_val.month, year=date_val.year)
+            )
+        return CommandResult(
+            command="display",
+            error=ErrorData(
+                error_boolean=True,
+                error_message=date_val.error.error_message,
+                error_code=date_val.error.error_code
+            )
+         )
     else:
-        logger.error("Unknown display command")
-        return uniform_return("display", "error-unknown-command", date={"day": None, "month": None, "year": None})
-
+        logger.warning("No date provided for display command")
+        return CommandResult(
+            command="display",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="No date provided for display command",
+                error_code="error-no-date"
+            )
+        )
 def cmd_help():
-    return uniform_return("help", "display-help", flags={"default": False})
+    return CommandResult(
+        command="help",
+        action="help"
+    )
