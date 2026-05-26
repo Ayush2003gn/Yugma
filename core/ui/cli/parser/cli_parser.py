@@ -19,7 +19,7 @@ def parse_command(command):
     cmd = parts[0].lower()
 
     argument = parts[1:]
-    return cmd, argument
+    return command_handler(cmd, argument)
 
 def command_handler(cmd, argument):
     match cmd:
