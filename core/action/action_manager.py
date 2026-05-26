@@ -1,8 +1,16 @@
 from core.models.taskpage import TaskPage
 import logging
-import core.action.handle_page_command as handle_page_command
-import core.action.handle_add_command as handle_add_command
-import core.action.handle_update_command as handle_update_command
+from core.action import (
+    page_action,
+    add_action,
+    update_action,
+    remove_action,
+    priority_action,
+    mark_done_action,
+    mark_undone_action,
+    display_action,
+    storage_action
+)
 logger = logging.getLogger(__name__)
 
 todo = TaskPage()
@@ -23,11 +31,11 @@ def decision_action(token_return, todo):
         return {"success": False, "message": "No token return received", "data": None}
     
     if command == "page":
-        return handle_page_command(action, page_name)
+        pass
     elif command == "add":
-        return handle_add_command(action, task_name, date, flags)
+        pass
     elif command == "update":
-        return handle_update_command(action, task_id, task_name, date, flags)
+        pass
     elif command == "remove":
         pass
     elif command == "priority":
