@@ -1,6 +1,6 @@
-import core.services.storage.path_manager as pathmanager
-import core.services.storage.json_storage as jsonstorage
-import core.services.storage.recovery as recovery
+import core.storage.path_manager as pathmanager
+import core.storage.json_storage as jsonstorage
+import core.storage.recovery as recovery
 
 def load_page(page_name):
     pass
