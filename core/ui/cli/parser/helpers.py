@@ -147,7 +147,7 @@ def validate_priority(priority) -> ValidationResult:
     if priority not in ["low", "medium", "high"]:
         return ValidationResult(value="medium", is_valid=False, used_default=True)
 
-    return ValidationResult(value=priority, is_valid=True, used_default=False)
+    return ValidationResult(value=priority.lower(), is_valid=True, used_default=False)
 
 def validate_status(status) -> ValidationResult:
 
