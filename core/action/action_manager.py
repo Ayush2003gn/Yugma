@@ -13,22 +13,10 @@ from core.action import (
 )
 logger = logging.getLogger(__name__)
 
-todo = TaskPage()
+task_app = TaskPage()
 
-def decision_action(token_return, todo):
-    if token_return and isinstance(token_return, dict):
-        command = token_return.get("command")
-        action = token_return.get("action")
-        page_name = token_return.get("page_name")
-        task_id = token_return.get("task_id")
-        task_name = token_return.get("task_name")
-        date = token_return.get("date")
-        flags = token_return.get("flags")
-        logger.info(f"Token return received: Command: {command}, Action: {action}, Page Name: {page_name}, Task ID: {task_id}, Task Name: {task_name}, Date: {date}, Flags: {flags}")
-    
-    else:
-        logger.warning("No token return received")
-        return {"success": False, "message": "No token return received", "data": None}
+def decision_action(token_return):
+    command = token_return.command
     
     if command == "page":
         pass
