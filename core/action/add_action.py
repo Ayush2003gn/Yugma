@@ -1,5 +1,5 @@
 import logging
-from core.contracts.action_result import ActionResult
+from core.contracts.operation_result import OperationResult
 from core.contracts.error_data import ErrorData
 logger = logging.getLogger(__name__)
 
