@@ -39,10 +39,17 @@ class Task:
     #file representation
 
     def to_dict(self):
-        return {"iid" : self.iid, "Task" : self.task, "Done" : self.done, "Date Created":self.created_date.isoformat(), "Date Modified":self.modified_date.isoformat(), "Priority":self.priority}
+        return {
+            "iid" : self.iid, 
+            "Task" : self.task, 
+            "Done" : self.done,
+            "Date Created":self.created_date.isoformat(), 
+            "Date Modified":self.modified_date.isoformat(), 
+            "Priority":self.priority
+        }
     
     # display of task
 
     def __str__(self):
         is_done = "√" if self.done else "x"
-        return f"{self.iid} |-|-| {self.uid} |-| {is_done} | {self.task} | {self.priority}"
+        return f"{self.iid} ||| {self.uid} || {is_done} | {self.task} | {self.priority}"
