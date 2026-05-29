@@ -70,7 +70,7 @@ class TaskList:
             
         return OperationResult(
             success = False,
-            message = "Can't able to find internal task id {iid}",
+            message = None,
             data = None,
             error=ErrorData(
                 error_boolean=True,
@@ -91,7 +91,7 @@ class TaskList:
             
         return OperationResult(
             success = False,
-            message = "Can't able to find internal task id {uid}",
+            message = None,
             data = None,
             error=ErrorData(
                 error_boolean=True,
@@ -119,7 +119,6 @@ class TaskList:
          
         return OperationResult(
             success = False,
-            message = f"{self.category} page: Task ID not found: {iid} ",
             data = None,
             error=ErrorData(
                 error_boolean=True,
@@ -147,7 +146,6 @@ class TaskList:
         logger.warning(f"{self.category} page: Task ID not found: {iid}")
         return OperationResult(
             success = False,
-            message = f"{self.category} page: Task ID not found: {iid}",
             data = None,
             error=ErrorData(
                 error_boolean=True,
@@ -174,7 +172,6 @@ class TaskList:
         logger.warning(f"{self.category} page: Task ID not found: {iid} ")
         return OperationResult(
             success = False,
-            message = f"Id not found in {self.category} page",
             data = None,
             error=ErrorData(
                 error_boolean=True,
@@ -197,7 +194,6 @@ class TaskList:
         logger.warning(f"{self.category} page: Task ID not found: {iid} ")
         return OperationResult(
             success = False,
-            message = f"Id not found in {self.category} page",
             data = None,
             error=ErrorData(
                 error_boolean=True,
@@ -219,7 +215,6 @@ class TaskList:
         logger.warning(f"{self.category} page: Task ID not found: {iid} ")
         return OperationResult(
             success = False,
-            message = f"Id not found in {self.category} page",
             data = None,
             error=ErrorData(
                 error_boolean=True,
@@ -243,7 +238,6 @@ class TaskList:
         logger.warning(f"{self.category} page: Task ID not found: {iid} ")
         return OperationResult(
             success = False,
-            message = f"Id not found in {self.category} page",
             data = None,
             error=ErrorData(
                 error_boolean=True,
@@ -267,7 +261,6 @@ class TaskList:
         logger.warning(f"{self.category} page: Task ID not found: {iid} ")
         return OperationResult(
             success = False,
-            message = f"Id not found in {self.category} page",
             data = None,
             error=ErrorData(
                 error_boolean=True,
