@@ -9,7 +9,7 @@ def test_priority_flow():
 
     add_result = action.execute_command(parsed_add)
 
-    task_id = add_result["data"]["internal_id"]
+    task_id = add_result["data"]["iid"]
 
     parsed_priority = token.parse_command(
         f'priority -id {task_id} --p high'

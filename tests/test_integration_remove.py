@@ -9,7 +9,7 @@ def test_remove_task_flow():
 
     add_result = action.execute_command(parsed_add)
 
-    task_id = add_result["data"]["internal_id"]
+    task_id = add_result["data"]["iid"]
 
     parsed_remove = token.parse_command(
         f'remove -id {task_id}'

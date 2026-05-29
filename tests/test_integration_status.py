@@ -9,7 +9,7 @@ def test_mark_done_flow():
 
     add_result = action.execute_command(parsed_add)
 
-    task_id = add_result["data"]["internal_id"]
+    task_id = add_result["data"]["iid"]
 
     parsed_done = token.parse_command(
         f'mark_done -id {task_id}'
