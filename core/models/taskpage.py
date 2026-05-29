@@ -197,12 +197,16 @@ class TaskPage:
     #----------------------------------Display task---------------------------------------------
     def _execute_page_display(self,type_display,*args,category = None):
         display = []
-        if category == None or category == "*":
+        if category == None:
             for page in self.taskpage:
                 method = getattr(page, type_display)
                 method_data = method(*args)
                 display.append(method_data)
-            return {"success": True, "message": "Ready for display", "data": display}
+            return OperationResult(
+                success=True,
+                message="Ready for display",
+                data=display
+            )
         else:
             page_dict = self.category_finder(category)
             if page_dict.success:
@@ -210,20 +214,24 @@ class TaskPage:
                 method = getattr(page, type_display)
                 method_data = method(*args)
                 display.append(method_data)
-                return {"success": True, "message": "Ready for display", "data": display}
+                return OperationResult(
+                    success=True,
+                    message="Ready for display",
+                    data=display
+                )
         logger.warning(f"Page Category not found: {category}")
         return page
             
 
     #-------------------------------------------------------------------------------------------
-    def display_all(self,category = "*"):
+    def display_all(self,category = None):
         return self._execute_page_display(
             "display_all",
             category=category
             )
         
     
-    def display_by_months(self,months,year,category= "*"):
+    def display_by_months(self,months,year,category = None):
         return self._execute_page_display(
             "display_by_months",
             months,
@@ -232,7 +240,7 @@ class TaskPage:
             )
         
     
-    def display_by_week(self,week,year,category= "*"):
+    def display_by_week(self,week,year,category = None):
         return self._execute_page_display(
             "display_by_week",
             week,
@@ -240,7 +248,7 @@ class TaskPage:
             category=category
             )
     
-    def display_by_day(self,day,months,year,category = "*"):
+    def display_by_day(self,day,months,year,category = None):
         return self._execute_page_display(
             "display_by_day",
             day,
@@ -249,7 +257,7 @@ class TaskPage:
             category=category
             )
     
-    def display_by_year(self,year,category = "*"):
+    def display_by_year(self,year,category = None):
         return self._execute_page_display(
             "display_by_year",
             year,
@@ -261,10 +269,18 @@ class TaskPage:
         if self.taskpage:
             for page in self.taskpage:
                 display.append(page.completion_bar())
-            return {"success":True, "message":"Ready for display","data":display}
+            return OperationResult(
+                success=True,
+                message="Ready for display",
+                data=display
+            )
         else:
             display.append("No pages are there")
-            return {"success":True, "message":"Ready for display","data":display}
+            return OperationResult(
+                success=True,
+                message="Ready for display",
+                data=display
+            )
 
     def display_done(self,category):
         return self._execute_page_display(

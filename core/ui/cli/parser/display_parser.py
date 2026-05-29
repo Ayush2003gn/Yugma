@@ -9,7 +9,7 @@ def cmd_display(argument):
 
     
   
-    category = "*"
+    category
 
     # ---------------- CATEGORY ----------------
     page = safe_get_value(argument, "--c")
