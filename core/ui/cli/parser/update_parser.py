@@ -18,7 +18,9 @@ def cmd_update(argument):
                 error_code="error-no-task-name"
             )
         )
-    task_id = safe_get_value(argument, "-id")
+    task_iid = safe_get_value(argument, "-iid")
+    task_uid = safe_get_value(argument, "-uid")
+    page = safe_get_value(argument, "--c")
     task_name = safe_get_value(argument, "-t")
     priority_raw = safe_get_value(argument, "--p")
 
@@ -44,16 +46,33 @@ def cmd_update(argument):
                 error_code="error-no-page-name"
             )
         )
-    if not task_id.is_valid:
-        logger.warning("No task ID provided for update command")
+    
+    if not task_iid.is_valid or not task_uid.is_valid:
+        logger.warning("No task ID provided for mark_done command")
         return CommandResult(
-            command="update",
+            command="mark_done",
             error=ErrorData(
                 error_boolean=True,
-                error_message="No task ID provided for update command",
+                error_message="No task ID provided for mark_done command",
                 error_code="error-no-task-id"
             )
         )
+    elif task_iid.is_valid and task_uid.is_valid:
+        return CommandResult(
+            command="mark_done",
+            error=ErrorData(
+                error_boolean=True,
+                error_message="both task ID or UID provided for mark_done command",
+                error_code="error-no-task-id-or-uid"
+            )
+        )
+    if task_iid.is_valid:
+        task_iid = task_iid.value
+        task_uid = None
+    elif task_uid.is_valid:
+        task_uid = task_uid.value
+        task_iid = None
+
     if not task_name.is_valid:
         logger.warning("No task name provided for update command")
         return CommandResult(
@@ -68,7 +87,8 @@ def cmd_update(argument):
         return CommandResult(
             command="update",
             action="update",
-            task_id=task_id.value,
+            task_iid=task_iid,
+            task_uid=task_uid,
             task_name=task_name.value,
             page_name=page.value,
             flags=FlagsData(priority=priority.value, status=status.value)
@@ -76,7 +96,8 @@ def cmd_update(argument):
     return CommandResult(
         command="update",
         action="update",
-        task_id=task_id.value,
+        task_iid=task_iid,
+        task_uid=task_uid,
         task_name=task_name.value,
         flags=FlagsData(priority=priority.value, status=status.value)
     )

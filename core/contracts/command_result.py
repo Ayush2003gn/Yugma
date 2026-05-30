@@ -9,7 +9,8 @@ class CommandResult:
     command: str
     action: str | None = None
     page_name: str | None = None
-    task_id: str | None = None
+    task_iid: str | None = None
+    task_uid: str | None = None
     task_name: str | None = None
     date: DateData = field(
         default_factory=lambda: DateData(None, None, None, None)

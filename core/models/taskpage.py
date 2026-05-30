@@ -315,5 +315,15 @@ class TaskPage:
         if page.success:
             page = page.data
             for data in data_list:
-                page.importing_task(data["Task"],data["iid"],data["Date Created"],data["Date Modified"],data["Priority"],data["Done"])
-            return page
+                page.importing_task(
+                    task = data["Task"],
+                    iid = data["iid"],
+                    created_date = data["Created Date"],
+                    modified_date = data["Modified Date"],
+                    priority = data["Priority"],
+                    done = data["Done"]
+                )
+            return OperationResult(
+                success=True,
+                data=page
+            )
