@@ -346,3 +346,6 @@ class TaskPage:
                 success=True,
                 data=page
             )
+
+    def reset_changed_pages(self):
+        self.changed_pages = []
