@@ -7,7 +7,7 @@ logger = logging.getLogger(__name__)
 
 @dataclass
 class PageChanged:
-    page:TaskList
+    page:str
     type_change:str = "modify" #"add"|"remove"|"modify"
 
 class TaskPage:
@@ -87,12 +87,11 @@ class TaskPage:
             if self.default == page.data:
 
                 self.default = None
-                page_changed = PageChanged(page=page.data.category,type_change="remove")
-                self.changed_pages.append(page_changed)
 
             self.taskpage.remove(page.data)
             logger.info(f" Category : {category} is removed")
-
+            page_changed = PageChanged(page=page.data.category,type_change="remove")
+            self.changed_pages.append(page_changed)
             return OperationResult(
                 success=True,
                 message=f"Category : {category} is removed",
@@ -331,6 +330,7 @@ class TaskPage:
 
     def import_category_data(self,category,data_list):
         page = self.add_page(category)
+        self.changed_pages = []
         if page.success:
             page = page.data
             for data in data_list:
