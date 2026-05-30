@@ -21,7 +21,7 @@ class TaskList:
         return OperationResult(
             success = True,
             message = "uid generated",
-            data = self.uid_count
+            data = f"Y{self.uid_count}"
         )
     
     #----------------------------------Create task---------------------------------------------
@@ -79,7 +79,7 @@ class TaskList:
             )
         )
     
-    def uid_to_iid(self,uid):
+    def resolve_uid(self,uid):
         for task in self.tasklist:
             if task.uid == uid:
                 iid = task.iid

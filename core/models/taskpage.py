@@ -42,6 +42,25 @@ class TaskPage:
             message=f"Category:{category} is added",
             data=newpage,
         )
+    def resolve_uid(self, uid, category = None):
+        if category is None:
+            page = self.default
+        else:
+            page_dict = self.category_finder(category)
+            if page_dict.success == False:
+                logger.warning(f"Page Category not found: {category}")
+                return OperationResult(
+                    success=False,
+                    data=None,
+                    error=ErrorData(
+                        error_boolean=True,
+                        error_message=f"Page Category not found: {category}",
+                        error_code="error-category-not-found"
+                    )
+                )
+            page = page_dict.data
+            uid_result = page.resolve_uid(uid)
+        return uid_result
     
     def category_finder(self,category):
         for page in self.taskpage:
