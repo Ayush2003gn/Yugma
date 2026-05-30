@@ -3,54 +3,46 @@ from core.contracts.operation_result import OperationResult
 from core.contracts.error_data import ErrorData
 logger = logging.getLogger(__name__)
 
-def action_add(token_return,task_app):
+def add_action(token_return,task_app):
     action = token_return.action
-    if action == "add":
+    if action == "add-task":
 
         task_name = token_return.task_name
-        page_category = token_return.page_category
+        page_category = token_return.page_name
 
         newtask = task_app.add_task(task_name,page_category)
         logger.info(f"{page_category} page:task added [{task_name}]")
-        if newtask["success"] is False:
-            logger.warning(newtask["message"])
-            return ActionResult(
-                success=False, 
-                message="Can't able to add task", 
-                error=ErrorData(
-                    error_boolean=True, 
-                    error_message=newtask["message"], 
-                    error_code="error-add-task"
-                )
-            )
+        if newtask.success is False:
+            logger.warning(newtask.message)
+            return newtask
 
         message_done = ""
         message_priority = ""
 
         if token_return.flags.status is True:
-            markdone = task_app.mark_done(newtask["data"].internal_id,page_category)
+            markdone = task_app.mark_done(newtask.data.internal_id,page_category)
             
-            if markdone["success"] is False:
-                message_done = markdone["message"]
+            if markdone.success is False:
+                message_done = markdone.error.error_message
         
         if token_return.flags.priority is not None:
             priority = token_return.flags.priority
             if priority == "low":
-                priority_change = task_app.low_priority_task(newtask["data"].internal_id,page_category)
+                priority_change = task_app.low_priority_task(newtask.data.internal_id,page_category)
             elif priority == "medium":
-                priority_change = task_app.priority_medium(newtask["data"].internal_id,page_category)
+                priority_change = task_app.priority_medium(newtask.data.internal_id,page_category)
             elif priority == "high":
-                priority_change = task_app.high_priority_task(newtask["data"].internal_id,page_category)
+                priority_change = task_app.high_priority_task(newtask.data.internal_id,page_category)
 
-            if priority_change["success"] is False:
-                message_priority = priority_change["message"]
+            if priority_change.success is False:
+                message_priority = priority_change.error.error_message
 
         if message_done != "" and message_priority != "":
             logger.warning(f"status:{message_done} priority:{message_priority}")
-            return ActionResult(
+            return OperationResult(
                 success=True, 
-                message=f"{newtask['message']}", 
-                data=newtask["data"], 
+                message=f"{newtask.message}", 
+                data=newtask.data, 
                 error={
                     "error_boolean": True, 
                     "error_message": f"status:{message_done} priority:{message_priority}", 
@@ -60,10 +52,10 @@ def action_add(token_return,task_app):
         
         if message_done != "":
             logger.warning(f"status:{message_done}")
-            return ActionResult(
+            return OperationResult(
                 success=True, 
-                message=f"{newtask['message']}", 
-                data=newtask["data"], 
+                message=f"{newtask.message}", 
+                data=newtask.data, 
                 error={
                     "error_boolean": True, 
                     "error_message": f"status:{message_done}", 
@@ -73,10 +65,10 @@ def action_add(token_return,task_app):
         
         if message_priority != "":
             logger.warning(f"priority:{message_priority}")
-            return ActionResult(
+            return OperationResult(
                 success=True, 
-                message=f"{newtask['message']}", 
-                data=newtask["data"], 
+                message=f"{newtask.message}", 
+                data=newtask.data, 
                 error={
                     "error_boolean": True, 
                     "error_message": f"priority:{message_priority}", 
@@ -84,8 +76,8 @@ def action_add(token_return,task_app):
                 }
             )
         
-        return ActionResult(
+        return OperationResult(
             success=True, 
             message="Task added", 
-            data=newtask["data"], 
+            data=newtask.data, 
             )

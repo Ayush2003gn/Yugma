@@ -1,4 +1,4 @@
-from core.ui.cli import token
+from core.ui.cli.parser import cli_parser as token
 
 def test_invalid_command():
 
@@ -6,4 +6,4 @@ def test_invalid_command():
         'abcdefg'
     )
 
-    assert parsed is None
+    assert parsed.command == "Invalid"

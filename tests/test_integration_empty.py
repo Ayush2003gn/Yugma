@@ -1,7 +1,7 @@
-from core.ui.cli import token
+from core.ui.cli.parser import cli_parser as token
 
 def test_empty_input():
 
     parsed = token.parse_command("")
 
-    assert parsed is None
+    assert parsed.command == "None"
