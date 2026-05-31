@@ -11,6 +11,7 @@ def add_action(token_return,task_app):
         page_category = token_return.page_name
 
         newtask = task_app.add_task(task_name,page_category)
+        print("in add action",newtask)
         logger.info(f"{page_category} page:task added [{task_name}]")
         if newtask.success is False:
             logger.warning(newtask.message)
@@ -30,7 +31,7 @@ def add_action(token_return,task_app):
             if priority == "low":
                 priority_change = task_app.low_priority_task(newtask.data.internal_id,page_category)
             elif priority == "medium":
-                priority_change = task_app.priority_medium(newtask.data.internal_id,page_category)
+                priority_change = task_app.medium_priority_task(newtask.data.iid,page_category)
             elif priority == "high":
                 priority_change = task_app.high_priority_task(newtask.data.internal_id,page_category)
 
@@ -81,3 +82,13 @@ def add_action(token_return,task_app):
             message="Task added", 
             data=newtask.data, 
             )
+    elif action == None:
+        logger.error("action was None")
+        return OperationResult(
+            success=False,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=token_return.error.error_message,
+                error_code=token_return.error.error_code
+            )
+        )
