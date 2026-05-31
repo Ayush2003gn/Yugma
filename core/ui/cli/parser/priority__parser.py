@@ -47,12 +47,12 @@ def cmd_priority(argument):
         )
     
     if not task_iid.is_valid or not task_uid.is_valid:
-        logger.warning("No task ID provided for mark_done command")
+        logger.warning("No task ID provided for priority command")
         return CommandResult(
             command="mark_done",
             error=ErrorData(
                 error_boolean=True,
-                error_message="No task ID provided for mark_done command",
+                error_message="No task ID provided for priority command",
                 error_code="error-no-task-id"
             )
         )
