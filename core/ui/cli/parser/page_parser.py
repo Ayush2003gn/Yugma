@@ -19,10 +19,8 @@ def cmd_page(argument):
     
     if "add" in argument:
         page_name = safe_get_value(argument, "add")
-        default_raw = safe_get_value(argument, "--default")
-        default = validate_default(default_raw.value)
-        default_d_raw = safe_get_value(argument, "--d")
-        default_d = validate_default(default_d_raw.value)
+        default = "--default" in argument
+        default_d = "--d" in argument
 
         if not page_name.is_valid:
             logger.warning("No page name provided for add command")
@@ -34,8 +32,7 @@ def cmd_page(argument):
                     error_code="error-no-page-name"
                 )
             )
-        
-        if default.value or default_d.value:
+        if default or default_d:
             return CommandResult(
                 command="page",
                 action="add",
@@ -43,7 +40,7 @@ def cmd_page(argument):
                     flags=FlagsData(
                         priority=None, 
                         status=None, 
-                        default=default.value or default_d.value
+                        default = default or default_d
                     )
             )
         

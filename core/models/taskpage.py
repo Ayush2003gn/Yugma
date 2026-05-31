@@ -42,6 +42,7 @@ class TaskPage:
             message=f"Category:{category} is added",
             data=newpage,
         )
+    
     def resolve_uid(self, uid, category = None):
         if category is None:
             page = self.default
@@ -59,7 +60,7 @@ class TaskPage:
                     )
                 )
             page = page_dict.data
-            uid_result = page.resolve_uid(uid)
+        uid_result = page.resolve_uid(uid)
         return uid_result
     
     def category_finder(self,category):
@@ -140,23 +141,22 @@ class TaskPage:
                 return page_dict
             
             page = page_dict.data
-        if "display" not in action:
-            page_changed = PageChanged(page=page.category,type_change="modify")
-            self.changed_pages.append(page_changed)
-
+            
         method = getattr(page, action)
-        method(*args)
-
-        return OperationResult(
-            success=True,
-            message="Sccessfully executed action",
-            data=page
-        )
+        result = method(*args)
+        if result.success and "display" not in action:
+            self.changed_pages.append(
+                PageChanged(
+                    page=page.category,
+                    type_change="modify"
+                )
+            )
+        return result
 
     #----------------------------------Create task---------------------------------------------
     def add_task(self,task,category = None):
         return self._execute_page_method(
-        "add_task_iid",
+        "add_task",
         task,
         category=category)
     
