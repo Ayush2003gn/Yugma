@@ -20,7 +20,7 @@ def add_action(token_return,task_app):
         message_priority = ""
 
         if token_return.flags.status is True:
-            markdone = task_app.mark_done(newtask.data.internal_id,page_category)
+            markdone = task_app.mark_done(newtask.data.iid,page_category)
             
             if markdone.success is False:
                 message_done = markdone.error.error_message
@@ -28,11 +28,11 @@ def add_action(token_return,task_app):
         if token_return.flags.priority is not None:
             priority = token_return.flags.priority
             if priority == "low":
-                priority_change = task_app.low_priority_task(newtask.data.internal_id,page_category)
+                priority_change = task_app.low_priority_task(newtask.data.iid,page_category)
             elif priority == "medium":
                 priority_change = task_app.medium_priority_task(newtask.data.iid,page_category)
             elif priority == "high":
-                priority_change = task_app.high_priority_task(newtask.data.internal_id,page_category)
+                priority_change = task_app.high_priority_task(newtask.data.iid,page_category)
 
             if priority_change.success is False:
                 message_priority = priority_change.error.error_message
