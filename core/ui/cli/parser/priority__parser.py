@@ -46,7 +46,7 @@ def cmd_priority(argument):
             )
         )
     
-    if not task_iid.is_valid or not task_uid.is_valid:
+    if not (task_iid.is_valid or task_uid.is_valid):
         logger.warning("No task ID provided for priority command")
         return CommandResult(
             command="mark_done",
