@@ -11,7 +11,6 @@ def add_action(token_return,task_app):
         page_category = token_return.page_name
 
         newtask = task_app.add_task(task_name,page_category)
-        print("in add action",newtask)
         logger.info(f"{page_category} page:task added [{task_name}]")
         if newtask.success is False:
             logger.warning(newtask.message)
