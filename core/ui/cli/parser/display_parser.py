@@ -9,7 +9,7 @@ def cmd_display(argument):
 
     
   
-    category
+    category = None
 
     # ---------------- CATEGORY ----------------
     page = safe_get_value(argument, "--c")
@@ -124,6 +124,19 @@ def cmd_display(argument):
                 error_code=date_val.error.error_code
             )
          )
+    elif "--done" in argument:
+        return CommandResult(
+            command="display",
+            action="display-done",
+            page_name=category
+        )
+    
+    elif "--pending" in argument:
+        return CommandResult(
+            command="display",
+            action="display-pending",
+            page_name=category
+        )
     else:
         logger.warning("No date provided for display command")
         return CommandResult(
