@@ -15,6 +15,14 @@ logger = logging.getLogger(__name__)
 
 task_app = TaskPage()
 
+def command_paths():
+    default = task_app.default
+
+    if default == None:
+        return "Yukta/root/-"
+    else:
+        return f"Yukta/root/{default.category}/-"    
+
 def decision_action(token_return):
     command = token_return.command
     
