@@ -23,19 +23,31 @@ def remove_action(token_return,task_app):
 
                 logger.warning(iid_reture.message)
                 return iid_reture
-            
-            remove_task = task_app.remove_task(iid_reture.data,token_return.page_name)
-            
-            if remove_task.success is False:
+        else:
+            iid_reture = token_return.task_iid
 
-                logger.warning(remove_task.message)
-                return OperationResult(
-                    success=False,
-                    error=ErrorData(
-                        error_boolean=True,
-                        error_message=remove_task.error.error_message,
-                        error_code=remove_task.error.error_code
-                    )
+        remove_task = task_app.remove_task(iid_reture.data,token_return.page_name)
+            
+        if remove_task.success is False:
+
+            logger.warning(remove_task.message)
+            return OperationResult(
+                success=False,
+                error=ErrorData(
+                    error_boolean=True,
+                    error_message=remove_task.error.error_message,
+                    error_code=remove_task.error.error_code
                 )
+            )
 
-            return remove_task
+        return remove_task
+    elif token_return.action == None:
+        logger.error("action was None")
+        return OperationResult(
+            success=False,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=token_return.error.error_message,
+                error_code=token_return.error.error_code
+            )
+        )
