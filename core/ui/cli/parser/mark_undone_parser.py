@@ -35,7 +35,7 @@ def cmd_mark_undone(argument):
     if not (task_iid.is_valid or task_uid.is_valid):
         logger.warning("No task ID provided for mark_undone command")
         return CommandResult(
-            command="mark_done",
+            command="mark_undone",
             error=ErrorData(
                 error_boolean=True,
                 error_message="No task ID provided for mark_undone command",
@@ -44,10 +44,10 @@ def cmd_mark_undone(argument):
         )
     elif task_iid.is_valid and task_uid.is_valid:
         return CommandResult(
-            command="mark_done",
+            command="mark_undone",
             error=ErrorData(
                 error_boolean=True,
-                error_message="both task ID or UID provided for mark_done command",
+                error_message="both task ID or UID provided for mark_undone command",
                 error_code="error-no-task-id-or-uid"
             )
         )
