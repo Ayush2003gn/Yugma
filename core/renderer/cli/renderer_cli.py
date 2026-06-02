@@ -6,25 +6,31 @@ logger = logging.getLogger(__name__)
 
 def decision_renderer(action, result):
 
-    if result["success"]:
+    if result.success is True:
 
-        if action and "display" in action:
+        if action == "display" in action:
 
             if "analysis" in action:
-                display_analysis(result["data"])
+                display_analysis(result.data)
 
             elif "help" in action:
-                display_help(result["data"])
+                display_help()
 
             else:
-                display_task_list(result["data"])
+                display_task_list(result.data)
         
 
         else:
-            display_message(result["message"])
+            display_message(result.message)
 
     else:
-        display_error(result["message"])
+        display_error(result.error.error_message)
+    
+    if result.error.error_boolean is True:
+        logger.error(result.error.error_message)
+        display_error(result.error.error_message)
+    else:
+        logger.info(result.message)
 
 def welcome_message():
     print()
@@ -55,7 +61,21 @@ def display_error(error_message):
     print(f"[red]Error: {error_message}[/red]")
     print()
 
-def display_help(help_message):
+def display_help():
     print()
-    print(f"[cyan]{help_message}[/cyan]")
+    print("[bold green]Help[/bold green]")
+    print("[bold green]Type [blue]add[/blue] to add tasks.[/bold green]")
+    print("[bold green]Type [blue]display[/blue] to display tasks.[/bold green]")
+    print("[bold green]Type [blue]help[/blue] to see available commands.[/bold green]")
+    print("[bold green]Type [blue]exit[/blue] to exit.[/bold green]")
+    print("[bold green]Type [blue]analysis[/blue] to see analysis.[/bold green]")
+    print("[bold green]Type [blue]update[/blue] to update tasks.[/bold green]")
+    print("[bold green]Type [blue]page[/blue] to do operations on page.[/bold green]")
+    print()
+
+def display_exit():
+    print()
+    print("[bold green]Exiting....[/bold green]")
+    print("[bold green]Saving data...[/bold green]")
+    print("[bold green]Goodbye![/bold green]")
     print()
