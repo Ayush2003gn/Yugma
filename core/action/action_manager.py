@@ -23,7 +23,7 @@ def command_paths():
     else:
         return f"Yukta/root/{default.category}/-"    
 
-def decision_action(token_return):
+def action_manager(token_return):
     command = token_return.command
     logger.info(f"command: {command}")
     if command == "page":
@@ -74,6 +74,3 @@ def decision_action(token_return):
         logger.warning("Invalid command provided by user")
         return display_action.cmd_invalid(token_return)
 
-def action_manager(token_return):
-    #return storage_action.storage_action(token_return,task_app)
-    pass
