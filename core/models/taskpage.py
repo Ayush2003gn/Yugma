@@ -214,7 +214,7 @@ class TaskPage:
     
     #----------------------------------Display task---------------------------------------------
     def _execute_page_display(self,type_display,*args,category = None):
-        logger.debug(f"Displaying {type_display}")
+        logger.info(f"Displaying {type_display}")
         display = []
         if category == None:
             logger.info("Displaying all pages")
@@ -222,7 +222,7 @@ class TaskPage:
                 method = getattr(page, type_display)
                 method_data = method(*args)
                 display.append(method_data)
-            logger.debug(f"Displayed {len(self.taskpage)} pages")
+            logger.info(f"Displayed {len(self.taskpage)} pages")
             return OperationResult(
                 success=True,
                 message="Ready for display",
@@ -231,14 +231,14 @@ class TaskPage:
         else:
             logger.info(f"Displaying {category} page")
             page_dict = self.category_finder(category)
-            logger.debug(f"message:{page_dict.message} and error_message:{page_dict.error.error_message}")
+            logger.info(f"message:{page_dict.message} and error_message:{page_dict.error.error_message}")
             if page_dict.success:
                 page = page_dict.data
 
                 method = getattr(page, type_display)
                 method_data = method(*args)
 
-                logger.debug(f"message:{method_data.message} and error_message:{method_data.error.error_message}")
+                logger.info(f"message:{method_data.message} and error_message:{method_data.error.error_message}")
                 return OperationResult(
                     success=True,
                     message="Ready for display",

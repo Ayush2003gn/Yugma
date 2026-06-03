@@ -286,7 +286,7 @@ class TaskList:
         
         display.append("")
         
-        logger.debug(f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ")
+        logger.info(f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ")
         return OperationResult(
             success=True,
             message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
@@ -316,7 +316,7 @@ class TaskList:
         if count == 0:
             display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
             return OperationResult(
                 success = False,
                 message = f"No tasks available",
@@ -324,7 +324,7 @@ class TaskList:
             )
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
         return OperationResult(
             success=True,
             message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
@@ -353,7 +353,7 @@ class TaskList:
         if count == 0:
             display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
             return OperationResult(
                 success = False,
                 message = f"No tasks available",
@@ -361,7 +361,7 @@ class TaskList:
             )
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
         return OperationResult(
             success=True,
             message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
@@ -390,7 +390,7 @@ class TaskList:
         if count == 0:
             display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
             return OperationResult(
                 success = False,
                 message = f"No tasks available",
@@ -398,7 +398,7 @@ class TaskList:
             )
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
         return OperationResult(
             success=True,
             message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
@@ -426,7 +426,7 @@ class TaskList:
         if count == 0:
             display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
             return OperationResult(
                 success = False,
                 message = f"No tasks available",
@@ -434,7 +434,7 @@ class TaskList:
             )
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
         return OperationResult(
             success=True,
             message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
@@ -462,7 +462,7 @@ class TaskList:
         if count == 0:
             display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
             return OperationResult(
                 success = False,
                 message = f"No tasks available",
@@ -470,7 +470,7 @@ class TaskList:
             )
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
         return OperationResult(
             success=True,
             message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
@@ -498,7 +498,7 @@ class TaskList:
         if count == 0:
             display.append(f"No tasks available out of {len(self.tasklist)} tasks")
             display.append("")
-            logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
             return OperationResult(
                 success = False,
                 message = f"No tasks available",
@@ -506,7 +506,7 @@ class TaskList:
             )
         
         display.append("")
-        logger.debug(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
         return OperationResult(
             success=True,
             message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
@@ -544,5 +544,5 @@ class TaskList:
         for task in self.tasklist:
             jlist = task.to_dict()
             json_list.append(jlist)
-        logger.debug(f"{self.category} page: Prepared {len(json_list)} tasks for saving")
+        logger.info(f"{self.category} page: Prepared {len(json_list)} tasks for saving")
         return json_list
