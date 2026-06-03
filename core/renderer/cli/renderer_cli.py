@@ -8,7 +8,7 @@ def decision_renderer(action, result):
 
     if result.success is True:
 
-        if action == "display" in action:
+        if "display" in action:
 
             if "analysis" in action:
                 display_analysis(result.data)
