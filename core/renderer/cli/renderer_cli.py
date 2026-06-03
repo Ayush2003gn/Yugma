@@ -18,12 +18,11 @@ def decision_renderer(action, result):
             if "analysis" in action:
                 display_analysis(result.data)
 
-            elif "help" in action:
-                display_help()
-
             else:
                 display_task_list(result.data)
-        
+
+        elif "help" in action:
+            display_help()
 
         else:
             display_message(result.message)
@@ -151,7 +150,7 @@ def display_help():
     )
 
     display_table.add_row(
-        "analysis",
+        "display --analysis",
         "Show task analysis",
         "analysis"
     )
