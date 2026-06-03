@@ -22,9 +22,6 @@ def decision_renderer(action, result):
 
         else:
             display_message(result.message)
-
-    else:
-        display_error(result.error.error_message)
     
     if result.error.error_boolean is True:
         logger.error(result.error.error_message)

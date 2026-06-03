@@ -43,6 +43,7 @@ def page_action(token_return,task_app):
         return OperationResult(
             success=True,
             data=addpage.data,
+            message=f"Category : {token_return.page_name} is added",
             error=error
             )
     elif token_return.action == "remove":
