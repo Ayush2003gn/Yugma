@@ -1,5 +1,10 @@
 import logging
 from rich import print 
+from rich.console import Console
+from rich.table import Table
+from rich.panel import Panel
+
+console = Console()
 
 logger = logging.getLogger(__name__)
 
@@ -58,17 +63,122 @@ def display_error(error_message):
     print(f"[red]Error: {error_message}[/red]")
     print()
 
+
 def display_help():
-    print()
-    print("[bold green]Help[/bold green]")
-    print("[bold green]Type [blue]add[/blue] to add tasks.[/bold green]")
-    print("[bold green]Type [blue]display[/blue] to display tasks.[/bold green]")
-    print("[bold green]Type [blue]help[/blue] to see available commands.[/bold green]")
-    print("[bold green]Type [blue]exit[/blue] to exit.[/bold green]")
-    print("[bold green]Type [blue]analysis[/blue] to see analysis.[/bold green]")
-    print("[bold green]Type [blue]update[/blue] to update tasks.[/bold green]")
-    print("[bold green]Type [blue]page[/blue] to do operations on page.[/bold green]")
-    print()
+
+    console.print(
+        Panel.fit(
+            "[bold cyan]Yukta Help[/bold cyan]\n"
+            "[green]Task Management CLI[/green]",
+            border_style="cyan"
+        )
+    )
+
+    # ---------------- TASK COMMANDS ----------------
+
+    task_table = Table(title="Task Commands")
+
+    task_table.add_column("Command", style="cyan", no_wrap=True)
+    task_table.add_column("Description", style="green")
+    task_table.add_column("Example", style="yellow")
+
+    task_table.add_row(
+        "add",
+        "Add a new task",
+        "add -t 'Study Python'"
+    )
+
+    task_table.add_row(
+        "remove",
+        "Remove a task",
+        "remove -uid Y1"
+    )
+
+    task_table.add_row(
+        "update",
+        "Update task name",
+        "update -uid Y1 -t 'New Task'"
+    )
+
+    task_table.add_row(
+        "done",
+        "Mark task as completed",
+        "done -uid Y1"
+    )
+
+    task_table.add_row(
+        "undone",
+        "Mark task as pending",
+        "undone -uid Y1"
+    )
+
+    task_table.add_row(
+        "priority",
+        "Change task priority",
+        "priority -uid Y1"
+    )
+
+    console.print(task_table)
+
+    # ---------------- PAGE COMMANDS ----------------
+
+    page_table = Table(title="Page Commands")
+
+    page_table.add_column("Command", style="cyan", no_wrap=True)
+    page_table.add_column("Description", style="green")
+    page_table.add_column("Example", style="yellow")
+
+    page_table.add_row(
+        "page",
+        "Manage task pages",
+        "page add Work"
+    )
+
+    console.print(page_table)
+
+    # ---------------- DISPLAY COMMANDS ----------------
+
+    display_table = Table(title="Display Commands")
+
+    display_table.add_column("Command", style="cyan", no_wrap=True)
+    display_table.add_column("Description", style="green")
+    display_table.add_column("Example", style="yellow")
+
+    display_table.add_row(
+        "display",
+        "Display tasks",
+        "display"
+    )
+
+    display_table.add_row(
+        "analysis",
+        "Show task analysis",
+        "analysis"
+    )
+
+    console.print(display_table)
+
+    # ---------------- UTILITY COMMANDS ----------------
+
+    utility_table = Table(title="Utility Commands")
+
+    utility_table.add_column("Command", style="cyan", no_wrap=True)
+    utility_table.add_column("Description", style="green")
+    utility_table.add_column("Example", style="yellow")
+
+    utility_table.add_row(
+        "help",
+        "Show help screen",
+        "help"
+    )
+
+    utility_table.add_row(
+        "exit",
+        "Exit Yukta",
+        "exit"
+    )
+
+    console.print(utility_table)
 
 def display_exit():
     print()
