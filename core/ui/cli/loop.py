@@ -1,48 +1,62 @@
 import logging
-import core.action as action
-import core.ui.cli.token as cli_token
+import core.action.action_manager as action
+import core.ui.cli.parser.cli_parser as cli_token
 import core.renderer.cli.renderer_cli as renderer
 logger = logging.getLogger(__name__)
 
 
 
 def start_up_loop():
-    action.import_data()
+    STORAGE = action.import_storage()
     running = True
     renderer.welcome_message()
+    if STORAGE.success is False:
+        logger.error(STORAGE.error.error_message)
+        renderer.display_error(STORAGE.error.error_message)
+
     while running:
+
         try:
             command_input = input(f"{action.command_paths()} > ")
             logger.info(f"User input received: {command_input}")
+
             if not command_input.strip():
                 continue
-            cmd,arguments = cli_token.parse_command(command_input)
-            logger.info(f"Tokenized command: {cmd}, Arguments: {arguments}")
+            parsed_result = cli_token.parse_command(command_input)
+            logger.info(f"Tokenized command: {parsed_result}")
 
-            result_command_handler = cli_token.command_handler(cmd, arguments)
-            
-            if result_command_handler is None:
+           
+            if parsed_result.command == "Invalid":
+                renderer.display_error(parsed_result.error.error_message)
                 continue
             
-            if result_command_handler["command"] == "exit":
+            if parsed_result.command == "exit" and parsed_result.action == "exit":
                 running = False
-                print("Exiting....")
-                print("Saving data...")
-                action.export_data()
+                STORAGE = action.export_storage()
+                renderer.display_exit()
+                if STORAGE.success is False:
+                    logger.error(STORAGE.error.error_message)
+                    renderer.display_error(STORAGE.error.error_message)
                 continue
             
-            result = action.execute_command(result_command_handler)
-            logger.info(f"Action result: {result}")
+            action_result = action.action_manager(parsed_result)
+            logger.info(f"Action result: {action_result}")
 
-            action_name = result_command_handler["action"]
+            action_name = parsed_result.action
             
-            renderer.decision_renderer(action_name, result)
-            action.export_data()
+            renderer.decision_renderer(action_name, action_result)
+            STORAGE = action.export_storage()
+            if STORAGE.success is False:
+                logger.error(STORAGE.error.error_message)
+                renderer.display_error(STORAGE.error.error_message)
+            
         except KeyboardInterrupt:
             logger.critical("Keyboard Interrupt by the user")
-            print("Exiting....")
-            print("Saving data...")
-            action.export_data()
+            renderer.display_exit()
+            STORAGE = action.export_storage()
+            if STORAGE.success is False:
+                logger.error(STORAGE.error.error_message)
+                renderer.display_error(STORAGE.error.error_message)
             break
 
         
