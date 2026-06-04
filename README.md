@@ -1,4 +1,4 @@
-# Yukta v1.0.0
+# Yukta v1.0.1
 
 A modular task management application built in Python.
 
