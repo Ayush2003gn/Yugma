@@ -3,10 +3,11 @@ __pycache__/
 *.log
 venv/
 .env
-data/*
-!data/.gitkeep
+core/storage/data/*
+!core/storage/data/.gitkeep
 test.py
 TODO.py
 tree.txt
 .vscode
 notes/
+try*

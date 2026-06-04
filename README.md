@@ -1,115 +1,144 @@
-# Yukta
+# Yukta v1.0.0
 
-Yukta is a modular command-line productivity system built with Python.
+A modular task management application built in Python.
 
-The project focuses on:
-- clean architecture
-- modularity
-- predictable execution flow
-- task management
-- long-term scalability
-
-Current version: `v0.1.0`
+Yukta provides a structured task management workflow using pages, priorities, status tracking, and persistent storage while maintaining a clean layered architecture for future expansion.
 
 ---
 
 # Features
 
 ## Task Management
-- create tasks
-- remove tasks
-- mark tasks as done/undone
-- set task priority
 
-## Category System
-- create multiple task pages/categories
-- set default category
-- category-based task filtering
+- Add tasks
+- Remove tasks
+- Update tasks
+- Mark tasks as done
+- Mark tasks as undone
+- Change task priority
+- Task tracking with timestamps
+
+## Page Management
+
+- Create pages
+- Remove pages
+- Set default page
+- Category-based organization
 
 ## Display System
-- display all tasks
-- display by:
-  - year
-  - month
-  - week
-  - day
-- analysis mode with completion bars
 
-## Persistence
-- automatic JSON storage
-- automatic import/export system
+- Display all tasks
+- Display by day
+- Display by week
+- Display by month
+- Display by year
+- Completion analysis
 
-## Debugging & Logging
-- centralized logging system
-- debug log file generation
+## Persistent Storage
 
-## Architecture
-- modular layered structure
-- separated storage/business/CLI logic
+- JSON-based storage
+- Automatic data loading
+- Automatic data saving
+- Manifest-based page tracking
+
+---
+
+# Identification System
+
+Every task contains two identifiers.
+
+## User ID (UID)
+
+Human-friendly identifier used by users.
+
+Example:
+
+```text
+Y1
+Y2
+Y3
+```
+
+Used in:
+
+```bash
+remove -uid Y1
+update -uid Y2
+done -uid Y3
+```
+
+---
+
+## Internal ID (IID)
+
+Unique internal identifier used by the application.
+
+Example:
+
+```text
+550e8400-e29b-41d4-a716-446655440000
+```
+
+Used internally for:
+- business logic
+- storage
+- task tracking
+
+---
+
+# Architecture
+
+```text
+User
+ ↓
+CLI
+ ↓
+Parser
+ ↓
+Action Layer
+ ↓
+Models
+ ↓
+Storage Layer
+ ↓
+Renderer
+```
 
 ---
 
 # Project Structure
 
 ```text
-Yukta/
-│
-├── core/
-│   ├── logger.py
-│   ├── manager.py
-│   ├── storage.py
-│   │
-│   └── models/
-│       ├── task.py
-│       ├── tasklist.py
-│       └── taskpage.py
-│
-├── data/
-│   └── *.json
-│
-├── debug/
-│   └── app.log
-│
-├── tests/
-│
-├── main.py
-├── pytest.ini
-├── README.md
-└── LICENSE
+core/
+├── action/
+├── contracts/
+├── models/
+├── renderer/
+├── storage/
+├── ui/
+└── utils/
+
+tests/
 ```
 
 ---
 
 # Installation
 
-## Clone Repository
+Clone repository:
 
 ```bash
-git clone https://github.com/Ayush2003gn/Yukta.git
+git clone https://github.com/<your-username>/Yukta.git
 cd Yukta
 ```
 
-## Create Virtual Environment (Optional)
+Install dependencies:
 
 ```bash
-python -m venv venv
+pip install -r requirements.txt
 ```
 
-Activate:
-
-### Windows
-```bash
-venv\Scripts\activate
-```
-
-### Linux / Mac
-```bash
-source venv/bin/activate
-```
-
----
-
-# Run Project
+Run:
 
 ```bash
 python main.py
@@ -117,121 +146,9 @@ python main.py
 
 ---
 
-# Command Guide
-
-# Page Commands
-
-## Create Category
-```bash
-page add study
-```
-
-## Create and Set Default
-```bash
-page add study --sd
-```
-
-## Set Default Category
-```bash
-page set-default study
-```
-
-## Remove Category
-```bash
-page remove study
-```
-
----
-
-# Task Commands
-
-## Add Task
-```bash
-add -t "Complete chemistry notes"
-```
-
-## Add Task to Specific Category
-```bash
-add -t "Solve maths problems" --C study
-```
-
-## Add Task with Priority
-```bash
-add -t "Prepare for exam" --P high
-```
-
-## Add Task and Mark Done
-```bash
-add -t "Drink water" --MD
-```
-
----
-
-# Delete Commands
-
-## Remove Task
-```bash
-delete -id <task_id>
-```
-
----
-
-# Status Commands
-
-## Mark Done
-```bash
-status -id <task_id> --MD
-```
-
-## Mark Undone
-```bash
-status -id <task_id> --MUD
-```
-
----
-
-# Display Commands
-
-## Display All Tasks
-```bash
-display
-```
-
-## Display All with Category
-```bash
-display --all --C study
-```
-
-## Display Analysis
-```bash
-display --analysis
-```
-
-## Display by Year
-```bash
-display --year 2026
-```
-
-## Display by Month
-```bash
-display --month May 2026
-```
-
-## Display by Week
-```bash
-display --week 20 2026
-```
-
-## Display by Day
-```bash
-display --day 11 5 2026
-```
-
----
-
 # Testing
 
-Run tests using pytest:
+Run all tests:
 
 ```bash
 pytest
@@ -239,45 +156,69 @@ pytest
 
 ---
 
-# Current Limitations
+# Command Categories
 
-- argument parsing is still improving
-- no GUI/TUI yet
-- UI IDs reset after restart
-- command validation is still evolving
+## Task Commands
+
+```text
+add
+remove
+update
+done
+undone
+priority
+```
+
+## Page Commands
+
+```text
+page
+```
+
+## Display Commands
+
+```text
+display
+analysis
+```
+
+## Utility Commands
+
+```text
+help
+exit
+```
 
 ---
 
-# Development Goals
+# Version 1.0.0
 
-## Near Future
-- safer parser system
-- stronger pytest coverage
-- command refactoring
-- update/edit task system
+Initial stable release.
 
-## Long Term
-- TUI/GUI
-- reminder system
-- scheduling
-- analytics dashboard
-- plugin architecture
+Highlights:
+
+- Modular parser architecture
+- Layered application design
+- UID/IID task identification system
+- Page-based task organization
+- JSON persistence system
+- Comprehensive command validation
+- Integration and model testing
 
 ---
 
-# Philosophy
+# Roadmap
 
-Yukta is designed as a system-first productivity application.
+Future versions may include:
 
-The goal is not only task management, but also learning:
-- software architecture
-- modular design
-- scalable systems
-- debugging discipline
-- clean execution flow
+- Terminal User Interface (TUI)
+- SQLite backend
+- GUI support
+- Web interface
+- Advanced analytics
 
 ---
 
 # License
 
-This project is licensed under the MIT License.
+MIT License

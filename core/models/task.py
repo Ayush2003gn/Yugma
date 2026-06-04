@@ -1,10 +1,10 @@
 import logging
 logger = logging.getLogger(__name__)
 class Task:
-    def __init__(self, task, internal_id, ui_id, created_date, modified_date, priority = "Medium", done = False):
+    def __init__(self, task, iid, uid, created_date, modified_date, priority = "Medium", done = False):
         self.task = task
-        self.internal_id = internal_id
-        self.ui_id = ui_id #TODO: work on external id
+        self.iid = iid
+        self.uid = uid #TODO: work on external id
         self.created_date = created_date
         self.modified_date = modified_date
         self.priority = priority #1 = high | 2 = medium | 3 = low
@@ -39,10 +39,17 @@ class Task:
     #file representation
 
     def to_dict(self):
-        return {"Internal_Id" : self.internal_id, "Task" : self.task, "Done" : self.done, "Date Created":self.created_date.isoformat(), "Date Modified":self.modified_date.isoformat(), "Priority":self.priority}
+        return {
+            "iid" : self.iid, 
+            "Task" : self.task, 
+            "Done" : self.done,
+            "Date Created":self.created_date.isoformat(), 
+            "Date Modified":self.modified_date.isoformat(), 
+            "Priority":self.priority
+        }
     
     # display of task
 
     def __str__(self):
         is_done = "√" if self.done else "x"
-        return f"{self.internal_id}| {self.ui_id} | {is_done} | {self.task} | {self.priority}"
+        return f"{self.iid} ||| {self.uid} || {is_done} | {self.task} | {self.priority}"
