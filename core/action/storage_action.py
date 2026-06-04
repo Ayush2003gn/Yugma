@@ -9,7 +9,9 @@ class storage_action:
         self.task_app = task_app
 
     def load_storage(self):
+        logger.info("Loading storage")
         data = StorageManager.load_page()
+        logger.info(f"Storage load result: {data}")
         if data.success:
             for page_name in StorageManager.manifest_files_load_data().data["pages"]:
                 if page_name not in data.data.keys():
@@ -23,11 +25,14 @@ class storage_action:
                         )
                     )
             for page , data in data.data.items():
-                self.task_app.add_page(page)
-                self.task_app.import_category_data(page,data)
+                result = self.task_app.import_category_data(page,data)
+                logger.info(f"Task {data} loaded")
+                logger.info(f"Task {data} result: {result}")
         
         else:
+            logger.error(data.error.error_message)
             return data
+        logger.info("Storage loaded")
         return OperationResult(
             success=True,
         )

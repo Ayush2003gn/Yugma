@@ -6,20 +6,29 @@ import logging
 logger = logging.getLogger(__name__)
 
 def load_page():
+    logger.info("Loading pages")
     data_page = {}
     try:
         for file in pathmanager.list_page_data_files():
+            logger.info(f"Loading page {pathmanager.get_page_name(file)}")
             if jsonstorage.is_valid_json(file):
+                logger.info(f"Page {pathmanager.get_page_name(file)} is valid json")
                 data = jsonstorage.load_json(file)
+                logger.info(f"Page {pathmanager.get_page_name(file)} loaded")
             else:
+                logger.info(f"Page {pathmanager.get_page_name(file)} is not valid json")
                 data = []
             page_name = pathmanager.get_page_name(file)
+            logger.info(f"Page name: {page_name}")
             data_page[page_name] = data
+            logger.info(f"Page {page_name} data: {data}")
+            logger.info(f"Page {page_name} loaded")
         return OperationResult(
             success = True,
             data = data_page
         )
     except Exception as e:
+        logger.error(str(e))
         return OperationResult(
             success = False,
             error = ErrorData(

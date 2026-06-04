@@ -344,8 +344,8 @@ class TaskPage:
                 page.importing_task(
                     task = data["Task"],
                     iid = data["iid"],
-                    created_date = data["Created Date"],
-                    modified_date = data["Modified Date"],
+                    created_date = data["Date Created"],
+                    modified_date = data["Date Modified"],
                     priority = data["Priority"],
                     done = data["Done"]
                 )
