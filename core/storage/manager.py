@@ -121,8 +121,19 @@ def manifest_files_load_data():
             )
         )
         
-def manifest_files_save_data(data):
+def manifest_files_save_data(data_list):
+    if type(data_list) is not list:
+        logger.error("Data must be list")
+        return operationresult(
+            success = False,
+            error = errordata(
+                error_boolean = True,
+                error_message = "Data must be list",
+                error_code = "error-reading-data"
+            )
+        )
     try:
+        data = {"pages" : data_list}
         file = pathmanager.manifest_file()
         jsonstorage.save_json(file,data)
         return operationresult(
