@@ -3,8 +3,8 @@ __pycache__/
 *.log
 venv/
 .env
-core/services/storage/data/*
-!core/services/storage/data/.gitkeep
+core/storage/data/*
+!core/storage/data/.gitkeep
 test.py
 TODO.py
 tree.txt
