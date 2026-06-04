@@ -128,7 +128,7 @@ tests/
 Clone repository:
 
 ```bash
-git clone https://github.com/<your-username>/Yukta.git
+git clone https://github.com/ayush2003gn/Yukta.git
 cd Yukta
 ```
 
