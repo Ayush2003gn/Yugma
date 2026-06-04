@@ -35,13 +35,14 @@ class storage_action:
     def save_storage(self):
         for page_changed in self.task_app.changed_pages:
             if page_changed.type_change == "add":
-                StorageManager.create_page(page_changed.page)
+                storage_result = StorageManager.create_page(page_changed.page)
+
             elif page_changed.type_change == "remove":
-                StorageManager.delete_page(page_changed.page)
+                storage_result = StorageManager.delete_page(page_changed.page)
             elif page_changed.type_change == "modify":
 
                 data = self.task_app.serialize_tasksofpage(page_changed.page)
-                StorageManager.save_page(page_changed.page,data)
+                storage_result = StorageManager.save_page(page_changed.page,data)
             else:
                 self.task_app.changed_pages = []
                 logger.warning(f"Unknown page type change: {page_changed.type_change}")
@@ -53,6 +54,9 @@ class storage_action:
                         error_code="error-unknown-page-type-change"
                     )
                 )
+            if not storage_result.success:
+                self.task_app.changed_pages = []
+                return storage_result
         data_list = []
         self.task_app.changed_pages = []
         for page in self.task_app.taskpage:
