@@ -5,7 +5,7 @@ import core.storage.manager as StorageManager
 logger = logging.getLogger(__name__)
 
 class storage_action:
-    def __int__(self,task_app):
+    def __init__(self,task_app):
         self.task_app = task_app
 
     def load_storage(self):
