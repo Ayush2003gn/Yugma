@@ -102,38 +102,38 @@ def create_page(page_name):
             )
         )
 
-def manifest_files():
-    def load_data():
-        try:
-            file = pathmanager.manifest_file()
-            data = jsonstorage.load_json(file)
-            return operationresult(
-                success = True,
-                data = data
+
+def manifest_files_load_data():
+    try:
+        file = pathmanager.manifest_file()
+        data = jsonstorage.load_json(file)
+        return operationresult(
+            success = True,
+            data = data
+        )
+    except Exception as e:
+        return operationresult(
+            success = False,
+            error = errordata(
+                error_boolean = True,
+                error_message = str(e),
+                error_code = "error-reading-data"
             )
-        except Exception as e:
-            return operationresult(
-                success = False,
-                error = errordata(
-                    error_boolean = True,
-                    error_message = str(e),
-                    error_code = "error-reading-data"
-                )
-            )
+        )
         
-    def save_data(data):
-        try:
-            file = pathmanager.manifest_file()
-            jsonstorage.save_json(file,data)
-            return operationresult(
-                success = True
+def manifest_files_save_data(data):
+    try:
+        file = pathmanager.manifest_file()
+        jsonstorage.save_json(file,data)
+        return operationresult(
+            success = True
+        )
+    except Exception as e:
+        return operationresult(
+            success = False,
+            error = errordata(
+                error_boolean = True,
+                error_message = str(e),
+                error_code = "error-saving-data"
             )
-        except Exception as e:
-            return operationresult(
-                success = False,
-                error = errordata(
-                    error_boolean = True,
-                    error_message = str(e),
-                    error_code = "error-saving-data"
-                )
-            )
+        )
