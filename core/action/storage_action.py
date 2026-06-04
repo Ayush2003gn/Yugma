@@ -43,6 +43,7 @@ class storage_action:
                 data = self.task_app.serialize_tasksofpage(page_changed.page)
                 StorageManager.save_page(page_changed.page,data)
             else:
+                self.task_app.changed_pages = []
                 logger.warning(f"Unknown page type change: {page_changed.type_change}")
                 return OperationResult(
                     success=False,
@@ -53,6 +54,7 @@ class storage_action:
                     )
                 )
         data_list = []
+        self.task_app.changed_pages = []
         for page in self.task_app.taskpage:
             data_list.append(page.category)
         StorageManager.manifest_files_save_data(data_list)
