@@ -11,7 +11,7 @@ class storage_action:
     def load_storage(self):
         data = StorageManager.load_page()
         if data.success:
-            for page_name in StorageManager.manifest_files_load_data().data:
+            for page_name in StorageManager.manifest_files_load_data().data["pages"]:
                 if page_name not in data.data.keys():
                     logger.error(f"Page {page_name} not found in storage system ")
                     return OperationResult(
