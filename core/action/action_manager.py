@@ -74,3 +74,10 @@ def action_manager(token_return):
         logger.warning("Invalid command provided by user")
         return display_action.cmd_invalid(token_return)
 
+storageaction = storage_action.storage_action(task_app)
+
+def import_storage():
+    return storageaction.load_storage()
+
+def export_storage():
+    return storageaction.save_storage()

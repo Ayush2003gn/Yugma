@@ -1,7 +1,65 @@
 import logging
 from core.contracts.operation_result import OperationResult
 from core.contracts.error_data import ErrorData
+import core.storage.manager as StorageManager
 logger = logging.getLogger(__name__)
 
-def storage_action(task_app):
-    pass
+class storage_action:
+    def __int__(self,task_app):
+        self.task_app = task_app
+
+    def load_storage(self):
+        data = StorageManager.load_page()
+        if data.success:
+            for page_name in StorageManager.manifest_files_load_data().data:
+                if page_name not in data.data.keys():
+                    logger.error(f"Page {page_name} not found in storage system ")
+                    return OperationResult(
+                        success=False,
+                        error=ErrorData(
+                            error_boolean=True,
+                            error_message=f"Page {page_name} not found in storage",
+                            error_code="error-page-not-found"
+                        )
+                    )
+            for page , data in data.data.items():
+                self.task_app.add_page(page)
+                self.task_app.import_category_data(page,data)
+        
+        else:
+            return data
+        return OperationResult(
+            success=True,
+        )
+    
+    def save_storage(self):
+        for page_changed in self.task_app.changed_pages:
+            if page_changed.type_change == "add":
+                StorageManager.create_page(page_changed.page)
+            elif page_changed.type_change == "remove":
+                StorageManager.delete_page(page_changed.page)
+            elif page_changed.type_change == "modify":
+
+                data = self.task_app.serialize_tasksofpage(page_changed.page)
+                StorageManager.save_page(page_changed.page,data)
+            else:
+                logger.warning(f"Unknown page type change: {page_changed.type_change}")
+                return OperationResult(
+                    success=False,
+                    error=ErrorData(
+                        error_boolean=True,
+                        error_message=f"Unknown page type change: {page_changed.type_change}",
+                        error_code="error-unknown-page-type-change"
+                    )
+                )
+        data_list = []
+        for page in self.task_app.taskpage:
+            data_list.append(page.category)
+        StorageManager.manifest_files_save_data(data_list)
+        return OperationResult(
+            success=True,
+        )
+            
+        
+        
+           
