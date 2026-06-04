@@ -7,9 +7,12 @@ logger = logging.getLogger(__name__)
 
 
 def start_up_loop():
-
+    STORAGE = action.import_storage()
     running = True
     renderer.welcome_message()
+    if STORAGE.success is False:
+        logger.error(STORAGE.error.error_message)
+        renderer.display_error(STORAGE.error.error_message)
 
     while running:
 
@@ -29,7 +32,11 @@ def start_up_loop():
             
             if parsed_result.command == "exit" and parsed_result.action == "exit":
                 running = False
+                STORAGE = action.export_storage()
                 renderer.display_exit()
+                if STORAGE.success is False:
+                    logger.error(STORAGE.error.error_message)
+                    renderer.display_error(STORAGE.error.error_message)
                 continue
             
             action_result = action.action_manager(parsed_result)
@@ -38,10 +45,18 @@ def start_up_loop():
             action_name = parsed_result.action
             
             renderer.decision_renderer(action_name, action_result)
+            STORAGE = action.export_storage()
+            if STORAGE.success is False:
+                logger.error(STORAGE.error.error_message)
+                renderer.display_error(STORAGE.error.error_message)
             
         except KeyboardInterrupt:
             logger.critical("Keyboard Interrupt by the user")
             renderer.display_exit()
+            STORAGE = action.export_storage()
+            if STORAGE.success is False:
+                logger.error(STORAGE.error.error_message)
+                renderer.display_error(STORAGE.error.error_message)
             break
 
         
