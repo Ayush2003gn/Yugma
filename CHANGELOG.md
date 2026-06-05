@@ -30,7 +30,7 @@
 
 - Tasks now persist correctly across application restarts.
 
-## v1.0.2
+## v1.0.2(branding)
 
 ### Fixed (storage)
 
