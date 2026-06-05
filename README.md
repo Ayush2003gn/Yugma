@@ -1,4 +1,4 @@
-# Yukta v1.0.1
+# Yukta v1.0.2
 
 A modular task management application built in Python.
 
@@ -122,6 +122,24 @@ tests/
 ```
 
 ---
+# Windows Data Location
+
+Yukta stores application data in:
+
+%APPDATA%\Yukta\
+
+Structure:
+
+Yukta/
+├── data/
+│   ├── manifest.json
+│   └── *_data.json
+│
+└── logs/
+    └── *.log
+```
+
+---
 
 # Installation
 
@@ -191,7 +209,7 @@ exit
 
 ---
 
-# Version 1.0.1
+# Version 1.0.2
 
 Initial stable release.
 
