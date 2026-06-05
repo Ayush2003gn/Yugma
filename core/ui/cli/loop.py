@@ -25,7 +25,11 @@ def start_up_loop():
             parsed_result = cli_token.parse_command(command_input)
             logger.info(f"Tokenized command: {parsed_result}")
 
-           
+            if parsed_result is None:
+                logger.warning("Parsed result is None, skipping iteration.")
+                renderer.display_error("Failed to parse command. Please try again.")
+                continue
+        
             if parsed_result.command == "Invalid":
                 renderer.display_error(parsed_result.error.error_message)
                 continue

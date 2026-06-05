@@ -7,6 +7,17 @@ logger = logging.getLogger(__name__)
 
 def load_page():
     logger.info("Loading pages")
+    cheack_data_folder = pathmanager.create_check_data_folder()
+    if cheack_data_folder is not None:
+        logger.error("Error creating data folder")
+        return OperationResult(
+            success = False,
+            error = ErrorData(
+                error_boolean = True,
+                error_message = "Error creating data folder",
+                error_code = "error-creating-data-folder"
+            )
+        )
     data_page = {}
     try:
         for file in pathmanager.list_page_data_files():
@@ -40,6 +51,18 @@ def load_page():
 
 def save_page(page_name,data):
     try:
+        cheack_data_folder = pathmanager.create_check_data_folder()
+        if cheack_data_folder is not None:
+            logger.error("Error creating data folder")
+            return OperationResult(
+                success = False,
+                error = ErrorData(
+                    error_boolean = True,
+                    error_message = "Error creating data folder",
+                    error_code = "error-creating-data-folder"
+                )
+            )
+        
         logger.info(f"Saving page {page_name}")
 
         jsonstorage.save_json(pathmanager.get_page_file(page_name),data)

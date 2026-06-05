@@ -5,9 +5,19 @@ import json
 logger = logging.getLogger(__name__)
 
 def get_data_folder():
-    base = os.path.dirname(__file__)
+    base = Path(os.getenv("APPDATA")) / "Yukta" if os.name == "nt" else Path.home() / ".yukta"
     logger.info(f"path to base: {base} ")
     return os.path.join(base,"data")
+
+def create_check_data_folder():
+    data_folder = get_data_folder()
+    if not os.path.exists(data_folder):
+        try:
+            os.makedirs(data_folder)
+            return None
+        except Exception as e:
+            logger.error(str(e))
+            return "Error creating data folder"
 
 def list_page_data_files():
     data_folder = get_data_folder()
@@ -56,7 +66,7 @@ def create_file(file_path):
 
         if not Path(file_path).exists():
             with open(file_path, "w", encoding="utf-8") as f:
-                json.dump([], f)
+                json.dump({"pages": []}, f)
 
     except Exception as e:
         logger.error(str(e))
