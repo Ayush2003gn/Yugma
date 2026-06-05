@@ -5,7 +5,7 @@ import json
 logger = logging.getLogger(__name__)
 
 def get_data_folder():
-    base = Path(os.getenv("APPDATA")) / "Yukta" if os.name == "nt" else Path.home() / ".yukta"
+    base = Path(os.getenv("APPDATA")) / "Yugma" if os.name == "nt" else Path.home() / ".Yugma"
     logger.info(f"path to base: {base} ")
     return os.path.join(base,"data")
 

@@ -35,7 +35,7 @@ def decision_renderer(action, result):
 
 def welcome_message():
     print()
-    print("[bold green]Welcome to Yukta CLI![/bold green]")
+    print("[bold green]Welcome to Yugma CLI![/bold green]")
     print("Type [blue]help[/blue] to see available commands.")
     print()
 
@@ -67,7 +67,7 @@ def display_help():
 
     console.print(
         Panel.fit(
-            "[bold cyan]Yukta Help[/bold cyan]\n"
+            "[bold cyan]Yugma Help[/bold cyan]\n"
             "[green]Task Management CLI[/green]",
             border_style="cyan"
         )
@@ -173,7 +173,7 @@ def display_help():
 
     utility_table.add_row(
         "exit",
-        "Exit Yukta",
+        "Exit Yugma",
         "exit"
     )
 

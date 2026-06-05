@@ -1,8 +1,8 @@
-# Yukta v1.0.2
+# Yugma v1.0.2
 
 A modular task management application built in Python.
 
-Yukta provides a structured task management workflow using pages, priorities, status tracking, and persistent storage while maintaining a clean layered architecture for future expansion.
+Yugma provides a structured task management workflow using pages, priorities, status tracking, and persistent storage while maintaining a clean layered architecture for future expansion.
 
 ---
 
@@ -124,13 +124,13 @@ tests/
 ---
 # Windows Data Location
 
-Yukta stores application data in:
+Yugma stores application data in:
 
-%APPDATA%\Yukta\
+%APPDATA%\Yugma\
 
 Structure:
 
-Yukta/
+Yugma/
 ├── data/
 │   ├── manifest.json
 │   └── *_data.json
@@ -146,8 +146,8 @@ Yukta/
 Clone repository:
 
 ```bash
-git clone https://github.com/ayush2003gn/Yukta.git
-cd Yukta
+git clone https://github.com/ayush2003gn/Yugma.git
+cd Yugma
 ```
 
 Install dependencies:

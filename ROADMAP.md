@@ -1,4 +1,4 @@
-# Yukta Roadmap
+# Yugma Roadmap
 
 ## v0.1.1
 - safer argument parsing

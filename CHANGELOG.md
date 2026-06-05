@@ -34,10 +34,10 @@
 
 ### Fixed (storage)
 
-- Yukta stores application data in: %APPDATA%\Yukta\
+- Yugma stores application data in: %APPDATA%\Yugma\
 
 - Structure:
-Yukta/
+Yugma/
 ├── data/
 │   ├── manifest.json
 │   └── *_data.json

@@ -19,9 +19,9 @@ def command_paths():
     default = task_app.default
 
     if default == None:
-        return "Yukta/root/-"
+        return "Yugma/root/-"
     else:
-        return f"Yukta/root/{default.category}/-"    
+        return f"Yugma/root/{default.category}/-"    
 
 def action_manager(token_return):
     command = token_return.command

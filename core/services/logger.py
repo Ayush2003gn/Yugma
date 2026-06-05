@@ -4,7 +4,7 @@ from datetime import datetime
 from pathlib import Path
 
 def start_up():
-    base = Path(os.getenv("APPDATA")) / "Yukta" if os.name == "nt" else Path.home() / ".yukta"
+    base = Path(os.getenv("APPDATA")) / "Yugma" if os.name == "nt" else Path.home() / ".Yugma"
 
     log_dir = os.path.join(base, "debug")
     os.makedirs(log_dir, exist_ok=True)
