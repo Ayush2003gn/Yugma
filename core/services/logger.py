@@ -1,9 +1,10 @@
 import logging
 import os
 from datetime import datetime
+from pathlib import Path
 
 def start_up():
-    base = os.path.dirname(os.path.dirname(os.path.dirname(__file__)))
+    base = Path(os.getenv("APPDATA")) / "Yukta" if os.name == "nt" else Path.home() / ".yukta"
 
     log_dir = os.path.join(base, "debug")
     os.makedirs(log_dir, exist_ok=True)
