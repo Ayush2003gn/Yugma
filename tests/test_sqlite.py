@@ -23,6 +23,7 @@ def test_sqlite_operations():
     # Initialize database
     init_result = initialize_database.initialize_database(test_db_path)
     assert init_result.success is True
+    init_result.data.close()
     
     # Create a page
     page_result = create_page.create_page("page1", "Test Page", "2024-01-01T00:00:00Z", "2024-01-01T00:00:00Z", test_db_path)
