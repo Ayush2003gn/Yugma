@@ -13,7 +13,7 @@ def create_task(page_id, task,iid,created_at,updated_at,path,):
             cursor = conn.data.cursor()
             cursor.execute("INSERT INTO tasks (iid, page_id, task, created_at, updated_at) VALUES (?, ?, ?, ?, ?);", (iid, page_id, task, created_at, updated_at))
             conn.data.commit()
-            conn.data.close()
+            
             return OperationResult(
                 success = True,
                 data = {
@@ -25,7 +25,7 @@ def create_task(page_id, task,iid,created_at,updated_at,path,):
                 }
             )
         except sqlite3.Error as e:
-            conn.data.close()
+            
             logger.error(f"Error creating task: {e}")
             return OperationResult(
                 success = False,
@@ -35,6 +35,8 @@ def create_task(page_id, task,iid,created_at,updated_at,path,):
                     error_code = "error-creating-task"
                 )
             )
+        finally:
+            conn.data.close()
        
     else:
         return OperationResult(

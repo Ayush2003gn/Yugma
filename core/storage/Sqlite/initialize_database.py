@@ -8,6 +8,8 @@ import os
 def initialize_database(path):
 
     try:
+        os.makedirs(path, exist_ok=True)
+        
         db_path = os.path.join(path, "database.db")
         conn = sqlite3.connect(db_path)
         

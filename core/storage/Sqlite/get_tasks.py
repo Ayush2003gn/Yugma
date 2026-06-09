@@ -35,6 +35,8 @@ def get_tasks(page_id,path):
                     error_code = "error-getting-tasks"
                 )
             )
+        finally:
+            conn.data.close()
     else:
         return OperationResult(
             success= False,

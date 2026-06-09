@@ -18,7 +18,7 @@ def create_page(page_id,title, created_at, updated_at,path):
                 (page_id, title, created_at, updated_at)
             )
             conn.data.commit()
-            conn.data.close()
+            
             return OperationResult(
                 success = True,
                 data = {
@@ -30,7 +30,7 @@ def create_page(page_id,title, created_at, updated_at,path):
             )
         except sqlite3.Error as e:
             logger.error(f"Error creating page: {e}")
-            conn.data.close()
+            
             return OperationResult(
                 success = False,
                 error = ErrorData(
@@ -39,6 +39,8 @@ def create_page(page_id,title, created_at, updated_at,path):
                     error_code = "error-creating-page"
                 )
             )
+        finally:
+            conn.data.close()
     else:
         return OperationResult(
             success= False,

@@ -25,14 +25,14 @@ def list_pages(path):
                     "created_at": row[2],
                     "updated_at": row[3]
                 })
-            conn.data.close()
+            
             return OperationResult(
                 success = True,
                 data = pages
             )
         except sqlite3.Error as e:
             logger.error(f"Error listing pages: {e}")
-            conn.data.close()
+            
             return OperationResult(
                 success = False,
                 error = ErrorData(
@@ -41,6 +41,8 @@ def list_pages(path):
                     error_code = "error-listing-pages"
                 )
             )
+        finally:
+            conn.data.close()
     else:
         return OperationResult(
             success= False,
