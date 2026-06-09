@@ -3,11 +3,12 @@ import logging
 from core.contracts.operation_result import OperationResult
 from core.contracts.error_data import ErrorData
 logger = logging.getLogger(__name__)
+import os
 
 def initialize_database(path):
 
     try:
-        db_path = path + "/database.db"
+        db_path = os.path.join(path, "database.db")
         conn = sqlite3.connect(db_path)
         
     except sqlite3.Error as e:
