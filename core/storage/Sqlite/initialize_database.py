@@ -36,10 +36,12 @@ def initialize_database(path):
     conn.execute("""
     CREATE TABLE IF NOT EXISTS tasks(
         iid TEXT PRIMARY KEY,
-        page_id INTEGER NOT NULL,
+        page_id TEXT NOT NULL,
         task TEXT NOT NULL,
         created_at TEXT NOT NULL,
         updated_at TEXT NOT NULL,
+        priority TEXT NOT NULL
+        status INTEGER NOT NULL
         FOREIGN KEY(page_id) REFERENCES pages(id)
     )
     """)
