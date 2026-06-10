@@ -19,31 +19,6 @@ def create_check_data_folder():
             logger.error(str(e))
             return "Error creating data folder"
 
-def list_page_data_files():
-    data_folder = get_data_folder()
-    return [
-        os.path.join(data_folder, file)
-        for file in os.listdir(data_folder)
-        if file.endswith("_data.json")
-    ]
-
-def get_page_name(file_name):
-    file_name = os.path.basename(file_name)
-
-    page_name = file_name.replace("_data.json", "")
-    page_name = page_name.replace("_", " ")
-
-    return page_name.strip()
-
-def get_page_file(page_name):
-    logger.info(f"page name: {page_name}")
-    data_folder = get_data_folder()
-
-    if " " in page_name:
-        page_name = page_name.replace(" ","_")
-    page_name = page_name + "_data.json"
-    return os.path.join(data_folder, page_name)
-
 def ensure_data_folder_directory():
     data_folder = get_data_folder()
     try:
@@ -78,10 +53,10 @@ def delete_file(file_path):
     except Exception as e:
         logger.error(str(e))
 
-def manifest_file():
+def config_file():
     data_folder = get_data_folder()
-    manifestfiles = os.path.join(data_folder,"manifest.json")
-    file_exists = os.path.exists(manifestfiles)
+    configfiles = os.path.join(data_folder,"config.json")
+    file_exists = os.path.exists(configfiles)
     if not file_exists:
-        create_file(manifestfiles)
-    return manifestfiles
+        create_file(configfiles)
+    return configfiles
