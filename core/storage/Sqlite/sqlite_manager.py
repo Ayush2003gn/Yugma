@@ -58,7 +58,7 @@ class SqliteManager:
             path=self.folder_path
         )
     def get_tasks_id(self, page_id):
-        return task.get_tasks.get_tasks(
+        return task.get_tasks.get_tasks_id(
             page_id=page_id,
             path=self.folder_path
         )
@@ -82,4 +82,22 @@ class SqliteManager:
             task_id=task_id,
             path=self.folder_path
         )
+    
+    def move_task(self, task_id, old_page_id, new_page_id, update_date):
+        if old_page_id == new_page_id:
+            return OperationResult(
+                success = False,
+                error = ErrorData(
+                    error_boolean = True,
+                    error_message = "Task is already in the target page",
+                    error_code = "task-already-in-page"
+                )
+            )
+        return task.move_task.move_task(
+            task_id=task_id,
+            new_page_id=new_page_id,
+            update_date=update_date,
+            path=self.folder_path
+        )
+
     #endregion
