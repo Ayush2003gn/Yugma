@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 class Task:
-    def __init__(self, task, iid, uid, created_date, modified_date, priority = "Medium", done = False):
+    def __init__(self, task, iid, uid, created_date, modified_date, priority = "Medium", done = False , tags = [], description = "", reminder = False):
         self.task = task
         self.iid = iid
         self.uid = uid 
@@ -9,6 +9,21 @@ class Task:
         self.modified_date = modified_date
         self.priority = priority #1 = high | 2 = medium | 3 = low
         self.done = done
+        self.description = description
+
+        if tags is None:
+            tags = []
+        elif not isinstance(tags, list):
+            logger.warning(f"Tags should be a list, got {type(tags)}. Converting to list.")
+            tags = [tags]
+        elif not all(isinstance(tag, str) for tag in tags):
+            logger.warning(f"All tags should be strings. Converting non-string tags to strings.")
+            tags = [str(tag) for tag in tags]
+        else:            
+            logger.info(f"Tags are valid: {tags}")
+        
+        self.tags = tags
+        self.reminder = reminder
         
     def correction(self, task, modified_date):
         self.task = task
@@ -36,18 +51,50 @@ class Task:
         self.priority = "Low"
         self.modified_date = modified_date
 
+    def add_tags(self, tags, modified_date):
+        if tags is None:
+            tags = []
+        elif not isinstance(tags, list):
+            logger.warning(f"Tags should be a list, got {type(tags)}. Converting to list.")
+            tags = [tags]
+        elif not all(isinstance(tag, str) for tag in tags):
+            logger.warning(f"All tags should be strings. Converting non-string tags to strings.")
+            tags = [str(tag) for tag in tags]
+        else:            
+            logger.info(f"Tags are valid: {tags}")
+        self.tags.extend(tags)
+        self.modified_date = modified_date
+    
+    def remove_tags(self, tags, modified_date):
+        self.tags = [tag for tag in self.tags if tag not in tags]
+        self.modified_date = modified_date
+    
+    def update_description(self, description, modified_date):
+        self.description = description
+        self.modified_date = modified_date
+
+    def set_reminder(self, modified_date):
+        self.reminder = True
+        self.modified_date = modified_date
+    
+    def remove_reminder(self, modified_date):
+        self.reminder = False
+        self.modified_date = modified_date
+    
     #file representation
 
     def to_dict(self):
         return {
             "iid" : self.iid, 
-            "Task" : self.task, 
-            "Done" : self.done,
-            "Date Created":self.created_date.isoformat(), 
-            "Date Modified":self.modified_date.isoformat(), 
-            "Priority":self.priority
+            "task" : self.task, 
+            "done" : self.done,
+            "date_created":self.created_date.isoformat(), 
+            "date_modified":self.modified_date.isoformat(), 
+            "priority":self.priority,
+            "description": self.description,
+            "tags": self.tags,
+            "reminder": self.reminder
         }
-    
     # display of task
 
     def __str__(self):
