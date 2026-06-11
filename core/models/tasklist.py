@@ -1,21 +1,19 @@
 from core.models.task import Task
-import datetime
 import logging
 from core.contracts.error_data import ErrorData
 from core.contracts.operation_result import OperationResult
 import uuid
 logger = logging.getLogger(__name__)
-
-def datetime_now():
-    return datetime.datetime.now()
+from core.utils.datetime_now import datetime_now
 
 class TaskList:
-    def __init__(self, category):
+    def __init__(self, category,page_id, create_date , group = None):
         self.category = category 
-        self.page_id = str(uuid.uuid4())
-        create_date = datetime_now()
+        self.page_id = page_id
         self.created_date = create_date
         self.modified_date = create_date
+        self.group = group
+
         self.tasklist = []
         self.uid_count = 0
         self.changed = False
@@ -209,6 +207,7 @@ class TaskList:
                 error_code="error-iid-not-found"
             )
         )
+    
     def high_priority_task_iid(self,iid):
         task_found = self.iid_find(iid)
         if task_found.success:
@@ -304,7 +303,6 @@ class TaskList:
             data=display
         )
 
-
     def display_by_months(self,months,year):
         display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
@@ -342,7 +340,6 @@ class TaskList:
             data=display
         )
 
-
     def display_by_week(self,week,year):
         display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
@@ -379,7 +376,6 @@ class TaskList:
             data=display
         )   
     
-
     def display_by_year(self,year):
         display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
@@ -524,7 +520,6 @@ class TaskList:
             data=display
         )
 
-
     def percent_done(self):
         count_done = 0
         for task in self.tasklist:
@@ -535,7 +530,6 @@ class TaskList:
         except ZeroDivisionError:
             return 0
     
-
     def completion_bar(self):
         percent_inten = int(self.percent_done()/20.0)
         bar = ""
