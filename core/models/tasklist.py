@@ -12,6 +12,10 @@ def datetime_now():
 class TaskList:
     def __init__(self, category):
         self.category = category 
+        self.page_id = str(uuid.uuid4())
+        create_date = datetime_now()
+        self.created_date = create_date
+        self.modified_date = create_date
         self.tasklist = []
         self.uid_count = 0
         self.changed = False
@@ -33,7 +37,7 @@ class TaskList:
         
         self.tasklist.append(newtask)
         self.changed = True
-
+        self.modified_date = datetime_now()
         logger.info(f"{self.category} page:task added [{task}]")
         return OperationResult(
             success = True,
@@ -108,6 +112,7 @@ class TaskList:
             self.tasklist.remove(task.data)
             logger.info(f"{self.category} page: Id : {iid} is removed")
             self.changed = True
+            self.modified_date = datetime_now()
 
             return OperationResult(
                 success = True,
@@ -137,6 +142,7 @@ class TaskList:
             logger.info(f"{self.category} page: Task updated: id={iid}, new_value='{task}'")
 
             self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
                 success = True,
                 message = f"{self.category} page: Task updated: id={iid}, new_value='{task}'",
@@ -163,6 +169,7 @@ class TaskList:
 
             logger.info(f"{self.category} page: Task status updated: {iid} ")
             self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
                 success = True,
                 message = f"successfully Update status of id {iid} in {self.category} page",
@@ -186,6 +193,7 @@ class TaskList:
             task_found.data.mark_undone(datetime_now())
             logger.info(f"{self.category} page: Task status updated: {iid}")
             self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
                 success = True,
                 message = f"successfully Update status of id {iid} in {self.category} page",
@@ -207,6 +215,7 @@ class TaskList:
             task_found.data.priority_high(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {iid} ")
             self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
                 success = True,
                 message = f"successfully Update priority level of id {iid} in {self.category} page",
@@ -229,6 +238,7 @@ class TaskList:
             task_found.data.priority_medium(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {iid}")
             self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
                 success = True,
                 message = f"successfully Update priority level of id {iid} in {self.category} page",
@@ -253,6 +263,7 @@ class TaskList:
             task_found.data.priority_low(datetime_now())
             logger.info(f"{self.category} page: Task priority level updated: {iid} ")
             self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
                 success = True,
                 message = f"successfully Update priority level of id {iid} in {self.category} page",
