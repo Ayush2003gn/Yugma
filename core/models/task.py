@@ -1,7 +1,7 @@
 import logging
 logger = logging.getLogger(__name__)
 class Task:
-    def __init__(self, task, iid, uid, created_date, modified_date, priority = "Medium", done = False , tags = [], description = "", reminder = False):
+    def __init__(self, task, iid, uid, created_date, modified_date, priority = "Medium", done = False , tags = [], description = ""):
         self.task = task
         self.iid = iid
         self.uid = uid 
@@ -23,7 +23,6 @@ class Task:
             logger.info(f"Tags are valid: {tags}")
         
         self.tags = tags
-        self.reminder = reminder
         
     def correction(self, task, modified_date):
         self.task = task
@@ -73,13 +72,6 @@ class Task:
         self.description = description
         self.modified_date = modified_date
 
-    def set_reminder(self, modified_date):
-        self.reminder = True
-        self.modified_date = modified_date
-    
-    def remove_reminder(self, modified_date):
-        self.reminder = False
-        self.modified_date = modified_date
     
     #file representation
 

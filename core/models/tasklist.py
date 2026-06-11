@@ -348,318 +348,68 @@ class TaskList:
             )
         )
     
-    def bool_reminder_true(self, iid):
-        task_found = self.iid_find(iid)
-        if task_found.success:
-            if task_found.data.reminder:
-                task_found.data.remove_reminder(datetime_now())
-                logger.info(f"{self.category} page: Task reminder removed: {iid} ")
-                self.changed = True
-                self.modified_date = datetime_now()
-                return OperationResult(
-                    success = True,
-                    message = f"successfully Remove reminder from id {iid} in {self.category} page",
-                    data = task_found.data
-                )
-            else:
-                task_found.data.set_reminder(datetime_now())
-                logger.info(f"{self.category} page: Task reminder set: {iid} ")
-                self.changed = True
-                self.modified_date = datetime_now()
-                return OperationResult(
-                    success = True,
-                    message = f"successfully Set reminder to id {iid} in {self.category} page",
-                    data = task_found.data
-                )
-        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
-        return OperationResult(
-            success = False,
-            data = None,
-            error=ErrorData(
-                error_boolean=True,
-                error_message=f"Id not found in {self.category} page",
-                error_code="error-iid-not-found"
-            )
-        )
-    
-    def bool_reminder_false(self, iid):
-        task_found = self.iid_find(iid)
-        if task_found.success:
-            if task_found.data.reminder:
-                task_found.data.remove_reminder(datetime_now())
-                logger.info(f"{self.category} page: Task reminder removed: {iid} ")
-                self.changed = True
-                self.modified_date = datetime_now()
-                return OperationResult(
-                    success = True,
-                    message = f"successfully Remove reminder from id {iid} in {self.category} page",
-                    data = task_found.data
-                )
-            else:
-                task_found.data.set_reminder(datetime_now())
-                logger.info(f"{self.category} page: Task reminder set: {iid} ")
-                self.changed = True
-                self.modified_date = datetime_now()
-                return OperationResult(
-                    success = True,
-                    message = f"successfully Set reminder to id {iid} in {self.category} page",
-                    data = task_found.data
-                )
-        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
-        return OperationResult(
-            success = False,
-            data = None,
-            error=ErrorData(
-                error_boolean=True,
-                error_message=f"Id not found in {self.category} page",
-                error_code="error-iid-not-found"
-            )
-        )
-    
+
     def update_group(self, group):
         self.group = group
         self.modified_date = datetime_now()
+    
+    
+    def _display_filtered(self, predicate, no_match_message="No tasks available"):
+        display = [f"# {self.category} | id : {self.page_id}"]
+        if not self.tasklist:
+            logger.warning(f"{self.category} page: No tasks available")
+            display.append("No tasks available")
+            display.append("")
+            return OperationResult(
+                success = False,
+                message = f"No tasks available",
+                data = display
+            )
+
+        count = 0
+        for task in self.tasklist:
+            if predicate(task):
+                display.append(str(task))
+                count += 1
+
+        if count == 0:
+            display.append(f"{no_match_message} out of {len(self.tasklist)} tasks")
+            display.append("")
+            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+            return OperationResult(
+                success = False,
+                message = no_match_message,
+                data = display
+            )
+
+        display.append("")
+        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
+        return OperationResult(
+            success=True,
+            message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
+            data=display
+        )
     #----------------------------------Display task---------------------------------------------
     def display_all(self):
-        display = [f"# {self.category} | id : {self.page_id}"]
-        if not self.tasklist:
-            logger.warning("{self.category} page: No tasks available ")
-            display.append("No tasks available")
-            display.append("")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        for task in self.tasklist:
-            display.append(str(task))
-        
-        display.append("")
-        
-        logger.info(f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ")
-        return OperationResult(
-            success=True,
-            message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
-            data=display
-        )
+        return self._display_filtered(lambda t: True)
 
     def display_by_months(self,months,year):
-        display = [f"# {self.category} | id : {self.page_id}"]
-        count = 0
-
-        if not self.tasklist:
-            logger.warning(f"{self.category} page: No tasks available")
-            display.append("No tasks available")
-            display.append("")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        for task in self.tasklist:
-            if task.created_date.strftime("%B").lower() == months.lower() and task.created_date.year == year:
-                display.append(str(task))
-                count += 1
-        
-        if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
-            display.append("")
-            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        display.append("")
-        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-        return OperationResult(
-            success=True,
-            message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
-            data=display
-        )
+        return self._display_filtered(lambda task: task.created_date.strftime("%B").lower() == months.lower() and task.created_date.year == year)
 
     def display_by_week(self,week,year):
-        display = [f"# {self.category} | id : {self.page_id}"]
-        count = 0
-        if not self.tasklist:
-            logger.warning(f"{self.category} page: No tasks available")
-            display.append("No tasks available")
-            display.append("")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        for task in self.tasklist:
-            if int(task.created_date.isocalendar().week) == week and task.created_date.year == year:
-                display.append(str(task))
-                count += 1
-        
-        if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
-            display.append("")
-            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        display.append("")
-        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-        return OperationResult(
-            success=True,
-            message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
-            data=display
-        )   
+        return self._display_filtered(lambda task: int(task.created_date.isocalendar().week) == week and task.created_date.year == year)
     
     def display_by_year(self,year):
-        display = [f"# {self.category} | id : {self.page_id}"]
-        count = 0
-        if not self.tasklist:
-            logger.warning(f"{self.category} page: No tasks available")
-            display.append("No tasks available")
-            display.append("")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        for task in self.tasklist:
-            if task.created_date.year == year:
-                display.append(str(task))
-                count += 1
-        
-        if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
-            display.append("")
-            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        display.append("")
-        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-        return OperationResult(
-            success=True,
-            message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
-            data=display
-        )
+        return self._display_filtered(lambda task: task.created_date.year == year)
 
     def display_by_day(self,day,month,year):
-        display = [f"# {self.category} | id : {self.page_id}"]
-        count = 0
-        if not self.tasklist:
-            logger.warning(f"{self.category} page: No tasks available")
-            display.append("No tasks available")
-            display.append("")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        for task in self.tasklist:
-            if task.created_date.day == day and task.created_date.month == month and task.created_date.year == year:
-                display.append(str(task))
-                count += 1
-        
-        if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
-            display.append("")
-            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        display.append("")
-        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-        return OperationResult(
-            success=True,
-            message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
-            data=display
-        )
+        return self._display_filtered(lambda task: task.created_date.day == day and task.created_date.month == month and task.created_date.year == year)
 
     def display_by_done(self):
-        display = [f"# {self.category} | id : {self.page_id}"]
-        count = 0
-        if not self.tasklist:
-            logger.warning(f"{self.category} page: No tasks available")
-            display.append("No tasks available")
-            display.append("")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        for task in self.tasklist:
-            if task.done == True:
-                display.append(str(task))
-                count += 1
-        
-        if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
-            display.append("")
-            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        display.append("")
-        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-        return OperationResult(
-            success=True,
-            message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
-            data=display
-        )
+        return self._display_filtered(lambda task: task.done == True)
 
     def display_by_pending(self):
-        display = [f"# {self.category} | id : {self.page_id}"]
-        count = 0
-        if not self.tasklist:
-            logger.warning(f"{self.category} page: No tasks available")
-            display.append("No tasks available")
-            display.append("")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        for task in self.tasklist:
-            if task.done == False :
-                display.append(str(task))
-                count += 1
-        
-        if count == 0:
-            display.append(f"No tasks available out of {len(self.tasklist)} tasks")
-            display.append("")
-            logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-            return OperationResult(
-                success = False,
-                message = f"No tasks available",
-                data = display
-            )
-        
-        display.append("")
-        logger.info(f"{self.category} page: Displayed {count}/{len(self.tasklist)} tasks")
-        return OperationResult(
-            success=True,
-            message=f"{self.category} page: Displayed {len(self.tasklist)}/{len(self.tasklist)} tasks ",
-            data=display
-        )
+        return self._display_filtered(lambda task: task.done == False)
 
     def percent_done(self):
         count_done = 0
@@ -671,6 +421,9 @@ class TaskList:
         except ZeroDivisionError:
             return 0
     
+    def display_by_tags(self, tag):
+        return self._display_filtered(lambda task: tag in task.tags, no_match_message=f"No tasks available with tag '{tag}'")
+
     def completion_bar(self):
         percent_inten = int(self.percent_done()/20.0)
         bar = ""
@@ -699,5 +452,6 @@ class TaskList:
             "category": self.category,
             "created_date": self.created_date.isoformat(),
             "modified_date": self.modified_date.isoformat(),
-            "tasks": self.serialize_dict_of_tasks()
+            "tasks": self.serialize_dict_of_tasks(),
+            "group": self.group
         }
