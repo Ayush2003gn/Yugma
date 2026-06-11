@@ -281,7 +281,7 @@ class TaskList:
         )
     #----------------------------------Display task---------------------------------------------
     def display_all(self):
-        display = [f"# {self.category}"]
+        display = [f"# {self.category} | id : {self.page_id}"]
         if not self.tasklist:
             logger.warning("{self.category} page: No tasks available ")
             display.append("No tasks available")
@@ -306,7 +306,7 @@ class TaskList:
 
 
     def display_by_months(self,months,year):
-        display = [f"# {self.category}"]
+        display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
 
         if not self.tasklist:
@@ -344,7 +344,7 @@ class TaskList:
 
 
     def display_by_week(self,week,year):
-        display = [f"# {self.category}"]
+        display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
         if not self.tasklist:
             logger.warning(f"{self.category} page: No tasks available")
@@ -381,7 +381,7 @@ class TaskList:
     
 
     def display_by_year(self,year):
-        display = [f"# {self.category}"]
+        display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
         if not self.tasklist:
             logger.warning(f"{self.category} page: No tasks available")
@@ -417,7 +417,7 @@ class TaskList:
         )
 
     def display_by_day(self,day,month,year):
-        display = [f"# {self.category}"]
+        display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
         if not self.tasklist:
             logger.warning(f"{self.category} page: No tasks available")
@@ -453,7 +453,7 @@ class TaskList:
         )
 
     def display_by_done(self):
-        display = [f"# {self.category}"]
+        display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
         if not self.tasklist:
             logger.warning(f"{self.category} page: No tasks available")
@@ -489,7 +489,7 @@ class TaskList:
         )
 
     def display_by_pending(self):
-        display = [f"# {self.category}"]
+        display = [f"# {self.category} "]
         count = 0
         if not self.tasklist:
             logger.warning(f"{self.category} page: No tasks available")
