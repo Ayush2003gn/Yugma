@@ -489,7 +489,7 @@ class TaskList:
         )
 
     def display_by_pending(self):
-        display = [f"# {self.category} "]
+        display = [f"# {self.category} | id : {self.page_id}"]
         count = 0
         if not self.tasklist:
             logger.warning(f"{self.category} page: No tasks available")
@@ -557,3 +557,12 @@ class TaskList:
             json_list.append(jlist)
         logger.info(f"{self.category} page: Prepared {len(json_list)} tasks for saving")
         return json_list
+
+    def serialize_dict_of_page(self):
+        return {
+            "page_id": self.page_id,
+            "category": self.category,
+            "created_date": self.created_date.isoformat(),
+            "modified_date": self.modified_date.isoformat(),
+            "tasks": self.serialize_dict_of_tasks()
+        }
