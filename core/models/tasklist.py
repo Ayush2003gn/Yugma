@@ -101,8 +101,8 @@ class TaskList:
                 error_code="error-uid-not-found"
             )
         )
+    
     #----------------------------------Remove task---------------------------------------------
-
     def remove_task_iid(self, iid):
         task = self.iid_find(iid)
         if task.success:
@@ -415,6 +415,10 @@ class TaskList:
                 error_code="error-iid-not-found"
             )
         )
+    
+    def update_group(self, group):
+        self.group = group
+        self.modified_date = datetime_now()
     #----------------------------------Display task---------------------------------------------
     def display_all(self):
         display = [f"# {self.category} | id : {self.page_id}"]
