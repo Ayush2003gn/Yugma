@@ -278,6 +278,143 @@ class TaskList:
                 error_code="error-iid-not-found"
             )
         )
+    #----------------------------------additional functions---------------------------------------------
+    def update_discription(self, description,iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.update_description(description,datetime_now())
+            logger.info(f"{self.category} page: Task description updated: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
+            return OperationResult(
+                success = True,
+                message = f"successfully Update description of id {iid} in {self.category} page",
+                data = task_found.data
+            )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+    
+    def add_tag(self, tag, iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.add_tag(tag,datetime_now())
+            logger.info(f"{self.category} page: Task tag added: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
+            return OperationResult(
+                success = True,
+                message = f"successfully Add tag to id {iid} in {self.category} page",
+                data = task_found.data
+            )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+    
+    def remove_tag(self, tag, iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.remove_tag(tag,datetime_now())
+            logger.info(f"{self.category} page: Task tag removed: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
+            return OperationResult(
+                success = True,
+                message = f"successfully Remove tag from id {iid} in {self.category} page",
+                data = task_found.data
+            )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+    
+    def bool_reminder_true(self, iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            if task_found.data.reminder:
+                task_found.data.remove_reminder(datetime_now())
+                logger.info(f"{self.category} page: Task reminder removed: {iid} ")
+                self.changed = True
+                self.modified_date = datetime_now()
+                return OperationResult(
+                    success = True,
+                    message = f"successfully Remove reminder from id {iid} in {self.category} page",
+                    data = task_found.data
+                )
+            else:
+                task_found.data.set_reminder(datetime_now())
+                logger.info(f"{self.category} page: Task reminder set: {iid} ")
+                self.changed = True
+                self.modified_date = datetime_now()
+                return OperationResult(
+                    success = True,
+                    message = f"successfully Set reminder to id {iid} in {self.category} page",
+                    data = task_found.data
+                )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+    
+    def bool_reminder_false(self, iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            if task_found.data.reminder:
+                task_found.data.remove_reminder(datetime_now())
+                logger.info(f"{self.category} page: Task reminder removed: {iid} ")
+                self.changed = True
+                self.modified_date = datetime_now()
+                return OperationResult(
+                    success = True,
+                    message = f"successfully Remove reminder from id {iid} in {self.category} page",
+                    data = task_found.data
+                )
+            else:
+                task_found.data.set_reminder(datetime_now())
+                logger.info(f"{self.category} page: Task reminder set: {iid} ")
+                self.changed = True
+                self.modified_date = datetime_now()
+                return OperationResult(
+                    success = True,
+                    message = f"successfully Set reminder to id {iid} in {self.category} page",
+                    data = task_found.data
+                )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
     #----------------------------------Display task---------------------------------------------
     def display_all(self):
         display = [f"# {self.category} | id : {self.page_id}"]
