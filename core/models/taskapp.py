@@ -212,6 +212,37 @@ class TaskApp:
             category=category
         )
     
+    def add_tag(self,iid,tag,category = None):
+        return self._execute_page_method(
+            "add_tag_iid",
+            iid,
+            tag,
+            category=category
+        )
+    
+    def remove_tag(self,iid,tag,category = None):
+        return self._execute_page_method(
+            "remove_tag_iid",
+            iid,
+            tag,
+            category=category
+        )
+    
+    def update_description(self,iid,description,category = None):
+        return self._execute_page_method(
+            "update_discription_iid",
+            iid,
+            description,
+            category=category
+        )
+    
+    def update_group(self,group,category = None):
+        return self._execute_page_method(
+            "update_group",
+            group,
+            category=category
+        )
+
     #----------------------------------Display task---------------------------------------------
     def _execute_page_display(self,type_display,*args,category = None):
         logger.info(f"Displaying {type_display}")

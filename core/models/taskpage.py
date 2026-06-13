@@ -43,8 +43,7 @@ class TaskPage:
             data = newtask
         )
     
-    def importing_task(self,task, iid, created_date, modified_date, priority, done):
-        uid = self.uid_generator().data
+    def importing_task(self,task, iid,uid, created_date, modified_date, priority, done):
         newtask = Task(
             task = task,
             iid = iid,
@@ -279,7 +278,7 @@ class TaskPage:
             )
         )
     #----------------------------------additional functions---------------------------------------------
-    def update_discription(self, description,iid):
+    def update_discription_iid(self, description,iid):
         task_found = self.iid_find(iid)
         if task_found.success:
             task_found.data.update_description(description,datetime_now())
@@ -302,7 +301,7 @@ class TaskPage:
             )
         )
     
-    def add_tag(self, tag, iid):
+    def add_tag_iid(self, tag, iid):
         task_found = self.iid_find(iid)
         if task_found.success:
             task_found.data.add_tag(tag,datetime_now())
@@ -325,7 +324,7 @@ class TaskPage:
             )
         )
     
-    def remove_tag(self, tag, iid):
+    def remove_tag_iid(self, tag, iid):
         task_found = self.iid_find(iid)
         if task_found.success:
             task_found.data.remove_tag(tag,datetime_now())
@@ -352,7 +351,11 @@ class TaskPage:
     def update_group(self, group):
         self.group = group
         self.modified_date = datetime_now()
-    
+        return OperationResult(
+            success = True,
+            message = f"{self.category} page: Group updated to {group}",
+            data = None
+        )
     
     def _display_filtered(self, predicate, no_match_message="No tasks available"):
         display = [f"# {self.category} | id : {self.page_id}"]
