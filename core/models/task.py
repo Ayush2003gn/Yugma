@@ -78,14 +78,14 @@ class Task:
     def to_dict(self):
         return {
             "iid" : self.iid, 
+            "uid" : self.uid,
             "task" : self.task, 
             "done" : self.done,
             "date_created":self.created_date.isoformat(), 
             "date_modified":self.modified_date.isoformat(), 
             "priority":self.priority,
             "description": self.description,
-            "tags": self.tags,
-            "reminder": self.reminder
+            "tags": self.tags
         }
     # display of task
 

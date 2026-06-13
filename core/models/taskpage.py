@@ -1,358 +1,457 @@
-from core.models.tasklist import TaskList
+from core.models.task import Task
 import logging
 from core.contracts.error_data import ErrorData
 from core.contracts.operation_result import OperationResult
-from dataclasses import dataclass
+import uuid
 logger = logging.getLogger(__name__)
-
-@dataclass
-class PageChanged:
-    page:str
-    type_change:str = "modify" #"add"|"remove"|"modify"
+from core.utils.datetime_now import datetime_now
 
 class TaskPage:
-    def __init__(self):
+    def __init__(self, category,page_id, create_date , group = None):
+        self.category = category 
+        self.page_id = page_id
+        self.created_date = create_date
+        self.modified_date = create_date
+        self.group = group
+
         self.taskpage = []
-        self.default = None
-        self.changed_pages = []
+        self.uid_count = 0
+        self.changed = False
 
-    #-------------------------------------Changes in Page------------------------------------------
-    def add_page(self,category):
-        if self.taskpage:
-            for page in self.taskpage:
-                if page.category.lower() == category.lower():
-                    logger.warning(f"Category:{category} is alreay exist")
-                    return OperationResult(
-                        success=False,
-                        data=None,
-                        error=ErrorData(
-                            error_boolean=True,
-                            error_message=f"Category:{category} is alreay exist",
-                            error_code="error-category-already-exist"
-                        )
-                    )
-                
-        newpage = TaskList(category)
-        self.taskpage.append(newpage)
-        page_changed = PageChanged(page=newpage.category,type_change="add")
-        self.changed_pages.append(page_changed)
-
+    def uid_generator(self):
+        self.uid_count += 1
         return OperationResult(
-            success=True,
-            message=f"Category:{category} is added",
-            data=newpage,
+            success = True,
+            message = "uid generated",
+            data = f"Y{self.uid_count}"
         )
     
-    def resolve_uid(self, uid, category = None):
-        if category is None:
-            page = self.default
-        else:
-            page_dict = self.category_finder(category)
-            if page_dict.success == False:
-                logger.warning(f"Page Category not found: {category}")
-                return OperationResult(
-                    success=False,
-                    data=None,
-                    error=ErrorData(
-                        error_boolean=True,
-                        error_message=f"Page Category not found: {category}",
-                        error_code="error-category-not-found"
-                    )
-                )
-            page = page_dict.data
-        uid_result = page.resolve_uid(uid)
-        return uid_result
-    
-    def category_finder(self,category):
-        for page in self.taskpage:
-            if page.category.lower() == category.lower():
-                return OperationResult(
-                    success=True,
-                    message=f"Category:{category} is found",
-                    data=page
-                )
+    #----------------------------------Create task---------------------------------------------
+    def add_task(self,task):
+        iid = str(uuid.uuid4())
+        uid = self.uid_generator().data
+
+        newtask = Task(task, iid, uid, datetime_now(), datetime_now())
+        
+        self.taskpage.append(newtask)
+        self.changed = True
+        self.modified_date = datetime_now()
+        logger.info(f"{self.category} page:task added [{task}]")
         return OperationResult(
-            success=False,
+            success = True,
+            message = f"{self.category} page:task added [{task}, iid: {iid}, uid: {uid}",
+            data = newtask
+        )
+    
+    def importing_task(self,task, iid, created_date, modified_date, priority, done):
+        uid = self.uid_generator().data
+        newtask = Task(
+            task = task,
+            iid = iid,
+            uid = uid,
+            created_date = created_date,
+            modified_date = modified_date,
+            priority = priority,
+            done = done
+        )
+        self.taskpage.append(newtask)
+        return OperationResult(
+            success = True,
+            message = f"{self.category} page:task imorted [{task}]",
+            data = newtask
+        )
+
+    def iid_find(self,iid):
+        for task in self.taskpage:
+            if task.iid == iid:
+                return OperationResult(
+                    success = True,
+                    message = "Got the file",
+                    data = task
+                )
+            
+        return OperationResult(
+            success = False,
+            message = None,
+            data = None,
             error=ErrorData(
                 error_boolean=True,
-                error_message=f"Category:{category} is not found",
-                error_code="error-category-not-found"
+                error_message=f"Can't able to find internal task id {iid}",
+                error_code="error-iid-not-found"
             )
         )
     
-    def remove_page(self,category):
-        page = self.category_finder(category)
-
-        if page.success:
-            
-            if self.default == page.data:
-
-                self.default = None
-
-            self.taskpage.remove(page.data)
-            logger.info(f" Category : {category} is removed")
-            page_changed = PageChanged(page=page.data.category,type_change="remove")
-            self.changed_pages.append(page_changed)
-            return OperationResult(
-                success=True,
-                message=f"Category : {category} is removed",
-                data=None
-            )
-        
-        logger.warning(f"Page Category not found: {category}")
-        return page
-
-    def set_default(self,category):
-        page = self.category_finder(category)
-        if page.success:
-            self.default = page.data
-            logger.info(f" Category : {category} is set as default")
-            return OperationResult(
-                success=True,
-                message=f"Category : {category} is set as default",
-                data=page.data
-            )
-        logger.warning(f"Page Category not found: {category}")
-        return page
-    
-    #----------------------------------Change in task-------------------------------------------
-    def _execute_page_method(self,action,*args,category):
-        if category is None:
-            
-            if self.default is None:
-
-                logger.warning("Not set default page or mention page")
+    def resolve_uid(self,uid):
+        for task in self.taskpage:
+            if task.uid == uid:
+                iid = task.iid
                 return OperationResult(
-                    success=False,
-                    error=ErrorData(
-                        error_boolean=True,
-                        error_message="Not set default page or mention page",
-                        error_code="error-default-page-not-set"
-                    )
+                    success = True,
+                    message = "Got the iid",
+                    data = iid
                 )
-
-            page = self.default
-        else:
-            page_dict = self.category_finder(category)
-
-            if page_dict.success == False:
-
-                logger.warning(f"Page Category not found: {category}")
-                return page_dict
             
-            page = page_dict.data
-            
-        method = getattr(page, action)
-        result = method(*args)
-        if result.success and "display" not in action:
-            self.changed_pages.append(
-                PageChanged(
-                    page=page.category,
-                    type_change="modify"
-                )
+        return OperationResult(
+            success = False,
+            message = None,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Can't able to find internal task id {uid}",
+                error_code="error-uid-not-found"
             )
-        return result
-
-    #----------------------------------Create task---------------------------------------------
-    def add_task(self,task,category = None):
-        return self._execute_page_method(
-        "add_task",
-        task,
-        category=category)
+        )
     
     #----------------------------------Remove task---------------------------------------------
-    def remove_task(self, iid,category = None):
-        return self._execute_page_method(
-            "remove_task_iid",
-            iid,
-            category=category
+    def remove_task_iid(self, iid):
+        task = self.iid_find(iid)
+        if task.success:
+
+            self.taskpage.remove(task.data)
+            logger.info(f"{self.category} page: Id : {iid} is removed")
+            self.changed = True
+            self.modified_date = datetime_now()
+
+            return OperationResult(
+                success = True,
+                message = f"{self.category} page: Id : {iid} is removed",
+                data = None
+            )
+        
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+         
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"{self.category} page: Task ID not found: {iid} ",
+                error_code="error-iid-not-found"
+            )
         )
     
     #----------------------------------Update task---------------------------------------------    
-    def update_task(self,iid,task,category = None):
-        return self._execute_page_method(
-            "update_task_iid",
-            iid,
-            task,
-            category=category
-        )
-    
-    def mark_done(self,iid,category = None):
-        return self._execute_page_method(
-            "mark_done_iid",
-            iid,
-            category=category
-        )
+    def update_task_iid(self, iid, task):
+        task_found = self.iid_find(iid)
 
-    def mark_undone(self,iid,category = None):
-        return self._execute_page_method(
-            "mark_undone_iid",
-            iid,
-            category=category
-        )
+        if task_found.success:
+            task_found.data.correction(task,datetime_now())
 
-    def high_priority_task(self,iid,category = None):
-        return self._execute_page_method(
-            "high_priority_task_iid",
-            iid,
-            category=category
-        )
+            logger.info(f"{self.category} page: Task updated: id={iid}, new_value='{task}'")
 
-    def medium_priority_task(self,iid,category = None):
-        return self._execute_page_method(
-            "medium_priority_task_iid",
-            iid,
-            category=category
-        )
-
-    def low_priority_task(self,iid,category = None):
-        return self._execute_page_method(
-            "low_priority_task_iid",
-            iid,
-            category=category
-        )
-    
-    #----------------------------------Display task---------------------------------------------
-    def _execute_page_display(self,type_display,*args,category = None):
-        logger.info(f"Displaying {type_display}")
-        display = []
-        if category == None:
-            logger.info("Displaying all pages")
-            for page in self.taskpage:
-                method = getattr(page, type_display)
-                method_data = method(*args)
-                display.append(method_data)
-            logger.info(f"Displayed {len(self.taskpage)} pages")
+            self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
-                success=True,
-                message="Ready for display",
-                data=display
+                success = True,
+                message = f"{self.category} page: Task updated: id={iid}, new_value='{task}'",
+                data = task_found.data
             )
-        else:
-            logger.info(f"Displaying {category} page")
-            page_dict = self.category_finder(category)
-            logger.info(f"message:{page_dict.message} and error_message:{page_dict.error.error_message}")
-            if page_dict.success:
-                page = page_dict.data
+        
+        logger.warning(f"{self.category} page: Task ID not found: {iid}")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"{self.category} page: Task ID not found: {iid}",
+                error_code="error-iid-not-found"
+            )
+        )
+    
+    def mark_done_iid(self, iid):
+        task_found = self.iid_find(iid)
 
-                method = getattr(page, type_display)
-                method_data = method(*args)
+        if task_found.success:
 
-                logger.info(f"message:{method_data.message} and error_message:{method_data.error.error_message}")
-                return OperationResult(
-                    success=True,
-                    message="Ready for display",
-                    data=display
-                )
-        logger.warning(f"Page Category not found: {category}")
-        return page
+            task_found.data.mark_done(datetime_now())
+
+            logger.info(f"{self.category} page: Task status updated: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
+            return OperationResult(
+                success = True,
+                message = f"successfully Update status of id {iid} in {self.category} page",
+                data = task_found.data
+            )
+        
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+        
+    def mark_undone_iid(self,iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.mark_undone(datetime_now())
+            logger.info(f"{self.category} page: Task status updated: {iid}")
+            self.changed = True
+            self.modified_date = datetime_now()
+            return OperationResult(
+                success = True,
+                message = f"successfully Update status of id {iid} in {self.category} page",
+                data = task_found.data
+            )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+    
+    def high_priority_task_iid(self,iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.priority_high(datetime_now())
+            logger.info(f"{self.category} page: Task priority level updated: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
+            return OperationResult(
+                success = True,
+                message = f"successfully Update priority level of id {iid} in {self.category} page",
+                data = task_found.data
+            )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+
+    def medium_priority_task_iid(self,iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.priority_medium(datetime_now())
+            logger.info(f"{self.category} page: Task priority level updated: {iid}")
+            self.changed = True
+            self.modified_date = datetime_now()
+            return OperationResult(
+                success = True,
+                message = f"successfully Update priority level of id {iid} in {self.category} page",
+                data = task_found.data
+            )
+                
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+
+    def low_priority_task_iid(self,iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
             
-
-    #-------------------------------------------------------------------------------------------
-    def display_all(self,category = None):
-        return self._execute_page_display(
-            "display_all",
-            category=category
-            )
-        
-    
-    def display_by_months(self,months,year,category = None):
-        return self._execute_page_display(
-            "display_by_months",
-            months,
-            year,
-            category=category
-            )
-        
-    
-    def display_by_week(self,week,year,category = None):
-        return self._execute_page_display(
-            "display_by_week",
-            week,
-            year,
-            category=category
-            )
-    
-    def display_by_day(self,day,months,year,category = None):
-        return self._execute_page_display(
-            "display_by_day",
-            day,
-            months,
-            year,
-            category=category
-            )
-    
-    def display_by_year(self,year,category = None):
-        return self._execute_page_display(
-            "display_by_year",
-            year,
-            category=category
-            )
-
-    def display_analysis(self):
-        display = []
-        if self.taskpage:
-            for page in self.taskpage:
-                display.append(page.completion_bar())
+            task_found.data.priority_low(datetime_now())
+            logger.info(f"{self.category} page: Task priority level updated: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
-                success=True,
-                message="Ready for display",
-                data=display
+                success = True,
+                message = f"successfully Update priority level of id {iid} in {self.category} page",
+                data = task_found.data
             )
-        else:
-            display.append("No pages are there")
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+    #----------------------------------additional functions---------------------------------------------
+    def update_discription(self, description,iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.update_description(description,datetime_now())
+            logger.info(f"{self.category} page: Task description updated: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
-                success=True,
-                message="Ready for display",
-                data=display
+                success = True,
+                message = f"successfully Update description of id {iid} in {self.category} page",
+                data = task_found.data
             )
-
-    def display_done(self,category):
-        return self._execute_page_display(
-            "display_by_done",
-            category=category
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
         )
     
-    def display_pending(self,category):
-        return self._execute_page_display(
-            "display_by_pending",
-            category=category
-        )
-
-#-----------------------------Data handling for persistence--------------------------------------
-
-    def category_datapath_dict(self):
-        category_list = {}
-        if self.taskpage:
-            for page in self.taskpage:
-                category = page.category
-                category_list[category + "_data.json"] = category
-            return category_list
-        return {}
-
-    def serialize_tasksofpage(self,category):
-        page = self.category_finder(category)
-        if page.success:
-            return page.data.serialize_dict_of_tasks()
-
-    def import_category_data(self,category,data_list):
-        page = self.add_page(category)
-        self.changed_pages = []
-        if page.success:
-            page = page.data
-            for data in data_list:
-                page.importing_task(
-                    task = data["Task"],
-                    iid = data["iid"],
-                    created_date = data["Date Created"],
-                    modified_date = data["Date Modified"],
-                    priority = data["Priority"],
-                    done = data["Done"]
-                )
+    def add_tag(self, tag, iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.add_tag(tag,datetime_now())
+            logger.info(f"{self.category} page: Task tag added: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
             return OperationResult(
-                success=True,
-                data=page
+                success = True,
+                message = f"successfully Add tag to id {iid} in {self.category} page",
+                data = task_found.data
+            )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+    
+    def remove_tag(self, tag, iid):
+        task_found = self.iid_find(iid)
+        if task_found.success:
+            task_found.data.remove_tag(tag,datetime_now())
+            logger.info(f"{self.category} page: Task tag removed: {iid} ")
+            self.changed = True
+            self.modified_date = datetime_now()
+            return OperationResult(
+                success = True,
+                message = f"successfully Remove tag from id {iid} in {self.category} page",
+                data = task_found.data
+            )
+        logger.warning(f"{self.category} page: Task ID not found: {iid} ")
+        return OperationResult(
+            success = False,
+            data = None,
+            error=ErrorData(
+                error_boolean=True,
+                error_message=f"Id not found in {self.category} page",
+                error_code="error-iid-not-found"
+            )
+        )
+    
+
+    def update_group(self, group):
+        self.group = group
+        self.modified_date = datetime_now()
+    
+    
+    def _display_filtered(self, predicate, no_match_message="No tasks available"):
+        display = [f"# {self.category} | id : {self.page_id}"]
+        if not self.taskpage:
+            logger.warning(f"{self.category} page: No tasks available")
+            display.append("No tasks available")
+            display.append("")
+            return OperationResult(
+                success = False,
+                message = f"No tasks available",
+                data = display
             )
 
-    def reset_changed_pages(self):
-        self.changed_pages = []
+        count = 0
+        for task in self.taskpage:
+            if predicate(task):
+                display.append(str(task))
+                count += 1
+
+        if count == 0:
+            display.append(f"{no_match_message} out of {len(self.taskpage)} tasks")
+            display.append("")
+            logger.info(f"{self.category} page: Displayed {count}/{len(self.taskpage)} tasks")
+            return OperationResult(
+                success = False,
+                message = no_match_message,
+                data = display
+            )
+
+        display.append("")
+        logger.info(f"{self.category} page: Displayed {count}/{len(self.taskpage)} tasks")
+        return OperationResult(
+            success=True,
+            message=f"{self.category} page: Displayed {len(self.taskpage)}/{len(self.taskpage)} tasks ",
+            data=display
+        )
+    #----------------------------------Display task---------------------------------------------
+    def display_all(self):
+        return self._display_filtered(lambda t: True)
+
+    def display_by_months(self,months,year):
+        return self._display_filtered(lambda task: task.created_date.strftime("%B").lower() == months.lower() and task.created_date.year == year)
+
+    def display_by_week(self,week,year):
+        return self._display_filtered(lambda task: int(task.created_date.isocalendar().week) == week and task.created_date.year == year)
+    
+    def display_by_year(self,year):
+        return self._display_filtered(lambda task: task.created_date.year == year)
+
+    def display_by_day(self,day,month,year):
+        return self._display_filtered(lambda task: task.created_date.day == day and task.created_date.month == month and task.created_date.year == year)
+
+    def display_by_done(self):
+        return self._display_filtered(lambda task: task.done == True)
+
+    def display_by_pending(self):
+        return self._display_filtered(lambda task: task.done == False)
+
+    def percent_done(self):
+        count_done = 0
+        for task in self.taskpage:
+            if task.done:
+                count_done += 1
+        try:
+            return (count_done/len(self.taskpage))*100
+        except ZeroDivisionError:
+            return 0
+    
+    def display_by_tags(self, tag):
+        return self._display_filtered(lambda task: tag in task.tags, no_match_message=f"No tasks available with tag '{tag}'")
+
+    def completion_bar(self):
+        percent_inten = int(self.percent_done()/20.0)
+        bar = ""
+        for i in range(percent_inten):
+            bar += "="
+        for i in range(20-percent_inten):
+            bar += " "
+        return OperationResult(
+            success=True,
+            message=None,
+            data=f"{self.category} page: [{bar}]"
+        )
+    
+    #----------------------------------------File saving proccess---------------------------------
+    def serialize_dict_of_tasks(self):
+        json_list = []
+        for task in self.taskpage:
+            jlist = task.to_dict()
+            json_list.append(jlist)
+        logger.info(f"{self.category} page: Prepared {len(json_list)} tasks for saving")
+        return json_list
+
+    def serialize_dict_of_page(self):
+        return {
+            "page_id": self.page_id,
+            "category": self.category,
+            "created_date": self.created_date.isoformat(),
+            "modified_date": self.modified_date.isoformat(),
+            "tasks": self.serialize_dict_of_tasks(),
+            "group": self.group
+        }
