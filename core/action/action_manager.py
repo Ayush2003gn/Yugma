@@ -1,4 +1,4 @@
-from core.models.taskpage import TaskPage
+from core.models.taskapp import TaskApp
 import logging
 from core.action import (
     page_action,
@@ -13,7 +13,7 @@ from core.action import (
 )
 logger = logging.getLogger(__name__)
 
-task_app = TaskPage()
+task_app = TaskApp()
 
 def command_paths():
     default = task_app.default

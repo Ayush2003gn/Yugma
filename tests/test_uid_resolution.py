@@ -1,7 +1,7 @@
-from core.models.taskpage import TaskPage
+from core.models.taskapp import TaskApp
 def test_uid_to_iid_resolution():
 
-    page = TaskPage()
+    page = TaskApp()
 
     page.add_page("work")
     page.set_default("work")

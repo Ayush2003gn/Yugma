@@ -1,8 +1,8 @@
-from core.models.taskpage import TaskPage
+from core.models.taskapp import TaskApp
 
 def test_page_change_tracking():
 
-    page = TaskPage()
+    page = TaskApp()
 
     page.add_page("study")
 

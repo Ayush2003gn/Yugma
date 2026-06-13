@@ -1,8 +1,8 @@
-from core.models.taskpage import TaskPage
+from core.models.taskapp import TaskApp
 
 
 def setup_todo():
-    todo = TaskPage()
+    todo = TaskApp()
     todo.add_page("study")
     todo.set_default("study")
     return todo
@@ -13,7 +13,7 @@ def setup_todo():
 # -------------------------------------------------
 
 def test_add_page():
-    todo = TaskPage()
+    todo = TaskApp()
     category = "study"
     result = todo.add_page(category)
 
@@ -22,7 +22,7 @@ def test_add_page():
 
 
 def test_duplicate_page():
-    todo = TaskPage()
+    todo = TaskApp()
     category = "study"
 
     todo.add_page(category)
@@ -32,7 +32,7 @@ def test_duplicate_page():
 
 
 def test_set_default_page():
-    todo = TaskPage()
+    todo = TaskApp()
 
     todo.add_page("study")
     result = todo.set_default("study")
@@ -46,7 +46,7 @@ def test_set_default_page():
 # -------------------------------------------------
 
 def test_category_finder_existing():
-    todo = TaskPage()
+    todo = TaskApp()
     category = "study"
 
     todo.add_page(category)
@@ -70,7 +70,7 @@ def test_add_task_default_page():
 
 
 def test_add_task_specific_category():
-    todo = TaskPage()
+    todo = TaskApp()
     todo.add_page("work")
     result = todo.add_task("Finish report", category="work")
 
@@ -78,7 +78,7 @@ def test_add_task_specific_category():
     assert result.data.task == "Finish report"
 
 def test_add_task_without_default():
-    to_do = TaskPage()
+    to_do = TaskApp()
 
     result = to_do.add_task("Complete physics")
     assert result.success is False
