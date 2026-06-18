@@ -2,7 +2,7 @@ from core.models.task import Task
 import logging
 from core.contracts.error_data import ErrorData
 from core.contracts.operation_result import OperationResult
-import uuid
+from core.utils.uid_generator import uuid_generator
 logger = logging.getLogger(__name__)
 from core.utils.datetime_now import datetime_now
 
@@ -28,7 +28,7 @@ class TaskPage:
     
     #----------------------------------Create task---------------------------------------------
     def add_task(self,task):
-        iid = str(uuid.uuid4())
+        iid = uuid_generator().data
         uid = self.uid_generator().data
 
         newtask = Task(task, iid, uid, datetime_now(), datetime_now())

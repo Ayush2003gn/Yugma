@@ -9,3 +9,4 @@ class ReminderTaskData:
     task_title: str
     reminder_time: datetime.datetime
     reminder_addition_message: str
+    enabled: bool = field(default=True)
