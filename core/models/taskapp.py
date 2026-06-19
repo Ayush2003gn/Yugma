@@ -243,23 +243,13 @@ class TaskApp:
             category=category
         )
     
-    def display_analysis(self):
-        display = []
-        if self.taskapp:
-            for page in self.taskapp:
-                display.append(page.completion_bar())
-            return OperationResult(
-                success=True,
-                message="Ready for display",
-                data=display
-            )
-        else:
-            display.append("No pages are there")
-            return OperationResult(
-                success=True,
-                message="Ready for display",
-                data=display
-            )
+    def get_all_tasks(self):
+        all_task = []
+        for page in self.taskapp:
+            tasklist = page.taskpage
+            all_task.append(tasklist)
+        
+        return all_task
 
 #-----------------------------Data handling for persistence--------------------------------------
 
