@@ -242,84 +242,7 @@ class TaskApp:
             group,
             category=category
         )
-
-    #----------------------------------Display task---------------------------------------------
-    def _execute_page_display(self,type_display,*args,category = None):
-        logger.info(f"Displaying {type_display}")
-        display = []
-        if category == None:
-            logger.info("Displaying all pages")
-            for page in self.taskapp:
-                method = getattr(page, type_display)
-                method_data = method(*args)
-                display.append(method_data)
-            logger.info(f"Displayed {len(self.taskapp)} pages")
-            return OperationResult(
-                success=True,
-                message="Ready for display",
-                data=display
-            )
-        else:
-            logger.info(f"Displaying {category} page")
-            page_dict = self.category_finder(category)
-            logger.info(f"message:{page_dict.message} and error_message:{page_dict.error.error_message}")
-            if page_dict.success:
-                page = page_dict.data
-
-                method = getattr(page, type_display)
-                method_data = method(*args)
-
-                logger.info(f"message:{method_data.message} and error_message:{method_data.error.error_message}")
-                return OperationResult(
-                    success=True,
-                    message="Ready for display",
-                    data=display
-                )
-        logger.warning(f"Page Category not found: {category}")
-        return page
-            
-
-    #-------------------------------------------------------------------------------------------
-    def display_all(self,category = None):
-        return self._execute_page_display(
-            "display_all",
-            category=category
-            )
-        
     
-    def display_by_months(self,months,year,category = None):
-        return self._execute_page_display(
-            "display_by_months",
-            months,
-            year,
-            category=category
-            )
-        
-    
-    def display_by_week(self,week,year,category = None):
-        return self._execute_page_display(
-            "display_by_week",
-            week,
-            year,
-            category=category
-            )
-    
-    def display_by_day(self,day,months,year,category = None):
-        return self._execute_page_display(
-            "display_by_day",
-            day,
-            months,
-            year,
-            category=category
-            )
-    
-    def display_by_year(self,year,category = None):
-        return self._execute_page_display(
-            "display_by_year",
-            year,
-            category=category
-            )
-
     def display_analysis(self):
         display = []
         if self.taskapp:
@@ -337,18 +260,6 @@ class TaskApp:
                 message="Ready for display",
                 data=display
             )
-
-    def display_done(self,category):
-        return self._execute_page_display(
-            "display_by_done",
-            category=category
-        )
-    
-    def display_pending(self,category):
-        return self._execute_page_display(
-            "display_by_pending",
-            category=category
-        )
 
 #-----------------------------Data handling for persistence--------------------------------------
 
