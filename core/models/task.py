@@ -1,10 +1,11 @@
 import logging
 logger = logging.getLogger(__name__)
 class Task:
-    def __init__(self, task, iid, uid, created_date, modified_date, priority = "Medium", done = False , tags = [], description = ""):
+    def __init__(self, task, iid, uid, created_date, modified_date, page_id,priority = "Medium", done = False , tags = [], description = ""):
         self.task = task
         self.iid = iid
         self.uid = uid 
+        self.page_id = page_id
         self.created_date = created_date
         self.modified_date = modified_date
         self.priority = priority #1 = high | 2 = medium | 3 = low
