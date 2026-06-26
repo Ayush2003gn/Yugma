@@ -1,7 +1,9 @@
 class StatisticsService:
     def __init__(self,taskapp):
         self.taskapp = taskapp
-
+        self.tasks = self.taskapp.get_all_tasks()
+        self.page = self.taskapp.taskapp
+        
     def total_tasks(self):
         return len(self.taskapp.get_all_tasks())
     
@@ -56,7 +58,15 @@ class StatisticsService:
 
     
     def completion_percentage(self):
-        return (self.total_done_tasks() / self.total_tasks()) * 100
+        try:
+            compl_per = (self.total_done_tasks() / self.total_tasks()) * 100
+            return compl_per
+        except ZeroDivisionError:
+            return 0
     
     def completion_percentage_by_page(self,page_id):
-        return (self.total_tasks_done_by_page(page_id) / self.total_tasks_by_page(page_id)) * 100
+        try:
+            return (self.total_tasks_done_by_page(page_id) / self.total_tasks_by_page(page_id)) * 100
+
+        except ZeroDivisionError:
+            return 0
