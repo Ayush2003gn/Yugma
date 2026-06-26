@@ -251,6 +251,15 @@ class TaskApp:
         
         return all_task
 
+    def get_all_pages_names(self):
+        all_page = []
+        for page in self.taskapp:
+            all_page.append(page.category)
+        
+        return all_page
+    
+
+
 #-----------------------------Data handling for persistence--------------------------------------
 
     def category_datapath_dict(self):
