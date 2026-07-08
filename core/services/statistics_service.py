@@ -1,59 +1,54 @@
+from core.services.filter_service import FilterService
 class StatisticsService:
+    #option 1
     def __init__(self,taskapp):
         self.taskapp = taskapp
         self.tasks = self.taskapp.get_all_tasks()
-        self.page = self.taskapp.taskapp
+        self._filter = FilterService(taskapp)
         
     def total_tasks(self):
         return len(self.taskapp.get_all_tasks())
     
     def total_done_tasks(self):
-        count = 0
-        for page in self.taskapp.taskapp:
-            for task in page.taskpage.tasklist:
-                if task.done == True:
-                    count += 1
-        return count
+        return sum(
+            1 for task in self.taskapp.get_all_tasks()
+            if task.done
+        )
 
     def total_pending_tasks(self):
-        count = 0
-        for page in self.taskapp.taskapp:
-            for task in page.taskpage.tasklist:
-                if task.done == False:
-                    count += 1
-        return count
+        return sum(
+            1 for task in self.taskapp.get_all_tasks()
+            if task.done == False
+        )
     
     def total_tasks_by_priority(self,priority):
         count = 0
         for page in self.taskapp.taskapp:
-            for task in page.taskpage.tasklist:
+            for task in self.taskapp.get_all_tasks():
                 if task.priority == priority:
                     count += 1
         return count
 
-    def total_tasks_by_tag(self,tag):
+    def total_tasks_by_tag(self,tags):
         count = 0
-        for page in self.taskapp.taskapp:
-            for task in page.taskpage.tasklist:
-                if task.tags == tag:
-                    count += 1
+        for task in self.taskapp.get_all_tasks():
+            if tags in task.tags:
+                count += 1
         return count
     
     def total_tasks_by_page(self,page_id):
         count = 0
-        for page in self.taskapp.taskapp:
-            if page.page_id == page_id:
-                for task in page.taskpage.tasklist:
-                    count += 1
+        for task in self.taskapp.get_all_tasks():
+            if task.page_id == page_id:
+                count += 1
         return count
     
     def total_tasks_done_by_page(self,page_id):
         count = 0
-        for page in self.taskapp.taskapp:
-            if page.page_id == page_id:
-                for task in page.taskpage.tasklist:
-                    if task.done == True:
-                        count += 1
+        for task in self.taskapp.get_all_tasks():
+            if task.page_id == page_id:
+                if task.done == True:
+                    count += 1
         return count
 
     
@@ -70,3 +65,8 @@ class StatisticsService:
 
         except ZeroDivisionError:
             return 0
+#option 2
+    def Statistics(task=None,done=None,priority=None,tag=None,tag_type=None,page_id=None,iid=None,uid=None,date_created=None,date_modified=None):
+        filter = FilterService(task,done,priority,tag,tag_type,page_id,iid,uid,date_created,date_modified)
+        no_tasks = len(filter.filter().data)
+        return no_tasks
